@@ -15,8 +15,8 @@
       </xenotypeChances>
     </xenotypeSet>
     <apparelMoney>
-      <min>99999</min>
-      <max>99999</max>
+      <min>0</min>
+      <max>0</max>
     </apparelMoney>
     <!-- Exactly one apparel source. Required apparel creates the robe; empty
          tags/requirements prevent the generator and the old repair Hediff from
@@ -28,6 +28,13 @@
     <specificApparelRequirements Inherit="False" />
     <apparelDisallowTags Inherit="False" />
     <apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
+    <weaponMoney>
+      <min>0</min>
+      <max>0</max>
+    </weaponMoney>
+    <weaponTags Inherit="False" />
+    <inventoryOptions Inherit="False" />
+    <invNutrition>0</invNutrition>
     <gearHealthRange Inherit="False">
       <min>1</min>
       <max>1</max>
@@ -99,6 +106,12 @@
       </li>
       <!-- Locks both level and passion after every PawnGenerator call. -->
       <li Class="Yunjianzi.FixedPawnTemplateExtension">
+        <!-- Final generation guard: CE and Milira generation workers may add
+             race equipment after PawnKind apparel selection. Remove it once,
+             at pawn creation, and leave exactly this robe equipped. -->
+        <onlyInitialApparel>YJZ_Apparel_YunjianRobe</onlyInitialApparel>
+        <clearInitialEquipment>true</clearInitialEquipment>
+        <clearInitialInventory>true</clearInitialInventory>
         <skills>
           <li><skill>Shooting</skill><level>7</level><passion>None</passion></li>
           <li><skill>Melee</skill><level>19</level><passion>None</passion></li>

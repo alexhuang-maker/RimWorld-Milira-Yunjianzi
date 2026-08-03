@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using RimWorld;
 using Verse;
@@ -16,6 +17,9 @@ namespace Yunjianzi
     public sealed class FixedPawnTemplateExtension : DefModExtension
     {
         public List<FixedSkillSpec> skills = new List<FixedSkillSpec>();
+        public ThingDef onlyInitialApparel;
+        public bool clearInitialEquipment;
+        public bool clearInitialInventory;
     }
 
     [StaticConstructorOnStartup]
@@ -34,29 +38,80 @@ namespace Yunjianzi
     {
         private static void Postfix(Pawn __result)
         {
-            if (__result == null || __result.kindDef == null || __result.skills == null)
+            if (__result == null || __result.kindDef == null)
             {
                 return;
             }
 
             FixedPawnTemplateExtension extension = __result.kindDef.GetModExtension<FixedPawnTemplateExtension>();
-            if (extension == null || extension.skills == null)
+            if (extension == null)
             {
                 return;
             }
 
-            foreach (FixedSkillSpec spec in extension.skills)
+            if (__result.skills != null && extension.skills != null)
             {
-                if (spec == null || spec.skill == null)
+                foreach (FixedSkillSpec spec in extension.skills)
                 {
-                    continue;
+                    if (spec == null || spec.skill == null)
+                    {
+                        continue;
+                    }
+
+                    SkillRecord record = __result.skills.GetSkill(spec.skill);
+                    record.levelInt = Math.Max(0, Math.Min(20, spec.level));
+                    record.passion = spec.passion;
+                    record.xpSinceLastLevel = 0f;
+                    record.xpSinceMidnight = 0f;
+                }
+            }
+
+            NormalizeInitialGear(__result, extension);
+        }
+
+        private static void NormalizeInitialGear(Pawn pawn, FixedPawnTemplateExtension extension)
+        {
+            if (pawn.apparel != null && extension.onlyInitialApparel != null)
+            {
+                List<Apparel> worn = pawn.apparel.WornApparel.ToList();
+                foreach (Apparel apparel in worn)
+                {
+                    if (apparel.def == extension.onlyInitialApparel)
+                    {
+                        continue;
+                    }
+
+                    pawn.apparel.Remove(apparel);
+                    apparel.Destroy(DestroyMode.Vanish);
                 }
 
-                SkillRecord record = __result.skills.GetSkill(spec.skill);
-                record.levelInt = Math.Max(0, Math.Min(20, spec.level));
-                record.passion = spec.passion;
-                record.xpSinceLastLevel = 0f;
-                record.xpSinceMidnight = 0f;
+                if (!pawn.apparel.WornApparel.Any(apparel => apparel.def == extension.onlyInitialApparel))
+                {
+                    Apparel robe = ThingMaker.MakeThing(extension.onlyInitialApparel) as Apparel;
+                    if (robe != null)
+                    {
+                        CompQuality quality = robe.TryGetComp<CompQuality>();
+                        if (quality != null)
+                        {
+                            quality.SetQuality(QualityCategory.Excellent, ArtGenerationContext.Outsider);
+                        }
+                        pawn.apparel.Wear(robe, false);
+                    }
+                }
+            }
+
+            if (extension.clearInitialEquipment && pawn.equipment != null)
+            {
+                foreach (ThingWithComps equipment in pawn.equipment.AllEquipmentListForReading.ToList())
+                {
+                    pawn.equipment.Remove(equipment);
+                    equipment.Destroy(DestroyMode.Vanish);
+                }
+            }
+
+            if (extension.clearInitialInventory && pawn.inventory != null)
+            {
+                pawn.inventory.innerContainer.ClearAndDestroyContents();
             }
         }
     }
