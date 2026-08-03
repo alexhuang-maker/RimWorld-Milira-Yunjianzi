@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThoughtDef>
+    <defName>YJZ_SpiritualCirculation</defName>
+    <workerClass>Yunjianzi.ThoughtWorker_YunjianziSpiritualCirculation</workerClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <stages>
+      <li>
+        <label>灵力流通（练气）</label>
+        <description>灵力初入经脉，吐纳之间心神澄明。</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+      <li>
+        <label>灵力流通（筑基）</label>
+        <description>灵脉渐固，凡俗疲惫与饥饿已不再时刻牵动心神。</description>
+        <baseMoodEffect>4</baseMoodEffect>
+      </li>
+      <li>
+        <label>灵力流通（紫府）</label>
+        <description>紫府清明，灵力循环不息，身心自然安定。</description>
+        <baseMoodEffect>7</baseMoodEffect>
+      </li>
+      <li>
+        <label>灵力流通（金丹）</label>
+        <description>金丹自转，灵机充盈。这份内在圆满足以替代凡俗珍馐带来的慰藉。</description>
+        <baseMoodEffect>12</baseMoodEffect>
+      </li>
+      <li>
+        <label>灵力流通（化神）</label>
+        <description>元神与灵脉浑然一体，不眠不食亦神完气足。</description>
+        <baseMoodEffect>16</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+</Defs>

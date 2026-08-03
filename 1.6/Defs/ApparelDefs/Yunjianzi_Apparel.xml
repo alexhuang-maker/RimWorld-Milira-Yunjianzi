@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="Milira_OnSkinBase">
+    <defName>YJZ_Apparel_YunjianRobe</defName>
+    <label>云间道袍</label>
+    <description>云间子的专属道袍。珠白色外袍覆盖着以青玉色灵路书写的符纹，深青内层则负责约束米莉拉能源与修行灵气。</description>
+    <techLevel>Ultra</techLevel>
+    <smeltable>false</smeltable>
+    <burnableByRecipe>false</burnableByRecipe>
+    <useHitPoints>false</useHitPoints>
+    <recipeMaker Inherit="False" IsNull="True" />
+    <graphicData>
+      <texPath>Yunjianzi/UI/YunjianziRobe</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <uiIconPath>Yunjianzi/UI/YunjianziRobe</uiIconPath>
+    <statBases>
+      <Mass>1.2</Mass>
+      <DeteriorationRate>0</DeteriorationRate>
+      <ArmorRating_Sharp>1.0</ArmorRating_Sharp>
+      <ArmorRating_Blunt>0.7</ArmorRating_Blunt>
+      <ArmorRating_Heat>0.8</ArmorRating_Heat>
+      <Insulation_Cold>40</Insulation_Cold>
+      <Insulation_Heat>20</Insulation_Heat>
+    </statBases>
+    <apparel>
+      <useWornGraphicMask>false</useWornGraphicMask>
+      <developmentalStageFilter>Adult</developmentalStageFilter>
+      <bodyPartGroups Inherit="False">
+        <li>Torso</li>
+        <li>Legs</li>
+        <li>Arms</li>
+        <li>Neck</li>
+        <li>Shoulders</li>
+        <li>Feet</li>
+        <li>Hands</li>
+        <li>Milira_Wings</li>
+      </bodyPartGroups>
+      <wornGraphicPath>Yunjianzi/Apparel/YunjianziRobe</wornGraphicPath>
+      <tags Inherit="False">
+        <li>YJZ_YunjianRobe</li>
+      </tags>
+      <layers Inherit="False">
+        <li>Shell</li>
+      </layers>
+      <shellRenderedBehindHead>true</shellRenderedBehindHead>
+    </apparel>
+  </ThingDef>
+</Defs>

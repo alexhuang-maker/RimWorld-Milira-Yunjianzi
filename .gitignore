@@ -1,0 +1,13 @@
+# Local compiler intermediates
+Source/bin/
+Source/obj/
+
+# IDE-local files
+*.user
+*.suo
+.vs/
+
+# Never commit local authentication material
+*.pem
+*.key
+id_ed25519*

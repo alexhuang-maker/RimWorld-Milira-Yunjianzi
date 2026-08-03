@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <TraitDef>
+    <defName>YJZ_Trait_CloudseaSwordHeart</defName>
+    <commonality>0</commonality>
+    <allowOnHostileSpawn>false</allowOnHostileSpawn>
+    <degreeDatas>
+      <li>
+        <label>云海剑心</label>
+        <description>她拥有一颗追寻真理而不迷失方向的心。对未知，她保持探索；对力量，她保持克制；对需要帮助的人，她选择守护。剑对她而言并非单纯的武器，而是连接知识、技艺与意志的道路。</description>
+        <skillGains>
+          <Melee>4</Melee>
+          <Crafting>4</Crafting>
+          <Construction>2</Construction>
+          <Intellectual>4</Intellectual>
+        </skillGains>
+        <statOffsets>
+          <!-- These two stats use percentage points (vanilla Brawler/Nimble
+               use 4 and 15 respectively), so 10 means +10%. -->
+          <MeleeHitChance>10</MeleeHitChance>
+          <MeleeDodgeChance>10</MeleeDodgeChance>
+          <ResearchSpeed>0.10</ResearchSpeed>
+          <MentalBreakThreshold>-0.15</MentalBreakThreshold>
+        </statOffsets>
+      </li>
+    </degreeDatas>
+  </TraitDef>
+</Defs>

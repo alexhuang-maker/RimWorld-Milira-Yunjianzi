@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HeadTypeDef ParentName="AverageBase">
+    <defName>YJZ_Head_Yunjianzi</defName>
+    <graphicPath>Yunjianzi/Pawn/Head/YunjianziHead</graphicPath>
+    <gender>Female</gender>
+    <randomChosen>false</randomChosen>
+  </HeadTypeDef>
+</Defs>

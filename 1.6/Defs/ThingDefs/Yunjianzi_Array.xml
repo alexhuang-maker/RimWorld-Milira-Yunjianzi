@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef>
+    <defName>YJZ_Projectile_SwordShadow</defName>
+    <label>诛邪剑影</label>
+    <thingClass>Yunjianzi.ThingYunjianziSwordShadow</thingClass>
+    <category>Ethereal</category>
+    <tickerType>Normal</tickerType>
+    <drawerType>RealtimeOnly</drawerType>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <selectable>false</selectable>
+    <useHitPoints>false</useHitPoints>
+    <destroyable>true</destroyable>
+    <passability>Standable</passability>
+    <pathCost>0</pathCost>
+    <graphicData>
+      <texPath>Yunjianzi/Weapons/SwordShadow</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>1.58</drawSize>
+      <color>(255,255,255)</color>
+    </graphicData>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase" Name="YJZ_ArrayCoreBase" Abstract="True">
+    <label>琉璃阵眼</label>
+    <description>云间子以灵力凝成的琉璃玉珠，是仙阵的阵眼与防御枢机。其灵压会吸引附近敌人的注意；摧毁阵眼即可令对应仙阵消散。</description>
+    <thingClass>Yunjianzi.ThingYunjianziArrayCore</thingClass>
+    <category>Building</category>
+    <tickerType>Normal</tickerType>
+    <drawerType>RealtimeOnly</drawerType>
+    <altitudeLayer>Item</altitudeLayer>
+    <selectable>true</selectable>
+    <useHitPoints>true</useHitPoints>
+    <destroyable>true</destroyable>
+    <passability>Standable</passability>
+    <fillPercent>0</fillPercent>
+    <pathCost>0</pathCost>
+    <rotatable>false</rotatable>
+    <statBases>
+      <Flammability>0</Flammability>
+      <DeteriorationRate>0</DeteriorationRate>
+    </statBases>
+    <graphicData>
+      <texPath>Yunjianzi/Array/ArrayCore</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>0.9</drawSize>
+      <color>(255,255,255)</color>
+    </graphicData>
+  </ThingDef>
+
+  <!-- A vanilla wall has 300 HP and Sun Plate Steel has a 3.8 HP factor:
+       300 * 3.8 = 1140. Every cultivation realm doubles that durability. -->
+  <ThingDef ParentName="YJZ_ArrayCoreBase">
+    <defName>YJZ_Thing_ArrayCore</defName>
+    <statBases><MaxHitPoints>1140</MaxHitPoints></statBases>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_ArrayCoreBase">
+    <defName>YJZ_Thing_ArrayCore_Foundation</defName>
+    <statBases><MaxHitPoints>2280</MaxHitPoints></statBases>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_ArrayCoreBase">
+    <defName>YJZ_Thing_ArrayCore_PurplePalace</defName>
+    <statBases><MaxHitPoints>4560</MaxHitPoints></statBases>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_ArrayCoreBase">
+    <defName>YJZ_Thing_ArrayCore_GoldenCore</defName>
+    <statBases><MaxHitPoints>9120</MaxHitPoints></statBases>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_ArrayCoreBase">
+    <defName>YJZ_Thing_ArrayCore_SpiritTransformation</defName>
+    <statBases><MaxHitPoints>18240</MaxHitPoints></statBases>
+  </ThingDef>
+</Defs>

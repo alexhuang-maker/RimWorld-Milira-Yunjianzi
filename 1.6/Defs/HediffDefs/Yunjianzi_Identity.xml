@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Persistent invisible identity marker used by Ariandel Library. -->
+  <HediffDef>
+    <defName>YJZ_Identity_Yunjianzi</defName>
+    <label>ID: Yunjianzi</label>
+    <description>Internal marker for Yunjianzi special-pawn registration.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <tendable>false</tendable>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <initialSeverity>0.5</initialSeverity>
+    <stages>
+      <li>
+        <becomeVisible>false</becomeVisible>
+        <!-- Childhood effects that cannot be expressed by AlienBackstoryDef's
+             skill-only schema are carried by the permanent identity marker. -->
+        <statOffsets>
+          <ResearchSpeed>0.10</ResearchSpeed>
+          <GlobalLearningFactor>0.10</GlobalLearningFactor>
+        </statOffsets>
+      </li>
+    </stages>
+    <comps>
+      <li Class="AriandelLibrary.HediffCompProperties_SpecialIdentity">
+        <staticID>Yunjianzi</staticID>
+        <requiredPawnKind>YJZ_Yunjianzi</requiredPawnKind>
+      </li>
+    </comps>
+  </HediffDef>
+
+  <!-- Repairs apparel stripped or skipped by Character Editor after generation. -->
+  <HediffDef>
+    <defName>YJZ_ForceWear_YunjianziRobe</defName>
+    <label>云间道袍装束校准</label>
+    <description>用于确保云间子的专属服装在生成后正确穿戴。</description>
+    <hediffClass>Verse.HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <tendable>false</tendable>
+    <comps>
+      <li Class="AriandelLibrary.HediffCompProperties_WearApparel">
+        <countdownTicks>1</countdownTicks>
+        <defaultQuality>Excellent</defaultQuality>
+        <removeHediffAfter>true</removeHediffAfter>
+        <items>
+          <li>
+            <apparelDef>YJZ_Apparel_YunjianRobe</apparelDef>
+            <quality>Excellent</quality>
+          </li>
+        </items>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <becomeVisible>false</becomeVisible>
+      </li>
+    </stages>
+  </HediffDef>
+</Defs>

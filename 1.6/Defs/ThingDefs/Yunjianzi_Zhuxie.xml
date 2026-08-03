@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BaseMeleeWeapon_Sharp">
+    <defName>YJZ_Weapon_Zhuxie</defName>
+    <label>诛邪</label>
+    <description>云间子以灵脉温养的独一仙剑。剑本体不会随境界更换；实际威力、穿甲、剑影与附魔由持剑者的修行境界动态决定。</description>
+    <thingClass>ThingWithComps</thingClass>
+    <rotatable>true</rotatable>
+    <!-- Zhuxie is unique and summoned, never crafted or smelted. Clear the
+         manufacturing fields inherited from BaseMeleeWeapon_Sharp. -->
+    <recipeMaker Inherit="False" IsNull="True" />
+    <smeltable>false</smeltable>
+    <burnableByRecipe>false</burnableByRecipe>
+    <techLevel>Ultra</techLevel>
+    <weaponTags><li>YJZ_Zhuxie</li></weaponTags>
+    <weaponClasses><li>MeleePiercer</li></weaponClasses>
+    <graphicData>
+      <texPath>Yunjianzi/Weapons/Zhuxie</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>1.35</drawSize>
+      <color>(255,255,255)</color>
+    </graphicData>
+    <equippedAngleOffset>-65</equippedAngleOffset>
+    <soundInteract>Interact_MonoSword</soundInteract>
+    <meleeHitSound>MeleeHit_MonoSword</meleeHitSound>
+    <statBases>
+      <MarketValue>3200</MarketValue>
+      <Mass>1.5</Mass>
+      <MaxHitPoints>500</MaxHitPoints>
+    </statBases>
+    <tools>
+      <li>
+        <label>诛邪剑刃</label>
+        <capacities><li>Cut</li><li>Stab</li></capacities>
+        <power>25</power>
+        <cooldownTime>2</cooldownTime>
+        <armorPenetration>0.9</armorPenetration>
+        <chanceFactor>1</chanceFactor>
+      </li>
+    </tools>
+  </ThingDef>
+</Defs>

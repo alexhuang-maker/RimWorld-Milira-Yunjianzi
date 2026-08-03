@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- Milira uses an explicit apparel whitelist. Without this entry the pawn
+       generator can create the robe, but the apparel tracker rejects wearing it. -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/AlienRace.ThingDef_AlienRace[defName='Milira_Race']/alienRace/raceRestriction/apparelList</xpath>
+    <value>
+      <li>YJZ_Apparel_YunjianRobe</li>
+    </value>
+  </Operation>
+
+  <!-- Remove every randomized Milira head addon for Yunjianzi. -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/AlienRace.ThingDef_AlienRace[defName='Milira_Race']/alienRace/generalSettings/alienPartGenerator/bodyAddons/li[name='milira halo']/conditions</xpath>
+    <value>
+      <Not><Backstory><backstory>YJZ_Backstory_Adulthood</backstory></Backstory></Not>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/AlienRace.ThingDef_AlienRace[defName='Milira_Race']/alienRace/generalSettings/alienPartGenerator/bodyAddons/li[name='milira ahoge']/conditions</xpath>
+    <value>
+      <Not><Backstory><backstory>YJZ_Backstory_Adulthood</backstory></Backstory></Not>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/AlienRace.ThingDef_AlienRace[defName='Milira_Race']/alienRace/generalSettings/alienPartGenerator/bodyAddons/li[name='milira hair']/conditions</xpath>
+    <value>
+      <Not><Backstory><backstory>YJZ_Backstory_Adulthood</backstory></Backstory></Not>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/AlienRace.ThingDef_AlienRace[defName='Milira_Race']/alienRace/generalSettings/alienPartGenerator/bodyAddons/li[name='milira hair BG']/conditions</xpath>
+    <value>
+      <Not><Backstory><backstory>YJZ_Backstory_Adulthood</backstory></Backstory></Not>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/AlienRace.ThingDef_AlienRace[defName='Milira_Race']/alienRace/generalSettings/alienPartGenerator/bodyAddons</xpath>
+    <value>
+      <li>
+        <name>Yunjianzi halo</name>
+        <userCustomizable>false</userCustomizable>
+        <path>Yunjianzi/Pawn/Halo/YunjianziHalo</path>
+        <inFrontOfBody>true</inFrontOfBody>
+        <layerInvert>false</layerInvert>
+        <shaderType>MoteGlow</shaderType>
+        <colorChannel>YunjianziHaloColor</colorChannel>
+        <defaultOffset>Center</defaultOffset>
+        <drawSize>1</drawSize>
+        <alignWithHead>true</alignWithHead>
+        <scaleWithPawnDrawsize>true</scaleWithPawnDrawsize>
+        <useSkipFlags><li>Milira_Halo</li></useSkipFlags>
+        <conditions>
+          <BodyPart><bodyPart>Milira_Halo</bodyPart></BodyPart>
+          <Posture><drawnStanding>true</drawnStanding><drawnInBed>true</drawnInBed><drawnLaying>true</drawnLaying></Posture>
+          <RotStage>Fresh</RotStage>
+          <Backstory><backstory>YJZ_Backstory_Adulthood</backstory></Backstory>
+        </conditions>
+        <offsets>
+          <!-- Match the native adult Milira halo anchor and depth exactly. The
+               asymmetric world-space placement is encoded in the directional PNGs. -->
+          <west><bodyTypes><Female>(0,-0.06)</Female></bodyTypes><layerOffset>-0.24</layerOffset></west>
+          <south><bodyTypes><Female>(0,-0.06)</Female></bodyTypes><layerOffset>-0.24</layerOffset></south>
+          <north><bodyTypes><Female>(0,-0.06)</Female></bodyTypes><layerOffset>-0.24</layerOffset></north>
+          <east><bodyTypes><Female>(0,-0.06)</Female></bodyTypes><layerOffset>-0.24</layerOffset></east>
+        </offsets>
+      </li>
+      <li>
+        <name>Yunjianzi front hair</name>
+        <userCustomizable>false</userCustomizable>
+        <path>Yunjianzi/Pawn/HairFront/YunjianziHairFront</path>
+        <inFrontOfBody>true</inFrontOfBody>
+        <layerInvert>false</layerInvert>
+        <colorChannel>hair</colorChannel>
+        <defaultOffset>Center</defaultOffset>
+        <drawSize>1</drawSize>
+        <alignWithHead>true</alignWithHead>
+        <scaleWithPawnDrawsize>true</scaleWithPawnDrawsize>
+        <useSkipFlags><li>Ancot_Hair</li></useSkipFlags>
+        <conditions>
+          <BodyPart><bodyPart>Head</bodyPart></BodyPart>
+          <Posture><drawnStanding>true</drawnStanding><drawnInBed>true</drawnInBed><drawnLaying>true</drawnLaying></Posture>
+          <RotStage>Fresh,Rotting</RotStage>
+          <Backstory><backstory>YJZ_Backstory_Adulthood</backstory></Backstory>
+        </conditions>
+        <offsets>
+          <!-- The side face opening in the front-hair texture is about fourteen
+               source pixels behind the fixed eye/head anchor. Move only the
+               front layer toward the face; the ear tip remains outside it. -->
+          <west><bodyTypes><Female>(-0.028,0)</Female></bodyTypes><layerOffset>-0.274</layerOffset></west>
+          <south><layerOffset>-0.274</layerOffset></south>
+          <north><layerOffset>-0.274</layerOffset></north>
+          <east><bodyTypes><Female>(0.028,0)</Female></bodyTypes><layerOffset>-0.274</layerOffset></east>
+        </offsets>
+      </li>
+      <li>
+        <name>Yunjianzi back hair</name>
+        <userCustomizable>false</userCustomizable>
+        <path>Yunjianzi/Pawn/HairBack/YunjianziHairBack</path>
+        <inFrontOfBody>false</inFrontOfBody>
+        <layerInvert>false</layerInvert>
+        <colorChannel>hair</colorChannel>
+        <defaultOffset>Center</defaultOffset>
+        <drawSize>1</drawSize>
+        <alignWithHead>true</alignWithHead>
+        <scaleWithPawnDrawsize>true</scaleWithPawnDrawsize>
+        <linkVariantIndexWithPrevious>true</linkVariantIndexWithPrevious>
+        <useSkipFlags><li>Ancot_Hair</li></useSkipFlags>
+        <conditions>
+          <BodyPart><bodyPart>Head</bodyPart></BodyPart>
+          <Posture><drawnStanding>true</drawnStanding><drawnInBed>false</drawnInBed><drawnLaying>true</drawnLaying></Posture>
+          <RotStage>Fresh,Rotting</RotStage>
+          <Backstory><backstory>YJZ_Backstory_Adulthood</backstory></Backstory>
+        </conditions>
+        <offsets>
+          <west><bodyTypes><Female>(-0.012,0)</Female></bodyTypes><layerOffset>-0.275</layerOffset></west>
+          <south><layerOffset>-0.299</layerOffset></south>
+          <north><layerOffset>-0.275</layerOffset></north>
+          <east><bodyTypes><Female>(0.012,0)</Female></bodyTypes><layerOffset>-0.275</layerOffset></east>
+        </offsets>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/AlienRace.ThingDef_AlienRace[defName='Milira_Race']/alienRace/generalSettings/alienPartGenerator/colorChannels</xpath>
+    <value>
+      <li>
+        <name>YunjianziHaloColor</name>
+        <first Class="ColorGenerator_Options"><options><li><weight>100</weight><only>RGB(255,255,255)</only></li></options></first>
+      </li>
+    </value>
+  </Operation>
+</Patch>

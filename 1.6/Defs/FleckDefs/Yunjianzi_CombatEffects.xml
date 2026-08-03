@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <FleckDef ParentName="FleckBase">
+    <defName>YJZ_Fleck_SwordShadowAfterimage</defName>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <fadeInTime>0</fadeInTime>
+    <solidTime>0.04</solidTime>
+    <fadeOutTime>0.26</fadeOutTime>
+    <graphicData>
+      <texPath>Yunjianzi/Weapons/SwordShadow</texPath>
+      <shaderType>TransparentPostLight</shaderType>
+      <drawSize>1.34</drawSize>
+      <color>(190,250,255)</color>
+    </graphicData>
+  </FleckDef>
+
+  <FleckDef ParentName="FleckBase">
+    <defName>YJZ_Fleck_BlinkSlash</defName>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <fadeInTime>0</fadeInTime>
+    <solidTime>0.08</solidTime>
+    <fadeOutTime>0.42</fadeOutTime>
+    <graphicData>
+      <texPath>Yunjianzi/Effects/BlinkSlash</texPath>
+      <shaderType>MoteGlow</shaderType>
+      <drawSize>(4.8,2.4)</drawSize>
+      <color>(210,255,255)</color>
+    </graphicData>
+  </FleckDef>
+</Defs>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <AlienRace.AlienBackstoryDef>
+    <defName>YJZ_Backstory_Childhood</defName>
+    <title>星穹学徒</title>
+    <titleShort>星穹学徒</titleShort>
+    <description>[PAWN_nameDef]出生于米莉拉天空精灵文明体系，自幼接受正统知识教育。与专注于既有技术应用的同族不同，她对失落历史、未知文明和无法解释的技术现象抱有强烈兴趣。一次古代资料研究中，她发现了一本记载着未知制造技艺的残缺古籍；那本书成为她走向星海与仙途的起点。</description>
+    <slot>Childhood</slot>
+    <skillGains>
+      <Crafting>3</Crafting>
+      <Intellectual>3</Intellectual>
+    </skillGains>
+    <spawnCategories>
+      <li>YJZ_Backstory_Childhood_Category</li>
+    </spawnCategories>
+    <bodyTypeFemale>Female</bodyTypeFemale>
+    <bodyTypeMale>Female</bodyTypeMale>
+  </AlienRace.AlienBackstoryDef>
+
+  <AlienRace.AlienBackstoryDef>
+    <defName>YJZ_Backstory_Adulthood</defName>
+    <title>遗仙传人</title>
+    <titleShort>遗仙传人</titleShort>
+    <description>成年后，[PAWN_nameDef]驾驶米莉拉飞船探索星海，寻找古籍记载的失落知识。她最终发现了一位远古大能留下的完整道统：剑诀、阵法、符法与器道。传承选择的并非最强者，而是能够理解未知、坚持正道并愿意守护他人的继承者。诛邪认可了她，她也由此继承这一脉的道号——云间子。</description>
+    <slot>Adulthood</slot>
+    <skillGains>
+      <Melee>3</Melee>
+      <Crafting>2</Crafting>
+      <Intellectual>2</Intellectual>
+      <Social>1</Social>
+    </skillGains>
+    <spawnCategories>
+      <li>YJZ_Backstory_Adulthood_Category</li>
+    </spawnCategories>
+    <bodyTypeFemale>Female</bodyTypeFemale>
+    <bodyTypeMale>Female</bodyTypeMale>
+  </AlienRace.AlienBackstoryDef>
+</Defs>
