@@ -7,14 +7,15 @@ into a four-direction QA sheet.  It never edits the source layer sheet.
 
 from pathlib import Path
 
-from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 
 
 MOD_ROOT = Path(__file__).resolve().parents[1]
 TEXTURES = MOD_ROOT / "Content" / "Textures" / "Yunjianzi"
 MASTER = MOD_ROOT / "ArtSource" / "LayerSheets" / "Yunjianzi_HairLayers_Transparent_v2.png"
 CALIBRATED_FRONT = MOD_ROOT / "ArtSource" / "LayerSheets" / "Yunjianzi_HairFront_Calibrated"
-OUTPUT = MOD_ROOT / "ArtSource" / "SpriteDraft" / "Yunjianzi_PawnStructure_Final_v1.png"
+SIDE_REDRAW = MOD_ROOT / "ArtSource" / "GeneratedAssets" / "Yunjianzi_HairSide_Redraw_v1_transparent.png"
+OUTPUT = MOD_ROOT / "ArtSource" / "SpriteDraft" / "Yunjianzi_PawnStructure_Final_v2.png"
 
 MILIRA_WINGS = Path(
     r"C:\Program Files (x86)\Steam\steamapps\workshop\content\294100\3256974620"
@@ -49,52 +50,32 @@ def extract_component(master: Image.Image, box, target_size, position) -> Image.
     return canvas
 
 
-def shifted(image: Image.Image, dx: int, dy: int = 0) -> Image.Image:
-    canvas = Image.new("RGBA", image.size)
-    canvas.alpha_composite(image, (dx, dy))
+def side_redraw_canvas() -> Image.Image:
+    sheet = Image.open(SIDE_REDRAW).convert("RGBA")
+    # The generated sheet contains a left-facing source in its left half. Use
+    # that one source and mirror it for east so both rotations are guaranteed
+    # to share identical geometry and attachment points.
+    half = sheet.crop((0, 0, sheet.width // 2, sheet.height))
+    bounds = half.getchannel("A").getbbox()
+    if bounds is None:
+        raise RuntimeError("The redrawn side-hair source is empty")
+    hair = half.crop(bounds).resize((180, 332), Image.Resampling.LANCZOS)
+    canvas = Image.new("RGBA", (512, 512))
+    canvas.alpha_composite(hair, (195, 160))
     return canvas
-
-
-def outside_head_only(image: Image.Image, head: Image.Image) -> Image.Image:
-    """Keep the tied mass outside the Milira skull, leaving face/scalp clear.
-
-    The approved front cap supplies the crown and bangs. Dilating the head mask
-    hides the rear source's internal outline beneath that cap, producing the
-    same single-silhouette construction used by native long HairMain sprites.
-    """
-    head_mask = head.getchannel("A").filter(ImageFilter.MaxFilter(9))
-    outside = ImageChops.invert(head_mask)
-    result = image.copy()
-    result.putalpha(ImageChops.multiply(result.getchannel("A"), outside))
-    return result
 
 
 def rebuild_hair() -> None:
     master = rgba(MASTER, (1536, 1024))
     # The master is an art-layout sheet, not a 3x2 grid of game-ready canvases.
-    # Extract each isolated alpha component, then place it on the calibrated
-    # Milira 512px head canvas. Side rear hair is deliberately shifted toward
-    # the back of the skull so the tied length cannot disappear under the robe.
-    # These three front layers were manually shortened during the earlier
-    # face-style pass; retain that approved fringe instead of restoring the
-    # concept sheet's eye-covering bangs. Nudge side fringe toward the face to
-    # close the unnatural forehead/ear-root gap seen in the game captures.
+    # South keeps the approved fringe and north keeps the tied rear silhouette.
+    # East/west use one coherent profile redraw derived from the fixed Milira
+    # head; mirroring that source guarantees identical skull attachment points.
     front_south = rgba(CALIBRATED_FRONT / "YunjianziHairFront_south.png")
-    front_east = shifted(rgba(CALIBRATED_FRONT / "YunjianziHairFront_east.png"), 16, 8)
-    front_west = shifted(rgba(CALIBRATED_FRONT / "YunjianziHairFront_west.png"), -16, 8)
     back_south = extract_component(master, (220, 380, 480, 990), (183, 316), (164, 160))
-    # Match Milira's long HairMain envelope (not HairBG): approximately
-    # x=112..328/y=161..490 on the east texture, mirrored for west.
-    back_west = extract_component(master, (630, 380, 890, 990), (190, 324), (192, 162))
     back_north = extract_component(master, (1030, 380, 1290, 990), (185, 337), (163, 160))
-
-    back_east = back_west.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-
-    head_root = TEXTURES / "Pawn" / "Head"
-    unified_east = outside_head_only(back_east, rgba(head_root / "YunjianziHead_east.png"))
-    unified_east.alpha_composite(front_east)
-    unified_west = outside_head_only(back_west, rgba(head_root / "YunjianziHead_west.png"))
-    unified_west.alpha_composite(front_west)
+    unified_west = side_redraw_canvas()
+    unified_east = unified_west.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
 
     save_cell(front_south, "HairFront", "YunjianziHairFront", "south")
     save_cell(unified_west, "HairFront", "YunjianziHairFront", "west")
