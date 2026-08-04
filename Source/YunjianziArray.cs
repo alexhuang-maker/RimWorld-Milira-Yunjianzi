@@ -369,16 +369,19 @@ namespace Yunjianzi
 
     public sealed class ThingYunjianziSwordRain : Thing
     {
-        private const float BlastRadius = 3.9f;
         private Pawn owner;
         private int realmAtCast;
         private int startTick;
         private int wavesReleased;
+        private int waveCount = 2;
+        private float blastRadius = 3.9f;
 
-        public void Initialize(Pawn caster, int realm)
+        public void Initialize(Pawn caster, int realm, int waves, float radius)
         {
             owner = caster;
             realmAtCast = realm;
+            waveCount = Mathf.Max(2, waves);
+            blastRadius = Mathf.Max(1f, radius);
             startTick = Find.TickManager.TicksGame;
         }
 
@@ -392,24 +395,20 @@ namespace Yunjianzi
             }
 
             int elapsed = Find.TickManager.TicksGame - startTick;
-            if (elapsed < 100 && this.IsHashIntervalTick(2)) SpawnFallingBlade();
-            if (wavesReleased == 0 && elapsed >= 35)
+            int finalWaveTick = 35 + (waveCount - 1) * 47;
+            if (elapsed < finalWaveTick + 18 && this.IsHashIntervalTick(2)) SpawnFallingBlade();
+            while (wavesReleased < waveCount && elapsed >= 35 + wavesReleased * 47)
             {
                 ReleaseWave();
-                wavesReleased = 1;
+                wavesReleased++;
             }
-            if (wavesReleased == 1 && elapsed >= 82)
-            {
-                ReleaseWave();
-                wavesReleased = 2;
-            }
-            if (elapsed >= 112) Destroy(DestroyMode.Vanish);
+            if (elapsed >= finalWaveTick + 30) Destroy(DestroyMode.Vanish);
         }
 
         private void SpawnFallingBlade()
         {
             float angle = Rand.Range(0f, 360f);
-            float distance = Mathf.Sqrt(Rand.Value) * BlastRadius;
+            float distance = Mathf.Sqrt(Rand.Value) * blastRadius;
             Vector3 point = Position.ToVector3Shifted();
             point.x += Mathf.Cos(angle * Mathf.Deg2Rad) * distance;
             point.z += Mathf.Sin(angle * Mathf.Deg2Rad) * distance;
@@ -432,7 +431,7 @@ namespace Yunjianzi
 
             // Two restrained 42-damage waves: useful area damage at Purple
             // Palace, but intentionally below a high-tier screen wipe.
-            GenExplosion.DoExplosion(Position, Map, BlastRadius, DamageDefOf.Cut, owner, 42, .62f);
+            GenExplosion.DoExplosion(Position, Map, blastRadius, DamageDefOf.Cut, owner, 42, .62f);
         }
 
         public override void ExposeData()
@@ -442,6 +441,8 @@ namespace Yunjianzi
             Scribe_Values.Look(ref realmAtCast, "yjz_swordRainRealm", 3);
             Scribe_Values.Look(ref startTick, "yjz_swordRainStartTick", 0);
             Scribe_Values.Look(ref wavesReleased, "yjz_swordRainWaves", 0);
+            Scribe_Values.Look(ref waveCount, "yjz_swordRainWaveCount", 2);
+            Scribe_Values.Look(ref blastRadius, "yjz_swordRainRadius", 3.9f);
         }
     }
 
@@ -476,6 +477,14 @@ namespace Yunjianzi
             return comp != null && comp.HasSkill(id);
         }
         public float Radius { get { return 4f + realmAtCast; } }
+        private bool HasFollowingField
+        {
+            get
+            {
+                return !followsOwner && OwnerHasSkill(YunjianziSkills.MovingArray) && owner != null &&
+                    owner.Spawned && owner.Map == Map;
+            }
+        }
         public IntVec3 EffectCenter
         {
             get { return followsOwner && owner != null && owner.Spawned && owner.Map == Map ? owner.Position : Position; }
@@ -492,6 +501,17 @@ namespace Yunjianzi
             }
         }
         public bool Active { get { return Spawned && owner != null && !owner.Dead && (OwnerHasSkill(YunjianziSkills.ArrayBarrier) || Find.TickManager.TicksGame < expireTick); } }
+
+        private IEnumerable<IntVec3> CoverageCenters()
+        {
+            yield return Position;
+            if (HasFollowingField && owner.Position != Position) yield return owner.Position;
+        }
+
+        public bool Covers(IntVec3 cell)
+        {
+            return CoverageCenters().Any(center => cell.DistanceTo(center) <= Radius);
+        }
 
         public void Initialize(Pawn caster, bool follow, int realm, int durationTicks)
         {
@@ -516,6 +536,18 @@ namespace Yunjianzi
         protected override void Tick()
         {
             base.Tick();
+            if (followsOwner && Map != null)
+            {
+                ThingYunjianziArrayCore fixedCore = ActiveOn(Map).FirstOrDefault(c => c != this && c.owner == owner && !c.followsOwner);
+                if (fixedCore != null)
+                {
+                    Destroy(DestroyMode.Vanish);
+                    return;
+                }
+                // Save migration: a surviving legacy follower becomes the fixed
+                // core. MovingArray is now a second field owned by this one core.
+                followsOwner = false;
+            }
             if (!Active)
             {
                 if (!Destroyed) Destroy(DestroyMode.Vanish);
@@ -590,9 +622,8 @@ namespace Yunjianzi
         private IEnumerable<Pawn> PawnsInside()
         {
             if (Map == null) yield break;
-            IntVec3 center = EffectCenter;
             foreach (Pawn pawn in Map.mapPawns.AllPawnsSpawned)
-                if (!pawn.Dead && pawn.Position.DistanceTo(center) <= Radius) yield return pawn;
+                if (!pawn.Dead && Covers(pawn.Position)) yield return pawn;
         }
 
         private bool Friendly(Pawn pawn)
@@ -610,10 +641,10 @@ namespace Yunjianzi
                 if (injury != null && OwnerHasSkill(YunjianziSkills.ArrayRecovery)) injury.Heal(Mathf.Min(.25f, injury.Severity));
                 if (OwnerHasSkill(YunjianziSkills.AllyArrayShield)) RefreshArrayShield(pawn);
             }
-            if (!followsOwner && OwnerHasSkill(YunjianziSkills.SwordWard))
+            if (OwnerHasSkill(YunjianziSkills.SwordWard))
             {
                 CompYunjianziCultivation comp = owner.TryGetComp<CompYunjianziCultivation>();
-                if (comp != null && owner.Position.DistanceTo(EffectCenter) <= Radius) comp.Shield += 2f;
+                if (comp != null && Covers(owner.Position)) comp.Shield += 2f;
             }
         }
 
@@ -633,11 +664,12 @@ namespace Yunjianzi
 
         private void CastLightning()
         {
-            IntVec3 center = EffectCenter;
-            List<Thing> enemies = GenRadial.RadialDistinctThingsAround(center, Map, Radius, true)
+            List<Thing> enemies = CoverageCenters()
+                .SelectMany(center => GenRadial.RadialDistinctThingsAround(center, Map, Radius, true))
                 .Where(t => t != null && t.Spawned && t.HostileTo(owner) &&
                     ((t is Pawn && !((Pawn)t).Dead) || t is Building_Turret))
-                .OrderBy(t => t.Position.DistanceToSquared(center)).Take(2).ToList();
+                .Distinct()
+                .OrderBy(t => CoverageCenters().Min(center => t.Position.DistanceToSquared(center))).Take(2).ToList();
             foreach (Thing enemy in enemies)
             {
                 bool storm = OwnerHasSkill(YunjianziSkills.ArrayStorm);
@@ -656,22 +688,22 @@ namespace Yunjianzi
                     ? new Color(.75f, .96f, 1f, .30f)
                     : new Color(.58f, .90f, .95f, .22f);
                 fieldPropertyBlock.SetColor(ShaderPropertyIDs.Color, fieldColor);
-                Vector3 fieldPosition = EffectDrawCenter;
-                Matrix4x4 matrix = Matrix4x4.TRS(
-                    fieldPosition,
-                    Quaternion.identity,
-                    new Vector3(Radius * 2f, 1f, Radius * 2f));
-                Graphics.DrawMesh(MeshPool.plane10, matrix, ArrayFieldMaterial, 0, null, 0, fieldPropertyBlock);
+                DrawField(Position.ToVector3Shifted());
+                if (HasFollowingField && owner.Position != Position) DrawField(owner.DrawPos);
             }
-            Vector3 coreDrawLoc = followsOwner && owner != null && owner.Spawned && owner.Map == Map
-                ? owner.DrawPos.WithY(drawLoc.y)
-                : drawLoc;
-            base.DrawAt(coreDrawLoc, flip);
+            base.DrawAt(drawLoc, flip);
             if (Active && Find.Selector.IsSelected(this))
             {
                 Color color = realmAtCast >= 5 ? new Color(.72f, .95f, 1f) : new Color(.35f, .85f, .92f);
-                GenDraw.DrawRadiusRing(EffectCenter, Radius, color);
+                foreach (IntVec3 center in CoverageCenters()) GenDraw.DrawRadiusRing(center, Radius, color);
             }
+        }
+
+        private void DrawField(Vector3 center)
+        {
+            center.y = Altitudes.AltitudeFor(AltitudeLayer.FloorEmplacement);
+            Matrix4x4 matrix = Matrix4x4.TRS(center, Quaternion.identity, new Vector3(Radius * 2f, 1f, Radius * 2f));
+            Graphics.DrawMesh(MeshPool.plane10, matrix, ArrayFieldMaterial, 0, null, 0, fieldPropertyBlock);
         }
 
         public override string GetInspectString()
@@ -680,7 +712,8 @@ namespace Yunjianzi
             return "境界：" + new[] { "未定", "练气", "筑基", "紫府", "金丹", "化神" }[Mathf.Clamp(realmAtCast, 0, 5)] +
                 "\n耐久：" + HitPoints + " / " + MaxHitPoints +
                 "\n嘲讽半径：" + (Radius + 6f).ToString("0") + "格" +
-                "\n仙阵半径：" + Radius.ToString("0") + "格\n" + duration;
+                "\n仙阵半径：" + Radius.ToString("0") + "格" +
+                (HasFollowingField ? "\n随身阵：已展开（固定阵眼仍保留）" : "") + "\n" + duration;
         }
 
         public override void ExposeData()
@@ -730,8 +763,7 @@ namespace Yunjianzi
             IntVec3 origin = projectileLauncher != null && projectileLauncher.Spawned ? projectileLauncher.Position : current + new IntVec3(999, 0, 999);
             foreach (ThingYunjianziArrayCore core in ActiveOn(map).Where(c => c.OwnerHasSkill(YunjianziSkills.ArrayBarrier)))
             {
-                IntVec3 center = core.EffectCenter;
-                if (current.DistanceTo(center) > core.Radius || origin.DistanceTo(center) <= core.Radius) continue;
+                if (!core.Covers(current) || core.Covers(origin)) continue;
                 Thing launcher = projectileLauncher;
                 if (launcher != null && core.owner != null && !launcher.HostileTo(core.owner)) continue;
                 ThingDef projectileDef = projectile.def;
@@ -803,7 +835,6 @@ namespace Yunjianzi
             if (cost > 0 && !TrySpend(cost)) return;
             CancelArrays();
             SpawnArray(false, HasSkill(YunjianziSkills.ArrayBarrier) ? -1 : 3600);
-            if (HasSkill(YunjianziSkills.MovingArray)) SpawnArray(true, HasSkill(YunjianziSkills.ArrayBarrier) ? -1 : 3600);
             Messages.Message(HasSkill(YunjianziSkills.ArrayBarrier) ? "仙阵展开。阵法将持续消耗灵力。" : "琉璃阵眼落定，仙阵展开。", Pawn, MessageTypeDefOf.PositiveEvent);
         }
 
@@ -833,7 +864,7 @@ namespace Yunjianzi
 
         private void TryArrayBlink(IntVec3 cell)
         {
-            if (!cell.InBounds(Pawn.Map) || !cell.Standable(Pawn.Map) || !ActiveArrays().Any(c => cell.DistanceTo(c.EffectCenter) <= c.Radius))
+            if (!cell.InBounds(Pawn.Map) || !cell.Standable(Pawn.Map) || !ActiveArrays().Any(c => c.Covers(cell)))
             {
                 Messages.Message("目标必须是任一仙阵内部的可站立位置。", Pawn, MessageTypeDefOf.RejectInput);
                 return;

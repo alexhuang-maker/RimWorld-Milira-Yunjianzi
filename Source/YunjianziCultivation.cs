@@ -37,6 +37,8 @@ namespace Yunjianzi
         private int blinkReadyTick;
         private bool autoBlink;
         private int swordRainReadyTick;
+        private int swordRainCharges = -1;
+        private int swordRainNextChargeTick;
         private int shadowCursor;
         private int deathLockUntil;
         private int deathLockReadyTick;
@@ -114,6 +116,7 @@ namespace Yunjianzi
             if (Pawn.IsHashIntervalTick(60))
             {
                 EnsureRealmAndAbilities();
+                UpdateSwordRainCharges();
                 UpdateSwordHeartClarity();
                 Energy += EnergyMax * 0.005f;
                 if (Realm >= 5 && Pawn.needs != null)
@@ -160,16 +163,6 @@ namespace Yunjianzi
                     action = BeginMeditationTargeting
                 };
                 foreach (Gizmo scrollGizmo in GetBoundScrollGizmos()) yield return scrollGizmo;
-                if (HasOpenedBoundScroll)
-                {
-                    yield return new Command_Action
-                    {
-                        defaultLabel = "云间宝卷·修为参悟",
-                        defaultDesc = "打开云间子的修为面板，消耗当前灵力参悟御剑诀与仙阵诀。境界只提供学习资格，不会自动解锁技能。",
-                        icon = YunjianziAbilityTextures.CultivationTree,
-                        action = delegate { Find.WindowStack.Add(new Window_YunjianziCultivationTree(this)); }
-                    };
-                }
                 Command_Action summon = new Command_Action
                 {
                     defaultLabel = "御剑诀·唤剑",
@@ -198,16 +191,17 @@ namespace Yunjianzi
                 }
                 if (HasSkill(YunjianziSkills.SwordRain))
                 {
+                    UpdateSwordRainCharges();
                     Command_Action swordRain = new Command_Action
                     {
-                        defaultLabel = "御剑诀·天剑雨",
-                        defaultDesc = "紫府境解锁。消耗80点灵力，在目标区域降下两轮诛邪剑雨。每轮覆盖约迫击炮弹爆炸范围，只造成中等纯粹伤害，不附带眩晕、落雷或击退。冷却30秒。",
+                        defaultLabel = string.Format("御剑诀·天剑雨 {0}/{1}", swordRainCharges, SwordRainMaxCharges),
+                        defaultDesc = SwordRainDescription,
                         icon = YunjianziAbilityTextures.SwordRain,
                         action = BeginSwordRainTargeting
                     };
-                    int swordRainRemaining = swordRainReadyTick - Find.TickManager.TicksGame;
-                    if (swordRainRemaining > 0)
-                        swordRain.Disable(string.Format("冷却中：{0:0.0}秒", swordRainRemaining / 60f));
+                    int swordRainRemaining = swordRainNextChargeTick - Find.TickManager.TicksGame;
+                    if (swordRainCharges <= 0)
+                        swordRain.Disable(string.Format("充能中：{0:0.0}秒", Mathf.Max(0, swordRainRemaining) / 60f));
                     else if (Energy < 80f)
                         swordRain.Disable("灵力不足：需要80点。");
                     yield return swordRain;
@@ -301,7 +295,8 @@ namespace Yunjianzi
 
         private void BeginSwordRainTargeting()
         {
-            if (!HasSkill(YunjianziSkills.SwordRain) || Find.TickManager.TicksGame < swordRainReadyTick || Pawn == null || !Pawn.Spawned) return;
+            UpdateSwordRainCharges();
+            if (!HasSkill(YunjianziSkills.SwordRain) || swordRainCharges <= 0 || Pawn == null || !Pawn.Spawned) return;
             TargetingParameters parms = new TargetingParameters
             {
                 canTargetLocations = true,
@@ -311,22 +306,98 @@ namespace Yunjianzi
                 validator = target => target.IsValid && target.Cell.InBounds(Pawn.Map) &&
                     target.Cell.DistanceTo(Pawn.Position) <= 35.9f
             };
-            Find.Targeter.BeginTargeting(parms, target => TryCastSwordRain(target.Cell));
+            Find.Targeter.BeginTargeting(
+                parms,
+                target => TryCastSwordRain(target.Cell),
+                DrawSwordRainTargetHighlight,
+                null,
+                Pawn,
+                null,
+                YunjianziAbilityTextures.SwordRain,
+                true,
+                delegate { Widgets.MouseAttachedLabel(string.Format("天剑雨落点 · 半径 {0:0.0}", SwordRainRadius)); });
+        }
+
+        private void DrawSwordRainTargetHighlight(LocalTargetInfo target)
+        {
+            if (!target.IsValid || Pawn == null || Pawn.Map == null || !target.Cell.InBounds(Pawn.Map)) return;
+            GenDraw.DrawRadiusRing(target.Cell, SwordRainRadius, new Color(.48f, .90f, 1f));
         }
 
         private void TryCastSwordRain(IntVec3 center)
         {
+            UpdateSwordRainCharges();
             if (!HasSkill(YunjianziSkills.SwordRain) || Pawn == null || !Pawn.Spawned || !center.InBounds(Pawn.Map) ||
                 center.DistanceTo(Pawn.Position) > 35.9f)
             {
                 Messages.Message("天剑雨目标必须位于35.9格内。", Pawn, MessageTypeDefOf.RejectInput);
                 return;
             }
+            if (swordRainCharges <= 0)
+            {
+                Messages.Message("天剑雨尚未完成充能。", Pawn, MessageTypeDefOf.RejectInput);
+                return;
+            }
             if (!TrySpend(80f)) return;
             ThingYunjianziSwordRain rain = (ThingYunjianziSwordRain)ThingMaker.MakeThing(YJZDefOf.YJZ_Thing_SwordRain);
-            rain.Initialize(Pawn, Realm);
+            rain.Initialize(Pawn, Realm, SwordRainWaveCount, SwordRainRadius);
             GenSpawn.Spawn(rain, center, Pawn.Map);
-            swordRainReadyTick = Find.TickManager.TicksGame + 1800;
+            swordRainCharges--;
+            if (swordRainCharges < SwordRainMaxCharges && swordRainNextChargeTick <= 0)
+                swordRainNextChargeTick = Find.TickManager.TicksGame + SwordRainCooldownTicks;
+            swordRainReadyTick = swordRainNextChargeTick;
+        }
+
+        private int SwordRainMaxCharges { get { return HasSkill(YunjianziSkills.SwordRainGolden) ? 2 : 1; } }
+        private int SwordRainCooldownTicks
+        {
+            get
+            {
+                if (HasSkill(YunjianziSkills.SwordRainSpirit)) return 1200;
+                if (HasSkill(YunjianziSkills.SwordRainGolden)) return 1500;
+                return 1800;
+            }
+        }
+        private int SwordRainWaveCount { get { return HasSkill(YunjianziSkills.SwordRainSpirit) ? 4 : 2; } }
+        private float SwordRainRadius { get { return HasSkill(YunjianziSkills.SwordRainGolden) ? 5.4f : 3.9f; } }
+        private string SwordRainDescription
+        {
+            get
+            {
+                return string.Format("消耗80点灵力，在目标区域降下{0}轮纯伤害剑雨；范围半径{1:0.0}格，不附带眩晕、落雷或击退。每次充能冷却{2:0}秒，最多储存{3}次。",
+                    SwordRainWaveCount, SwordRainRadius, SwordRainCooldownTicks / 60f, SwordRainMaxCharges);
+            }
+        }
+
+        private void UpdateSwordRainCharges()
+        {
+            if (!HasSkill(YunjianziSkills.SwordRain)) return;
+            int now = Find.TickManager == null ? 0 : Find.TickManager.TicksGame;
+            int max = SwordRainMaxCharges;
+            if (swordRainCharges < 0)
+            {
+                if (swordRainReadyTick > now)
+                {
+                    swordRainCharges = 0;
+                    swordRainNextChargeTick = swordRainReadyTick;
+                }
+                else
+                {
+                    swordRainCharges = max;
+                    swordRainNextChargeTick = 0;
+                }
+            }
+            swordRainCharges = Mathf.Clamp(swordRainCharges, 0, max);
+            if (swordRainCharges < max && swordRainNextChargeTick <= 0)
+                swordRainNextChargeTick = now + SwordRainCooldownTicks;
+            while (swordRainCharges < max && swordRainNextChargeTick > 0 && now >= swordRainNextChargeTick)
+            {
+                swordRainCharges++;
+                swordRainNextChargeTick = swordRainCharges < max
+                    ? swordRainNextChargeTick + SwordRainCooldownTicks
+                    : 0;
+            }
+            swordRainReadyTick = swordRainNextChargeTick;
         }
 
         private ThingWithComps FindExistingZhuxie()
@@ -612,6 +683,8 @@ namespace Yunjianzi
             Scribe_Values.Look(ref blinkReadyTick, "yjz_blinkReadyTick", 0);
             Scribe_Values.Look(ref autoBlink, "yjz_autoBlink", false);
             Scribe_Values.Look(ref swordRainReadyTick, "yjz_swordRainReadyTick", 0);
+            Scribe_Values.Look(ref swordRainCharges, "yjz_swordRainCharges", -1);
+            Scribe_Values.Look(ref swordRainNextChargeTick, "yjz_swordRainNextChargeTick", 0);
             Scribe_Values.Look(ref deathLockUntil, "yjz_deathLockUntil", 0);
             Scribe_Values.Look(ref deathLockReadyTick, "yjz_deathLockReadyTick", 0);
             Scribe_Collections.Look(ref shadowLightningReady, "yjz_shadowLightningReady", LookMode.Value);
@@ -697,6 +770,27 @@ namespace Yunjianzi
             DrawRealmEmblems(outer);
             TooltipHandler.TipRegion(new Rect(outer.x + 126f, outer.y + 60f, 98f, 20f),
                 "修行境界：练气、筑基、紫府、金丹、化神。亮起的玉印表示当前境界。\n当前：" + comp.RealmLabel);
+            Rect orbRect = new Rect(outer.x + 7f, outer.y + 8f, 56f, 57f);
+            if (comp.HasOpenedBoundScroll)
+            {
+                TooltipHandler.TipRegion(orbRect, "点击宝珠展开云间宝卷，打开修为参悟面板。\n技能学习消耗当前灵力。右侧玉印表示当前修行境界。");
+                if (Mouse.IsOver(orbRect))
+                {
+                    GUI.color = new Color(.40f, .94f, 1f, .82f);
+                    Widgets.DrawBox(orbRect, 2);
+                    GUI.color = Color.white;
+                }
+                if (Widgets.ButtonInvisible(orbRect))
+                {
+                    Find.WindowStack.Add(new Window_YunjianziCultivationTree(comp));
+                    Event current = Event.current;
+                    return new GizmoResult(GizmoState.Interacted, current);
+                }
+            }
+            else
+            {
+                TooltipHandler.TipRegion(orbRect, "宝珠尚未苏醒：研读云间宝卷后，可点击这里打开修为参悟面板。");
+            }
             Text.Anchor = TextAnchor.UpperLeft;
             GUI.color = Color.white;
             return new GizmoResult(GizmoState.Clear);

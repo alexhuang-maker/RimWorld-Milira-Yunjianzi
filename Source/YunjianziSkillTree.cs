@@ -19,6 +19,8 @@ namespace Yunjianzi
         public const string SwordShadowsI = "sword.shadows.1";
         public const string BlinkStrike = "sword.blink";
         public const string SwordRain = "sword.rain";
+        public const string SwordRainGolden = "sword.rain.golden";
+        public const string SwordRainSpirit = "sword.rain.spirit";
         public const string LightningEnchantment = "sword.lightning";
         public const string MovingArray = "array.moving";
         public const string ArrayTeleportShock = "array.teleport.shock";
@@ -57,12 +59,14 @@ namespace Yunjianzi
             N(BlinkChain, "诛邪连斩", "瞬斩击杀目标（包括附带落雷）后，自动寻找下一目标继续释放。", 4, 0, 1, BlinkStrike),
             N(SwordHealing, "剑息疗伤", "诛邪命中会修复自身伤口并降低流血。", 4, 0, 2, LightningEnchantment),
             N(DeathLock, "诛邪护主", "手持诛邪濒危时锁血20秒；具有较长的再次触发间隔。", 4, 0, 3, SummonZhuxie),
+            N(SwordRainGolden, "天剑雨·藏锋", "天剑雨冷却缩短5秒，可储存两次充能，并扩大覆盖范围。", 4, 0, 4, SwordRain),
             N(AllyArrayShield, "众生灵盾", "阵内友方与友方机械获得弱版灵力护盾。", 4, 1, 0, ArrayCore),
             N(ArrayBarrier, "金丹界壁", "仙阵改为每秒消耗5灵力持续维持，并阻挡阵外射入的抛射物。", 4, 1, 1, AllyArrayShield),
 
             N(SwordShadowsIII, "剑影·八荒", "剑影数量由四把提升至八把。", 5, 0, 0, SwordShadowsII),
             N(ArmorIgnore, "破妄剑意", "诛邪、瞬斩与剑影攻击无视护甲。", 5, 0, 1, SummonZhuxie),
             N(ShadowAffixes, "万剑同契", "剑影继承已学习的眩晕/麻痹与落雷附魔；每把剑影的落雷独立使用五倍冷却。", 5, 0, 2, SwordShadowsI, SwordEnchantment),
+            N(SwordRainSpirit, "天剑雨·化神", "天剑雨冷却再次缩短5秒，并在原有两轮后追加两轮攻击。", 5, 0, 3, SwordRainGolden),
             N(ArrayReflect, "返照界壁", "界壁不再仅仅阻挡，而会把敌方抛射物反射回去。", 5, 1, 0, ArrayBarrier),
             N(ArrayStorm, "万钧雷域", "仙阵落雷频率提升至5秒，并强化雷击。", 5, 1, 1, ArrayLightning),
             N(ArrayTeleportMastery, "化神阵遁", "阵遁的击退范围与距离提升至化神层次。", 5, 1, 2, ArrayTeleportShock)
@@ -334,9 +338,9 @@ namespace Yunjianzi
             for (int i = 0; i < nodes.Count; i++)
             {
                 YunjianziSkillNode node = nodes[i];
-                float x = panel.x + 67f + node.Column * 111f;
+                float x = panel.x + 65f + node.Column * 89f;
                 float y = panel.y + 77f + (node.Realm - 1) * 115f;
-                nodeRects[node.Id] = new Rect(x, y, 103f, 54f);
+                nodeRects[node.Id] = new Rect(x, y, 84f, 54f);
             }
         }
 
