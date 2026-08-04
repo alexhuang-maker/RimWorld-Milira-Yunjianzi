@@ -78,7 +78,7 @@ namespace Yunjianzi
             base.Tick();
             CompYunjianziCultivation comp = owner == null ? null : owner.TryGetComp<CompYunjianziCultivation>();
             if (!Spawned || Map == null || owner == null || owner.Dead || !owner.Spawned || owner.Map != Map ||
-                comp == null || comp.Realm < 3 || shadowIndex >= comp.ShadowCount)
+                comp == null || !comp.HasSkill(YunjianziSkills.SwordShadowsI) || shadowIndex >= comp.ShadowCount)
             {
                 if (!Destroyed) Destroy(DestroyMode.Vanish);
                 return;
@@ -469,6 +469,12 @@ namespace Yunjianzi
 
         public Pawn Owner { get { return owner; } }
         public int RealmAtCast { get { return realmAtCast; } }
+        private CompYunjianziCultivation OwnerComp { get { return owner == null ? null : owner.TryGetComp<CompYunjianziCultivation>(); } }
+        private bool OwnerHasSkill(string id)
+        {
+            CompYunjianziCultivation comp = OwnerComp;
+            return comp != null && comp.HasSkill(id);
+        }
         public float Radius { get { return 4f + realmAtCast; } }
         public IntVec3 EffectCenter
         {
@@ -485,7 +491,7 @@ namespace Yunjianzi
                 return result;
             }
         }
-        public bool Active { get { return Spawned && owner != null && !owner.Dead && (realmAtCast >= 4 || Find.TickManager.TicksGame < expireTick); } }
+        public bool Active { get { return Spawned && owner != null && !owner.Dead && (OwnerHasSkill(YunjianziSkills.ArrayBarrier) || Find.TickManager.TicksGame < expireTick); } }
 
         public void Initialize(Pawn caster, bool follow, int realm, int durationTicks)
         {
@@ -493,17 +499,17 @@ namespace Yunjianzi
             followsOwner = follow;
             realmAtCast = realm;
             expireTick = durationTicks < 0 ? int.MaxValue : Find.TickManager.TicksGame + durationTicks;
-            nextLightningTick = Find.TickManager.TicksGame + LightningInterval;
+            int interval = LightningInterval;
+            nextLightningTick = interval == int.MaxValue ? int.MaxValue : Find.TickManager.TicksGame + interval;
         }
 
         private int LightningInterval
         {
             get
             {
-                if (realmAtCast < 2) return int.MaxValue;
-                if (realmAtCast == 2) return 600;
-                if (realmAtCast < 5) return 480;
-                return 300;
+                if (!OwnerHasSkill(YunjianziSkills.ArrayLightning)) return int.MaxValue;
+                if (OwnerHasSkill(YunjianziSkills.ArrayStorm)) return 300;
+                return realmAtCast >= 3 ? 480 : 600;
             }
         }
 
@@ -518,7 +524,9 @@ namespace Yunjianzi
             if (this.IsHashIntervalTick(30) && TryMigrateRealmDef()) return;
             if (this.IsHashIntervalTick(60)) ApplyFriendlyEffects();
             if (this.IsHashIntervalTick(90)) ApplyTaunt();
-            if (realmAtCast >= 2 && Find.TickManager.TicksGame >= nextLightningTick)
+            if (OwnerHasSkill(YunjianziSkills.ArrayLightning) && nextLightningTick == int.MaxValue)
+                nextLightningTick = Find.TickManager.TicksGame + LightningInterval;
+            if (OwnerHasSkill(YunjianziSkills.ArrayLightning) && Find.TickManager.TicksGame >= nextLightningTick)
             {
                 CastLightning();
                 nextLightningTick = Find.TickManager.TicksGame + LightningInterval;
@@ -599,10 +607,10 @@ namespace Yunjianzi
                 Hediff_Injury injury = pawn.health.hediffSet.hediffs.OfType<Hediff_Injury>()
                     .Where(h => h.Severity > 0f && !h.IsPermanent())
                     .OrderByDescending(h => h.BleedRate).ThenByDescending(h => h.Severity).FirstOrDefault();
-                if (injury != null) injury.Heal(Mathf.Min(.25f, injury.Severity));
-                if (realmAtCast >= 4) RefreshArrayShield(pawn);
+                if (injury != null && OwnerHasSkill(YunjianziSkills.ArrayRecovery)) injury.Heal(Mathf.Min(.25f, injury.Severity));
+                if (OwnerHasSkill(YunjianziSkills.AllyArrayShield)) RefreshArrayShield(pawn);
             }
-            if (!followsOwner && realmAtCast >= 2)
+            if (!followsOwner && OwnerHasSkill(YunjianziSkills.SwordWard))
             {
                 CompYunjianziCultivation comp = owner.TryGetComp<CompYunjianziCultivation>();
                 if (comp != null && owner.Position.DistanceTo(EffectCenter) <= Radius) comp.Shield += 2f;
@@ -632,7 +640,8 @@ namespace Yunjianzi
                 .OrderBy(t => t.Position.DistanceToSquared(center)).Take(2).ToList();
             foreach (Thing enemy in enemies)
             {
-                DamageInfo info = new DamageInfo(DamageDefOf.Burn, realmAtCast >= 5 ? 22f : 16f, realmAtCast >= 5 ? .9f : .55f, -1f, owner);
+                bool storm = OwnerHasSkill(YunjianziSkills.ArrayStorm);
+                DamageInfo info = new DamageInfo(DamageDefOf.Burn, storm ? 22f : 16f, storm ? .9f : .55f, -1f, owner);
                 enemy.TakeDamage(info);
                 YunjianziCombatEffects.ShowLightning(enemy);
             }
@@ -667,7 +676,7 @@ namespace Yunjianzi
 
         public override string GetInspectString()
         {
-            string duration = realmAtCast >= 4 ? "持续维持：每秒消耗5灵力" : "剩余时间：" + Math.Max(0, expireTick - Find.TickManager.TicksGame).ToStringTicksToPeriod();
+            string duration = OwnerHasSkill(YunjianziSkills.ArrayBarrier) ? "持续维持：每秒消耗5灵力" : "剩余时间：" + Math.Max(0, expireTick - Find.TickManager.TicksGame).ToStringTicksToPeriod();
             return "境界：" + new[] { "未定", "练气", "筑基", "紫府", "金丹", "化神" }[Mathf.Clamp(realmAtCast, 0, 5)] +
                 "\n耐久：" + HitPoints + " / " + MaxHitPoints +
                 "\n嘲讽半径：" + (Radius + 6f).ToString("0") + "格" +
@@ -719,14 +728,14 @@ namespace Yunjianzi
             IntVec3 current = exact.ToIntVec3();
             Thing projectileLauncher = projectile.Launcher;
             IntVec3 origin = projectileLauncher != null && projectileLauncher.Spawned ? projectileLauncher.Position : current + new IntVec3(999, 0, 999);
-            foreach (ThingYunjianziArrayCore core in ActiveOn(map).Where(c => c.realmAtCast >= 4))
+            foreach (ThingYunjianziArrayCore core in ActiveOn(map).Where(c => c.OwnerHasSkill(YunjianziSkills.ArrayBarrier)))
             {
                 IntVec3 center = core.EffectCenter;
                 if (current.DistanceTo(center) > core.Radius || origin.DistanceTo(center) <= core.Radius) continue;
                 Thing launcher = projectileLauncher;
                 if (launcher != null && core.owner != null && !launcher.HostileTo(core.owner)) continue;
                 ThingDef projectileDef = projectile.def;
-                bool reflect = core.realmAtCast >= 5 && launcher != null && launcher.Spawned && launcher.Map == map;
+                bool reflect = core.OwnerHasSkill(YunjianziSkills.ArrayReflect) && launcher != null && launcher.Spawned && launcher.Map == map;
                 projectile.Destroy(DestroyMode.Vanish);
                 FleckMaker.Static(current, map, FleckDefOf.PsycastAreaEffect, .45f);
                 if (reflect)
@@ -752,7 +761,7 @@ namespace Yunjianzi
 
         private void TickArraySystem()
         {
-            if (Realm >= 4 && Pawn.IsHashIntervalTick(60) && ActiveArrays().Any())
+            if (HasSkill(YunjianziSkills.ArrayBarrier) && Pawn.IsHashIntervalTick(60) && ActiveArrays().Any())
             {
                 if (!TrySpend(5f, false))
                 {
@@ -767,12 +776,12 @@ namespace Yunjianzi
             bool active = ActiveArrays().Any();
             yield return new Command_Action
             {
-                defaultLabel = active && Realm >= 4 ? "仙阵诀·收阵" : "仙阵诀·布阵",
-                defaultDesc = Realm >= 4 ? "开启或主动取消固定阵与随身阵。维持时整套阵法每秒消耗5点灵力。" : "消耗灵力在脚下布置持续60秒的仙阵。紫府起同时生成随身阵。",
+                defaultLabel = active && HasSkill(YunjianziSkills.ArrayBarrier) ? "仙阵诀·收阵" : "仙阵诀·布阵",
+                defaultDesc = HasSkill(YunjianziSkills.ArrayBarrier) ? "开启或主动取消固定阵与随身阵。维持时整套阵法每秒消耗5点灵力。" : "消耗灵力在脚下布置持续60秒的仙阵。学习随身阵后同时生成跟随领域。",
                 icon = YunjianziAbilityTextures.ImmortalArray,
-                action = active && Realm >= 4 ? (Action)CancelArrays : ActivateArrays
+                action = active && HasSkill(YunjianziSkills.ArrayBarrier) ? (Action)CancelArrays : ActivateArrays
             };
-            if (active)
+            if (active && HasSkill(YunjianziSkills.ArrayTeleport))
             {
                 Command_Action blink = new Command_Action
                 {
@@ -790,12 +799,12 @@ namespace Yunjianzi
         private void ActivateArrays()
         {
             if (Realm <= 0 || !Pawn.Spawned) return;
-            int cost = Realm >= 4 ? 0 : Realm >= 3 ? 100 : 50;
+            int cost = HasSkill(YunjianziSkills.ArrayBarrier) ? 0 : HasSkill(YunjianziSkills.MovingArray) ? 100 : 50;
             if (cost > 0 && !TrySpend(cost)) return;
             CancelArrays();
-            SpawnArray(false, Realm >= 4 ? -1 : 3600);
-            if (Realm >= 3) SpawnArray(true, Realm >= 4 ? -1 : 3600);
-            Messages.Message(Realm >= 4 ? "仙阵展开。阵法将持续消耗灵力。" : "琉璃阵眼落定，仙阵展开。", Pawn, MessageTypeDefOf.PositiveEvent);
+            SpawnArray(false, HasSkill(YunjianziSkills.ArrayBarrier) ? -1 : 3600);
+            if (HasSkill(YunjianziSkills.MovingArray)) SpawnArray(true, HasSkill(YunjianziSkills.ArrayBarrier) ? -1 : 3600);
+            Messages.Message(HasSkill(YunjianziSkills.ArrayBarrier) ? "仙阵展开。阵法将持续消耗灵力。" : "琉璃阵眼落定，仙阵展开。", Pawn, MessageTypeDefOf.PositiveEvent);
         }
 
         private void SpawnArray(bool follows, int duration)
@@ -836,13 +845,14 @@ namespace Yunjianzi
             Pawn.Notify_Teleported(false, true);
             arrayBlinkReadyTick = Find.TickManager.TicksGame + 1200;
             YunjianziCombatEffects.ShowArrayTeleport(origin, Pawn.DrawPos, map);
-            if (Realm >= 3) ApplyArrayBlinkKnockback(cell, map);
+            if (HasSkill(YunjianziSkills.ArrayTeleportShock)) ApplyArrayBlinkKnockback(cell, map);
         }
 
         private void ApplyArrayBlinkKnockback(IntVec3 center, Map map)
         {
-            int radius = Mathf.Clamp(Realm - 2, 1, 3);
-            int distance = Mathf.Clamp(Realm - 1, 2, 4);
+            int effectiveRealm = HasSkill(YunjianziSkills.ArrayTeleportMastery) ? 5 : Mathf.Min(Realm, 4);
+            int radius = Mathf.Clamp(effectiveRealm - 2, 1, 3);
+            int distance = Mathf.Clamp(effectiveRealm - 1, 2, 4);
             List<Pawn> enemies = GenRadial.RadialDistinctThingsAround(center, map, radius, true)
                 .OfType<Pawn>()
                 .Where(p => p != Pawn && !p.Dead && p.Spawned && p.HostileTo(Pawn))

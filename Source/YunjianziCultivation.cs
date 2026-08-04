@@ -18,6 +18,8 @@ namespace Yunjianzi
         public static readonly Texture2D Meditate = ContentFinder<Texture2D>.Get("Yunjianzi/Buildings/Meditation/MeditationCushion");
         public static readonly Texture2D SwordRain =
             ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/SwordRain", false) ?? BlinkStrike;
+        public static readonly Texture2D CultivationTree =
+            ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/CultivationTree", false) ?? SummonZhuxie;
     }
 
     public sealed class CompProperties_YunjianziCultivation : CompProperties
@@ -58,9 +60,18 @@ namespace Yunjianzi
         public float ShieldMax { get { return ShieldCaps[Realm]; } }
         public float Energy { get { return Mathf.Clamp(energy, 0f, EnergyMax); } set { energy = Mathf.Clamp(value, 0f, EnergyMax); } }
         public float Shield { get { return Mathf.Clamp(shield, 0f, ShieldMax); } set { shield = Mathf.Clamp(value, 0f, ShieldMax); } }
-        public int ShadowCount { get { return Realm < 3 ? 0 : Realm == 3 ? 2 : Realm == 4 ? 4 : 8; } }
+        public int ShadowCount
+        {
+            get
+            {
+                if (HasSkill(YunjianziSkills.SwordShadowsIII)) return 8;
+                if (HasSkill(YunjianziSkills.SwordShadowsII)) return 4;
+                if (HasSkill(YunjianziSkills.SwordShadowsI)) return 2;
+                return 0;
+            }
+        }
         public float SwordDamage { get { return new[] { 0f, 25f, 29f, 38f, 48f, 62f }[Realm]; } }
-        public float SwordArmorPenetration { get { return Realm >= 5 ? 10f : new[] { 0f, .9f, .95f, 1.1f, 1.35f, 10f }[Realm]; } }
+        public float SwordArmorPenetration { get { return HasSkill(YunjianziSkills.ArmorIgnore) ? 10f : new[] { 0f, .9f, .95f, 1.1f, 1.35f, 1.6f }[Realm]; } }
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
@@ -110,12 +121,12 @@ namespace Yunjianzi
                     if (Pawn.needs.food != null) Pawn.needs.food.CurLevelPercentage = 1f;
                     if (Pawn.needs.rest != null) Pawn.needs.rest.CurLevelPercentage = 1f;
                 }
-                if (Realm >= 2 && Find.TickManager.TicksGame > lastDamageTick + 1200)
+                if (HasSkill(YunjianziSkills.SwordWard) && Find.TickManager.TicksGame > lastDamageTick + 1200)
                     Shield += Mathf.Max(1f, ShieldMax / 120f);
             }
-            if (Realm >= 3 && Pawn.Spawned && !Pawn.Downed && Pawn.IsHashIntervalTick(30))
+            if (ShadowCount > 0 && Pawn.Spawned && !Pawn.Downed && Pawn.IsHashIntervalTick(30))
                 TryShadowStrike();
-            if (autoBlink && Realm >= 3 && Pawn.Spawned && Pawn.Drafted && !Pawn.Downed &&
+            if (autoBlink && HasSkill(YunjianziSkills.BlinkStrike) && Pawn.Spawned && Pawn.Drafted && !Pawn.Downed &&
                 Pawn.Awake() && Pawn.IsHashIntervalTick(15))
                 TryAutoBlink();
         }
@@ -149,14 +160,26 @@ namespace Yunjianzi
                     action = BeginMeditationTargeting
                 };
                 foreach (Gizmo scrollGizmo in GetBoundScrollGizmos()) yield return scrollGizmo;
-                yield return new Command_Action
+                if (HasOpenedBoundScroll)
+                {
+                    yield return new Command_Action
+                    {
+                        defaultLabel = "云间宝卷·修为参悟",
+                        defaultDesc = "打开云间子的修为面板，消耗当前灵力参悟御剑诀与仙阵诀。境界只提供学习资格，不会自动解锁技能。",
+                        icon = YunjianziAbilityTextures.CultivationTree,
+                        action = delegate { Find.WindowStack.Add(new Window_YunjianziCultivationTree(this)); }
+                    };
+                }
+                Command_Action summon = new Command_Action
                 {
                     defaultLabel = "御剑诀·唤剑",
                     defaultDesc = "消耗10点灵力。召回或生成世界中唯一的诛邪剑并装备。",
                     icon = YunjianziAbilityTextures.SummonZhuxie,
                     action = SummonZhuxie
                 };
-                if (Realm >= 3)
+                if (!HasOpenedBoundScroll) summon.Disable("需要先研读云间宝卷。研读完成后会获得10点灵力上限与首次唤剑所需灵力。");
+                yield return summon;
+                if (HasSkill(YunjianziSkills.BlinkStrike))
                 {
                     Command_Action blink = new CommandYunjianziBlink
                     {
@@ -172,6 +195,9 @@ namespace Yunjianzi
                     if (remaining > 0) blink.Disable(string.Format("冷却中：{0:0.0}秒", remaining / 60f));
                     yield return blink;
 
+                }
+                if (HasSkill(YunjianziSkills.SwordRain))
+                {
                     Command_Action swordRain = new Command_Action
                     {
                         defaultLabel = "御剑诀·天剑雨",
@@ -186,7 +212,8 @@ namespace Yunjianzi
                         swordRain.Disable("灵力不足：需要80点。");
                     yield return swordRain;
                 }
-                foreach (Gizmo arrayGizmo in GetArrayGizmos()) yield return arrayGizmo;
+                if (HasSkill(YunjianziSkills.ArrayCore))
+                    foreach (Gizmo arrayGizmo in GetArrayGizmos()) yield return arrayGizmo;
             }
         }
 
@@ -226,7 +253,7 @@ namespace Yunjianzi
 
         private void BeginSwordRainTargeting()
         {
-            if (Realm < 3 || Find.TickManager.TicksGame < swordRainReadyTick || Pawn == null || !Pawn.Spawned) return;
+            if (!HasSkill(YunjianziSkills.SwordRain) || Find.TickManager.TicksGame < swordRainReadyTick || Pawn == null || !Pawn.Spawned) return;
             TargetingParameters parms = new TargetingParameters
             {
                 canTargetLocations = true,
@@ -241,7 +268,7 @@ namespace Yunjianzi
 
         private void TryCastSwordRain(IntVec3 center)
         {
-            if (Realm < 3 || Pawn == null || !Pawn.Spawned || !center.InBounds(Pawn.Map) ||
+            if (!HasSkill(YunjianziSkills.SwordRain) || Pawn == null || !Pawn.Spawned || !center.InBounds(Pawn.Map) ||
                 center.DistanceTo(Pawn.Position) > 35.9f)
             {
                 Messages.Message("天剑雨目标必须位于35.9格内。", Pawn, MessageTypeDefOf.RejectInput);
@@ -377,10 +404,10 @@ namespace Yunjianzi
             Pawn.rotationTracker.FaceTarget(new LocalTargetInfo(target));
             DamageInfo info = new DamageInfo(DamageDefOf.Cut, SwordDamage * 1.6f, SwordArmorPenetration, -1f, Pawn, null, null, DamageInfo.SourceCategory.ThingOrUnknown);
             target.TakeDamage(info);
-            if (Realm >= 4 && !target.Destroyed) ApplyLightning(target, SwordDamage * .45f);
+            if (HasSkill(YunjianziSkills.LightningEnchantment) && !target.Destroyed) ApplyLightning(target, SwordDamage * .45f);
             blinkReadyTick = Find.TickManager.TicksGame + 300;
             YunjianziCombatEffects.ShowBlinkSlash(originDrawPos, targetDrawPos, Pawn.DrawPos, map);
-            if (Realm >= 4 && (target.Destroyed || (target is Pawn && ((Pawn)target).Dead)) && Energy >= 20f)
+            if (HasSkill(YunjianziSkills.BlinkChain) && (target.Destroyed || (target is Pawn && ((Pawn)target).Dead)) && Energy >= 20f)
             {
                 Thing next = CombatTargetsInRange(25.9f).OrderBy(t => t.Position.DistanceToSquared(Pawn.Position)).FirstOrDefault();
                 if (next != null) TryBlink(next, false);
@@ -433,14 +460,14 @@ namespace Yunjianzi
         public void OnShadowProjectileHit(Thing target, int shadowIndex)
         {
             if (target == null || target.Destroyed || (target is Pawn && ((Pawn)target).Dead)) return;
-            DamageInfo info = new DamageInfo(DamageDefOf.Cut, SwordDamage * .7f, Realm >= 5 ? 10f : SwordArmorPenetration * .7f, -1f, Pawn, null, null, DamageInfo.SourceCategory.ThingOrUnknown);
+            DamageInfo info = new DamageInfo(DamageDefOf.Cut, SwordDamage * .7f, HasSkill(YunjianziSkills.ArmorIgnore) ? 10f : SwordArmorPenetration * .7f, -1f, Pawn, null, null, DamageInfo.SourceCategory.ThingOrUnknown);
             target.TakeDamage(info);
-            if (Realm >= 5 && !target.Destroyed && (!(target is Pawn) || !((Pawn)target).Dead))
+            if (HasSkill(YunjianziSkills.ShadowAffixes) && !target.Destroyed && (!(target is Pawn) || !((Pawn)target).Dead))
             {
                 Pawn pawnTarget = target as Pawn;
-                if (pawnTarget != null) ApplyControl(pawnTarget);
+                if (pawnTarget != null && HasSkill(YunjianziSkills.SwordEnchantment)) ApplyControl(pawnTarget);
                 while (shadowLightningReady.Count < 8) shadowLightningReady.Add(0);
-                if (Find.TickManager.TicksGame >= shadowLightningReady[shadowIndex])
+                if (HasSkill(YunjianziSkills.LightningEnchantment) && Find.TickManager.TicksGame >= shadowLightningReady[shadowIndex])
                 {
                     ApplyLightning(target, SwordDamage * .45f);
                     shadowLightningReady[shadowIndex] = Find.TickManager.TicksGame + 600;
@@ -453,7 +480,7 @@ namespace Yunjianzi
             absorbed = false;
             if (!IsYunjianzi || Pawn == null || Pawn.Dead) return;
             int now = Find.TickManager.TicksGame;
-            if (Realm >= 4 && HoldingZhuxie && (now < deathLockUntil || (Pawn.health.summaryHealth.SummaryHealthPercent < .25f && now >= deathLockReadyTick)))
+            if (HasSkill(YunjianziSkills.DeathLock) && HoldingZhuxie && (now < deathLockUntil || (Pawn.health.summaryHealth.SummaryHealthPercent < .25f && now >= deathLockReadyTick)))
             {
                 if (now >= deathLockUntil)
                 {
@@ -464,7 +491,7 @@ namespace Yunjianzi
                 absorbed = true;
                 return;
             }
-            if (Realm >= 2 && Shield > 0f && dinfo.Def.harmsHealth)
+            if (HasSkill(YunjianziSkills.SwordWard) && Shield > 0f && dinfo.Def.harmsHealth)
             {
                 lastDamageTick = now;
                 float amount = dinfo.Amount;
@@ -487,12 +514,11 @@ namespace Yunjianzi
         public void OnZhuxieHit(Pawn target)
         {
             if (target == null || target.Dead) return;
-            if (Realm >= 2) ApplyControl(target);
-            if (Realm >= 4)
-            {
+            if (HasSkill(YunjianziSkills.SwordEnchantment)) ApplyControl(target);
+            if (HasSkill(YunjianziSkills.LightningEnchantment))
                 ApplyLightning(target, SwordDamage * .45f);
+            if (HasSkill(YunjianziSkills.SwordHealing))
                 HealFromStrike();
-            }
         }
 
         private void ApplyControl(Pawn target)
@@ -506,7 +532,7 @@ namespace Yunjianzi
 
         private void ApplyLightning(Thing target, float amount)
         {
-            DamageInfo lightning = new DamageInfo(DamageDefOf.Burn, amount, Realm >= 5 ? 10f : .65f, -1f, Pawn, null, null, DamageInfo.SourceCategory.ThingOrUnknown);
+            DamageInfo lightning = new DamageInfo(DamageDefOf.Burn, amount, HasSkill(YunjianziSkills.ArmorIgnore) ? 10f : .65f, -1f, Pawn, null, null, DamageInfo.SourceCategory.ThingOrUnknown);
             target.TakeDamage(lightning);
             YunjianziCombatEffects.ShowLightning(target);
         }
@@ -545,6 +571,7 @@ namespace Yunjianzi
                 shadowLightningReady = new List<int> { 0, 0, 0, 0, 0, 0, 0, 0 };
             ExposeArrayData();
             ExposeBreakthroughData();
+            ExposeSkillTreeData();
         }
     }
 
@@ -611,7 +638,7 @@ namespace Yunjianzi
                 "前一组数值是当前灵力与已解锁上限；后一组是当前修为上限与本境界极限。\n" +
                 "灵力充满后继续打坐，或由云间子消灭敌人，都会提高灵力上限。达到境界极限后可闭关突破。");
 
-            if (comp.Realm >= 2)
+            if (comp.HasSkill(YunjianziSkills.SwordWard))
             {
                 Rect shieldRect = new Rect(outer.x + 68f, outer.y + 48f, 168f, 12f);
                 DrawBar(shieldRect, comp.Shield / Mathf.Max(1f, comp.ShieldMax), ShieldFill,
@@ -872,7 +899,7 @@ namespace Yunjianzi
             CompYunjianziCultivation comp = attacker == null ? null : attacker.TryGetComp<CompYunjianziCultivation>();
             if (comp == null || !comp.IsYunjianzi || !comp.HoldingZhuxie) return true;
             dinfo.SetAmount(dinfo.Amount * (comp.SwordDamage / 25f));
-            if (comp.Realm >= 5) dinfo.SetIgnoreArmor(true);
+            if (comp.HasSkill(YunjianziSkills.ArmorIgnore)) dinfo.SetIgnoreArmor(true);
             return true;
         }
     }
