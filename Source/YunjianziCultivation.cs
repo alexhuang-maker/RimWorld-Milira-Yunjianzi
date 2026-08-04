@@ -494,12 +494,23 @@ namespace Yunjianzi
     {
         public CompYunjianziCultivation comp;
         private static readonly Texture2D Panel = ContentFinder<Texture2D>.Get("Yunjianzi/UI/CultivationPanel", true);
+        private static readonly Texture2D[] RealmEmblems =
+        {
+            ContentFinder<Texture2D>.Get("Yunjianzi/UI/Realms/Realm_1", true),
+            ContentFinder<Texture2D>.Get("Yunjianzi/UI/Realms/Realm_2", true),
+            ContentFinder<Texture2D>.Get("Yunjianzi/UI/Realms/Realm_3", true),
+            ContentFinder<Texture2D>.Get("Yunjianzi/UI/Realms/Realm_4", true),
+            ContentFinder<Texture2D>.Get("Yunjianzi/UI/Realms/Realm_5", true)
+        };
         private static readonly Texture2D EnergyFill = SolidColorMaterials.NewSolidColorTexture(new Color(.24f, .88f, .91f));
         private static readonly Texture2D EnergyLowFill = SolidColorMaterials.NewSolidColorTexture(new Color(.86f, .65f, .26f));
         private static readonly Texture2D ShieldFill = SolidColorMaterials.NewSolidColorTexture(new Color(.44f, .66f, 1f));
         private static readonly Texture2D Empty = SolidColorMaterials.NewSolidColorTexture(new Color(.025f, .09f, .105f));
         private static readonly Color BarBorder = new Color(.72f, .68f, .48f, .9f);
         private static readonly Color RealmLit = new Color(.50f, 1f, 1f);
+        private static readonly Color RealmPassed = new Color(.72f, .94f, .92f, .82f);
+        private static readonly Color RealmLocked = new Color(.30f, .42f, .44f, .30f);
+        private static readonly Color RealmBackplate = new Color(.012f, .075f, .085f, .94f);
 
         public GizmoYunjianziCultivation() { Order = -100f; }
         public override float GetWidth(float maxWidth) { return 250f; }
@@ -527,12 +538,29 @@ namespace Yunjianzi
                 TooltipHandler.TipRegion(shieldRect, "剑罡可抵挡伤害；20秒未受击后开始恢复。筑基境的剑罡约等于普通护盾腰带。");
             }
 
-            DrawRealmProgress(outer);
-            TooltipHandler.TipRegion(new Rect(outer.x + 128f, outer.y + 62f, 84f, 16f),
+            DrawRealmEmblems(outer);
+            TooltipHandler.TipRegion(new Rect(outer.x + 126f, outer.y + 60f, 98f, 20f),
                 "修行境界：练气、筑基、紫府、金丹、化神。亮起的玉印表示当前境界。\n当前：" + comp.RealmLabel);
             Text.Anchor = TextAnchor.UpperLeft;
             GUI.color = Color.white;
             return new GizmoResult(GizmoState.Clear);
+        }
+
+        private void DrawRealmEmblems(Rect outer)
+        {
+            float[] sizes = { 12f, 13.5f, 15f, 16.5f, 18f };
+            for (int i = 1; i <= 5; i++)
+            {
+                float centerX = outer.x + 135.5f + (i - 1) * 17.3f;
+                float size = sizes[i - 1];
+                if (i == comp.Realm)
+                    size *= 1f + .035f * Mathf.Sin(Time.realtimeSinceStartup * 4f);
+                Rect marker = new Rect(centerX - size * .5f, outer.y + 68f - size * .5f, size, size);
+                Widgets.DrawBoxSolid(marker.ExpandedBy(1f), RealmBackplate);
+                GUI.color = i == comp.Realm ? Color.white : (i < comp.Realm ? RealmPassed : RealmLocked);
+                GUI.DrawTexture(marker, RealmEmblems[i - 1], ScaleMode.ScaleToFit, true);
+            }
+            GUI.color = Color.white;
         }
 
         private void DrawRealmProgress(Rect outer)
