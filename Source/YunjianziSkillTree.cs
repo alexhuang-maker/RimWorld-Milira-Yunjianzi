@@ -163,6 +163,75 @@ namespace Yunjianzi
             Messages.Message("云间子已悟得「" + node.Label + "」。", Pawn, MessageTypeDefOf.PositiveEvent, false);
         }
 
+        private bool DebugSkillMode { get { return Prefs.DevMode && DebugSettings.godMode; } }
+
+        private void DebugOpenBoundScroll()
+        {
+            if (!DebugSkillMode) return;
+            boundScrollConsumed = true;
+            boundScrollCreated = true;
+            cultivatedEnergyMax = Mathf.Max(cultivatedEnergyMax, 10f);
+            Energy = EnergyMax;
+            Messages.Message("DEV：已直接研读云间宝卷。", Pawn, MessageTypeDefOf.PositiveEvent, false);
+        }
+
+        private void DebugAdvanceRealm()
+        {
+            if (!DebugSkillMode || Realm >= 5 || RealmHediff == null) return;
+            RealmHediff.Severity = Mathf.Clamp(Realm + 1, 1, 5);
+            DebugFillCultivation();
+            Messages.Message("DEV：境界已提升至" + RealmLabel + "。", Pawn, MessageTypeDefOf.PositiveEvent, false);
+        }
+
+        private void DebugFillCultivation()
+        {
+            if (!DebugSkillMode) return;
+            if (!HasOpenedBoundScroll) DebugOpenBoundScroll();
+            cultivatedEnergyMax = RealmEnergyCap;
+            Energy = EnergyMax;
+            Shield = ShieldMax;
+            Messages.Message("DEV：灵力、修为上限与剑罡已补满。", Pawn, MessageTypeDefOf.PositiveEvent, false);
+        }
+
+        private void DebugUnlockThroughCurrentRealm()
+        {
+            if (!DebugSkillMode) return;
+            if (!HasOpenedBoundScroll) DebugOpenBoundScroll();
+            if (learnedSkills == null) learnedSkills = new List<string>();
+            foreach (YunjianziSkillNode node in YunjianziSkills.All.Where(n => n.Id != YunjianziSkills.SummonZhuxie && n.Realm <= Realm))
+                if (!learnedSkills.Contains(node.Id)) learnedSkills.Add(node.Id);
+            if (HasSkill(YunjianziSkills.SwordWard)) Shield = ShieldMax;
+            Messages.Message("DEV：已解锁" + RealmLabel + "及之前的全部技能。", Pawn, MessageTypeDefOf.PositiveEvent, false);
+        }
+
+        internal void DebugForceLearnSkill(YunjianziSkillNode node)
+        {
+            if (!DebugSkillMode || node == null || node.Id == YunjianziSkills.SummonZhuxie || HasSkill(node.Id)) return;
+            if (learnedSkills == null) learnedSkills = new List<string>();
+            learnedSkills.Add(node.Id);
+            if (node.Id == YunjianziSkills.SwordWard) Shield = ShieldMax;
+            Messages.Message("DEV：强制解锁「" + node.Label + "」。", Pawn, MessageTypeDefOf.PositiveEvent, false);
+        }
+
+        internal void DebugForgetSkill(YunjianziSkillNode node)
+        {
+            if (!DebugSkillMode || node == null || node.Id == YunjianziSkills.SummonZhuxie || learnedSkills == null) return;
+            if (!learnedSkills.Remove(node.Id)) return;
+            if (node.Id == YunjianziSkills.SwordWard) Shield = 0f;
+            Messages.Message("DEV：已移除「" + node.Label + "」。", Pawn, MessageTypeDefOf.NeutralEvent, false);
+        }
+
+        private void DebugResetSkills()
+        {
+            if (!DebugSkillMode) return;
+            if (learnedSkills == null) learnedSkills = new List<string>();
+            else learnedSkills.Clear();
+            autoBlink = false;
+            Shield = 0f;
+            CancelArrays();
+            Messages.Message("DEV：技能树已重置，仅保留先天唤起诛邪。", Pawn, MessageTypeDefOf.NeutralEvent, false);
+        }
+
         internal static float EnergyCapForRealm(int realm)
         {
             return new[] { 0f, 100f, 200f, 500f, 1000f, 2000f }[Mathf.Clamp(realm, 0, 5)];
@@ -213,6 +282,13 @@ namespace Yunjianzi
             Widgets.Label(new Rect(20f, 14f, 500f, 36f), "云间宝卷 · 修为参悟");
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(520f, 19f, 520f, 26f), string.Format("境界：{0}    当前灵力：{1:0}/{2:0}", comp.RealmLabel, comp.Energy, comp.EnergyMax));
+            if (Prefs.DevMode && DebugSettings.godMode)
+            {
+                GUI.color = new Color(1f, .72f, .30f);
+                Text.Font = GameFont.Tiny;
+                Widgets.Label(new Rect(790f, 43f, 330f, 20f), "GOD MODE：左键免费解锁；右键移除节点");
+                GUI.color = Color.white;
+            }
             Widgets.DrawLineHorizontal(18f, 55f, inRect.width - 36f);
 
             Rect swordPanel = new Rect(18f, 70f, 530f, 665f);
@@ -290,7 +366,8 @@ namespace Yunjianzi
                 Rect rect = nodeRects[node.Id];
                 bool learned = comp.HasSkill(node.Id);
                 string reason = comp.SkillLockReason(node);
-                bool available = reason == null;
+                bool debug = Prefs.DevMode && DebugSettings.godMode;
+                bool available = reason == null || (debug && node.Id != YunjianziSkills.SummonZhuxie);
                 Widgets.DrawBoxSolid(rect, learned ? Learned : available ? Available : Locked);
                 Widgets.DrawBox(rect, learned || available ? 2 : 1);
                 Text.Font = GameFont.Tiny;
@@ -303,9 +380,20 @@ namespace Yunjianzi
                 string tip = node.Label + "（" + CompYunjianziCultivation.RealmName(node.Realm) + "）\n" + node.Description +
                     "\n\n本境界已学习：" + comp.LearnedSkillCountAtRealm(node.Realm) + "项\n本次消耗：" + cost + "当前灵力" +
                     "\n费用序列：第1～6项为0%、10%、20%、40%、70%、100%；第7项起每项固定为该境界标准灵力上限的200%。";
-                if (!learned && reason != null) tip += "\n\n尚不可学习：" + reason;
+                if (!learned && reason != null) tip += debug ? "\n\nGOD MODE：可忽略限制免费解锁。" : "\n\n尚不可学习：" + reason;
+                if (debug && learned && node.Id != YunjianziSkills.SummonZhuxie) tip += "\n\nGOD MODE：右键移除此节点。";
                 TooltipHandler.TipRegion(rect, tip);
-                if (!learned && Widgets.ButtonInvisible(rect)) comp.TryLearnSkill(node);
+                Event current = Event.current;
+                if (debug && learned && node.Id != YunjianziSkills.SummonZhuxie && current != null && current.type == EventType.MouseDown && current.button == 1 && rect.Contains(current.mousePosition))
+                {
+                    comp.DebugForgetSkill(node);
+                    current.Use();
+                }
+                else if (!learned && Widgets.ButtonInvisible(rect))
+                {
+                    if (debug) comp.DebugForceLearnSkill(node);
+                    else comp.TryLearnSkill(node);
+                }
             }
             Text.Font = GameFont.Small;
         }

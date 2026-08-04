@@ -214,6 +214,54 @@ namespace Yunjianzi
                 }
                 if (HasSkill(YunjianziSkills.ArrayCore))
                     foreach (Gizmo arrayGizmo in GetArrayGizmos()) yield return arrayGizmo;
+
+                if (Prefs.DevMode && DebugSettings.godMode)
+                {
+                    if (!HasOpenedBoundScroll)
+                    {
+                        yield return new Command_Action
+                        {
+                            defaultLabel = "DEV：直接开卷",
+                            defaultDesc = "God Mode调试：立即视为已研读云间宝卷，开启修为面板并获得初始10点灵力。",
+                            icon = YunjianziAbilityTextures.CultivationTree,
+                            action = DebugOpenBoundScroll
+                        };
+                    }
+
+                    Command_Action advanceRealm = new Command_Action
+                    {
+                        defaultLabel = "DEV：提升境界",
+                        defaultDesc = "God Mode调试：直接提升一个境界，同时把修为上限、当前灵力与剑罡补满。不会自动解锁技能。",
+                        icon = YunjianziAbilityTextures.Meditate,
+                        action = DebugAdvanceRealm
+                    };
+                    if (Realm >= 5) advanceRealm.Disable("已达到化神境。");
+                    yield return advanceRealm;
+
+                    yield return new Command_Action
+                    {
+                        defaultLabel = "DEV：补满灵力/修为",
+                        defaultDesc = "God Mode调试：把当前境界的灵力上限提升至境界极限，并补满当前灵力与剑罡。",
+                        icon = YunjianziAbilityTextures.SummonZhuxie,
+                        action = DebugFillCultivation
+                    };
+
+                    yield return new Command_Action
+                    {
+                        defaultLabel = "DEV：解锁境界技能",
+                        defaultDesc = "God Mode调试：免费解锁当前境界及之前的全部技能节点。适合快速检查完整境界效果。",
+                        icon = YunjianziAbilityTextures.CultivationTree,
+                        action = DebugUnlockThroughCurrentRealm
+                    };
+
+                    yield return new Command_Action
+                    {
+                        defaultLabel = "DEV：重置技能树",
+                        defaultDesc = "God Mode调试：清除除先天唤剑外的全部已学节点，取消自动瞬斩并收回现有仙阵。境界和修为不变。",
+                        icon = YunjianziAbilityTextures.CultivationTree,
+                        action = DebugResetSkills
+                    };
+                }
             }
         }
 
