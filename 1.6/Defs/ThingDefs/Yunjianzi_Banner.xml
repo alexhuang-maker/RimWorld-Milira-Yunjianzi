@@ -14,7 +14,7 @@
     <thingCategories>
       <li>BuildingsMisc</li>
     </thingCategories>
-    <designationCategory>Misc</designationCategory>
+    <designationCategory>Ideology</designationCategory>
     <statBases>
       <MaxHitPoints>600</MaxHitPoints>
       <Mass>2</Mass>

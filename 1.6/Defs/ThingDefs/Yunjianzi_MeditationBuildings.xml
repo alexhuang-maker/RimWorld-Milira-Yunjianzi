@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef Name="YJZ_MeditationBuildingBase" ParentName="BuildingBase" Abstract="True">
+    <thingClass>Building</thingClass>
+    <category>Building</category>
+    <tickerType>Never</tickerType>
+    <drawerType>MapMeshOnly</drawerType>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>Standable</passability>
+    <pathCost>0</pathCost>
+    <fillPercent>0.12</fillPercent>
+    <rotatable>false</rotatable>
+    <designationCategory>Ideology</designationCategory>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <thingCategories><li>BuildingsMisc</li></thingCategories>
+    <building>
+      <isEdifice>false</isEdifice>
+      <ai_chillDestination>true</ai_chillDestination>
+    </building>
+    <comps>
+      <li Class="CompProperties_Forbiddable" />
+      <li Class="CompProperties_Quality" />
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_MeditationBuildingBase">
+    <defName>YJZ_Building_MeditationCushion</defName>
+    <label>云纹蒲团</label>
+    <description>以柔软织物缝制的云纹蒲团。云间子可以坐在蒲团上调息，使灵力总恢复速度提高到自然恢复的约三倍。其结构也为未来的境界突破仪式预留了基础接口。</description>
+    <stuffCategories><li>Fabric</li></stuffCategories>
+    <costStuffCount>45</costStuffCount>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/Meditation/MeditationCushion</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(1,1)</drawSize>
+    </graphicData>
+    <uiIconScale>0.9</uiIconScale>
+    <statBases>
+      <MaxHitPoints>120</MaxHitPoints>
+      <WorkToBuild>1200</WorkToBuild>
+      <Mass>2</Mass>
+      <Beauty>6</Beauty>
+      <Flammability>0.7</Flammability>
+    </statBases>
+    <constructionSkillPrerequisite>2</constructionSkillPrerequisite>
+    <comps>
+      <li Class="Yunjianzi.CompProperties_YunjianziMeditationSeat">
+        <extraEnergyPerSecond>0.01</extraEnergyPerSecond>
+        <breakthroughPower>0.25</breakthroughPower>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_MeditationBuildingBase">
+    <defName>YJZ_Building_WhiteJadePlatform</defName>
+    <label>白玉修行台</label>
+    <description>以翡翠、辉钢与日棱晶筑成的高规格修行台。中央坐位汇聚并梳理周围灵流，使云间子的灵力总恢复速度提高到自然恢复的约六倍。稳定的九宫结构将作为未来高境界突破的主要仪台。</description>
+    <size>(3,3)</size>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/Meditation/WhiteJadePlatform</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>TransparentPostLight</shaderType>
+      <drawSize>(3,3)</drawSize>
+    </graphicData>
+    <uiIconScale>0.65</uiIconScale>
+    <statBases>
+      <MaxHitPoints>1200</MaxHitPoints>
+      <WorkToBuild>16000</WorkToBuild>
+      <Mass>120</Mass>
+      <Beauty>120</Beauty>
+      <Flammability>0</Flammability>
+    </statBases>
+    <costList>
+      <Jade>200</Jade>
+      <Milira_SplendidSteel>300</Milira_SplendidSteel>
+      <Milira_SolarCrystal>80</Milira_SolarCrystal>
+    </costList>
+    <constructionSkillPrerequisite>10</constructionSkillPrerequisite>
+    <comps>
+      <li Class="Yunjianzi.CompProperties_YunjianziMeditationSeat">
+        <extraEnergyPerSecond>0.025</extraEnergyPerSecond>
+        <breakthroughPower>1.0</breakthroughPower>
+      </li>
+      <li Class="CompProperties_Glower">
+        <glowRadius>4</glowRadius>
+        <glowColor>(120,235,255,0)</glowColor>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>

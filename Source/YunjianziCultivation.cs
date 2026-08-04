@@ -5,6 +5,7 @@ using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 
 namespace Yunjianzi
 {
@@ -14,6 +15,7 @@ namespace Yunjianzi
         public static readonly Texture2D SummonZhuxie = ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/SummonZhuxie");
         public static readonly Texture2D BlinkStrike = ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/BlinkStrike");
         public static readonly Texture2D ImmortalArray = ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/ImmortalArray");
+        public static readonly Texture2D Meditate = ContentFinder<Texture2D>.Get("Yunjianzi/Buildings/Meditation/MeditationCushion");
         public static readonly Texture2D SwordRain =
             ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/SwordRain", false) ?? BlinkStrike;
     }
@@ -132,6 +134,13 @@ namespace Yunjianzi
             {
                 yield return new Command_Action
                 {
+                    defaultLabel = "打坐修行",
+                    defaultDesc = "选择云纹蒲团或白玉修行台，在其中央调息并加快灵力恢复。",
+                    icon = YunjianziAbilityTextures.Meditate,
+                    action = BeginMeditationTargeting
+                };
+                yield return new Command_Action
+                {
                     defaultLabel = "御剑诀·唤剑",
                     defaultDesc = "消耗10点灵力。召回或生成世界中唯一的诛邪剑并装备。",
                     icon = YunjianziAbilityTextures.SummonZhuxie,
@@ -166,6 +175,23 @@ namespace Yunjianzi
                 }
                 foreach (Gizmo arrayGizmo in GetArrayGizmos()) yield return arrayGizmo;
             }
+        }
+
+        private void BeginMeditationTargeting()
+        {
+            TargetingParameters parms = new TargetingParameters
+            {
+                canTargetLocations = false,
+                canTargetBuildings = true,
+                validator = target => target.HasThing && target.Thing.TryGetComp<CompYunjianziMeditationSeat>() != null
+            };
+            Find.Targeter.BeginTargeting(parms, target =>
+            {
+                Building seat = target.Thing as Building;
+                if (seat == null) return;
+                Job job = JobMaker.MakeJob(YJZDefOf.YJZ_Meditate, seat.Position, seat);
+                Pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+            });
         }
 
         private void SummonZhuxie()
@@ -598,6 +624,7 @@ namespace Yunjianzi
         public static HediffDef YJZ_SwordControlImmunity;
         public static HediffDef YJZ_SwordHeartClarity;
         public static TraitDef YJZ_Trait_CloudseaSwordHeart;
+        public static JobDef YJZ_Meditate;
         public static BackstoryDef YJZ_Backstory_Childhood;
         public static BackstoryDef YJZ_Backstory_Adulthood;
         public static ThingDef YJZ_Weapon_Zhuxie;
