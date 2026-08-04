@@ -51,29 +51,31 @@ namespace Yunjianzi
                 TotalRecoveryFactor, LinkedBannerCount, Props.breakthroughPower * 100f);
         }
 
-        public override IEnumerable<Gizmo> CompGetGizmosExtra()
+        public override IEnumerable<FloatMenuOption> CompFloatMenuOptions(Pawn selPawn)
         {
-            foreach (Gizmo gizmo in base.CompGetGizmosExtra()) yield return gizmo;
-            if (!parent.Spawned || parent.Faction != Faction.OfPlayer) yield break;
+            foreach (FloatMenuOption option in base.CompFloatMenuOptions(selPawn)) yield return option;
+            if (!parent.Spawned || parent.Faction != Faction.OfPlayer || selPawn == null) yield break;
+            CompYunjianziCultivation comp = selPawn.TryGetComp<CompYunjianziCultivation>();
+            if (comp == null || !comp.IsYunjianzi || selPawn.Dead) yield break;
 
-            Pawn yunjianzi = parent.Map.mapPawns.FreeColonistsSpawned.FirstOrDefault(pawn =>
+            string actionLabel = comp.CanBreakthrough ? "闭关突破" : "打坐修行";
+            FloatMenuOption meditation = new FloatMenuOption(actionLabel, delegate
             {
-                CompYunjianziCultivation cultivation = pawn.TryGetComp<CompYunjianziCultivation>();
-                return cultivation != null && cultivation.IsYunjianzi && cultivation.CanBreakthrough;
+                comp.BeginMeditationOrBreakthrough(parent as Building);
             });
-            if (yunjianzi == null) yield break;
-
-            CompYunjianziCultivation comp = yunjianzi.TryGetComp<CompYunjianziCultivation>();
-            Command_Action breakthrough = new Command_Action
+            string disabledReason = null;
+            if (selPawn.Downed) disabledReason = "云间子已倒地";
+            else if (!comp.HasOpenedBoundScroll) disabledReason = "尚未研读遗仙宝卷";
+            if (comp.CanBreakthrough && comp.Realm >= 3 && parent.def != YJZDefOf.YJZ_Building_WhiteJadePlatform)
+                disabledReason = "突破金丹及之后必须使用白玉修行台";
+            else if (!selPawn.CanReserveAndReach(parent, PathEndMode.OnCell, Danger.Deadly))
+                disabledReason = "无法抵达或设施已被占用";
+            if (disabledReason != null)
             {
-                defaultLabel = "命云间子闭关突破",
-                defaultDesc = "让云间子返回此修行设施闭关突破。突破期间无法移动，但紫府境之后的剑影仍会自主御敌。",
-                icon = YunjianziAbilityTextures.Meditate,
-                action = delegate { comp.BeginMeditationOrBreakthrough(parent as Building); }
-            };
-            if (comp.Realm >= 3 && parent.def != YJZDefOf.YJZ_Building_WhiteJadePlatform)
-                breakthrough.Disable("突破金丹及之后必须使用白玉修行台。");
-            yield return breakthrough;
+                meditation.Disabled = true;
+                meditation.Label = actionLabel + "（" + disabledReason + "）";
+            }
+            yield return meditation;
         }
     }
 

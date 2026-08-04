@@ -20,6 +20,34 @@ namespace Yunjianzi
             ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/SwordRain", false) ?? BlinkStrike;
         public static readonly Texture2D CultivationTree =
             ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/CultivationTree", false) ?? SummonZhuxie;
+        public static readonly Texture2D DevX = MakeDevX();
+
+        private static Texture2D MakeDevX()
+        {
+            const int size = 64;
+            Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            Color[] pixels = new Color[size * size];
+            Color transparent = new Color(0f, 0f, 0f, 0f);
+            Color outline = new Color(.02f, .10f, .24f, 1f);
+            Color blue = new Color(.12f, .62f, 1f, 1f);
+            Color highlight = new Color(.55f, .88f, 1f, 1f);
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    int diagonal = Mathf.Min(Mathf.Abs(x - y), Mathf.Abs((size - 1 - x) - y));
+                    Color color = transparent;
+                    if (diagonal <= 8 && x > 7 && x < size - 8 && y > 7 && y < size - 8) color = outline;
+                    if (diagonal <= 5 && x > 9 && x < size - 10 && y > 9 && y < size - 10) color = blue;
+                    if (diagonal <= 2 && x > 11 && x < size - 12 && y > 11 && y < size - 12) color = highlight;
+                    pixels[y * size + x] = color;
+                }
+            }
+            texture.SetPixels(pixels);
+            texture.Apply(false, true);
+            texture.name = "Yunjianzi_DEV_X";
+            return texture;
+        }
     }
 
     public sealed class CompProperties_YunjianziCultivation : CompProperties
@@ -153,15 +181,6 @@ namespace Yunjianzi
                 yield return new GizmoYunjianziCultivation { comp = this };
             if (Pawn.Faction == Faction.OfPlayer || DebugSettings.ShowDevGizmos)
             {
-                yield return new Command_Action
-                {
-                    defaultLabel = CanBreakthrough ? "闭关突破" : "打坐修行",
-                    defaultDesc = CanBreakthrough
-                        ? "选择蒲团或白玉修行台闭关突破。突破金丹及之后必须使用白玉修行台。"
-                        : "选择云纹蒲团或白玉修行台，在其中央调息并加快灵力恢复；灵力充满后继续积累灵力上限。",
-                    icon = YunjianziAbilityTextures.Meditate,
-                    action = BeginMeditationTargeting
-                };
                 foreach (Gizmo scrollGizmo in GetBoundScrollGizmos()) yield return scrollGizmo;
                 Command_Action summon = new Command_Action
                 {
@@ -217,7 +236,7 @@ namespace Yunjianzi
                         {
                             defaultLabel = "DEV：直接开卷",
                             defaultDesc = "God Mode调试：立即视为已研读云间宝卷，开启修为面板并获得初始10点灵力。",
-                            icon = YunjianziAbilityTextures.CultivationTree,
+                            icon = YunjianziAbilityTextures.DevX,
                             action = DebugOpenBoundScroll
                         };
                     }
@@ -226,7 +245,7 @@ namespace Yunjianzi
                     {
                         defaultLabel = "DEV：提升境界",
                         defaultDesc = "God Mode调试：直接提升一个境界，同时把修为上限、当前灵力与剑罡补满。不会自动解锁技能。",
-                        icon = YunjianziAbilityTextures.Meditate,
+                        icon = YunjianziAbilityTextures.DevX,
                         action = DebugAdvanceRealm
                     };
                     if (Realm >= 5) advanceRealm.Disable("已达到化神境。");
@@ -236,7 +255,7 @@ namespace Yunjianzi
                     {
                         defaultLabel = "DEV：补满灵力/修为",
                         defaultDesc = "God Mode调试：把当前境界的灵力上限提升至境界极限，并补满当前灵力与剑罡。",
-                        icon = YunjianziAbilityTextures.SummonZhuxie,
+                        icon = YunjianziAbilityTextures.DevX,
                         action = DebugFillCultivation
                     };
 
@@ -244,7 +263,7 @@ namespace Yunjianzi
                     {
                         defaultLabel = "DEV：解锁境界技能",
                         defaultDesc = "God Mode调试：免费解锁当前境界及之前的全部技能节点。适合快速检查完整境界效果。",
-                        icon = YunjianziAbilityTextures.CultivationTree,
+                        icon = YunjianziAbilityTextures.DevX,
                         action = DebugUnlockThroughCurrentRealm
                     };
 
@@ -252,22 +271,11 @@ namespace Yunjianzi
                     {
                         defaultLabel = "DEV：重置技能树",
                         defaultDesc = "God Mode调试：清除除先天唤剑外的全部已学节点，取消自动瞬斩并收回现有仙阵。境界和修为不变。",
-                        icon = YunjianziAbilityTextures.CultivationTree,
+                        icon = YunjianziAbilityTextures.DevX,
                         action = DebugResetSkills
                     };
                 }
             }
-        }
-
-        private void BeginMeditationTargeting()
-        {
-            TargetingParameters parms = new TargetingParameters
-            {
-                canTargetLocations = false,
-                canTargetBuildings = true,
-                validator = target => target.HasThing && target.Thing.TryGetComp<CompYunjianziMeditationSeat>() != null
-            };
-            Find.Targeter.BeginTargeting(parms, target => BeginMeditationOrBreakthrough(target.Thing as Building));
         }
 
         private void SummonZhuxie()
