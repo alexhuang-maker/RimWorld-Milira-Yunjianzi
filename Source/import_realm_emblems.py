@@ -42,7 +42,7 @@ def render_preview(emblems: list[Image.Image]) -> None:
     # Preview the exact in-game layout at 3x scale for readable QA.  The small
     # dark backplates cover the legacy diamond outlines baked into panel v1.
     centers = [406, 458, 510, 562, 614]
-    sizes = [36, 41, 45, 50, 54]
+    sizes = [30, 35, 39, 44, 48]
     center_y = 204
     draw = ImageDraw.Draw(panel, "RGBA")
     for center, size, emblem in zip(centers, sizes, emblems):

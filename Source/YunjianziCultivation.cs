@@ -548,7 +548,7 @@ namespace Yunjianzi
 
         private void DrawRealmEmblems(Rect outer)
         {
-            float[] sizes = { 12f, 13.5f, 15f, 16.5f, 18f };
+            float[] sizes = { 10f, 11.5f, 13f, 14.5f, 16f };
             for (int i = 1; i <= 5; i++)
             {
                 float centerX = outer.x + 135.5f + (i - 1) * 17.3f;
