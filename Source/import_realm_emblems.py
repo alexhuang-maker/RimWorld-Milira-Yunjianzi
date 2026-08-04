@@ -7,7 +7,7 @@ can tint and scale every cultivation realm without sharing one marker sprite.
 
 from pathlib import Path
 
-from PIL import Image, ImageDraw
+from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -39,17 +39,12 @@ def import_emblems() -> list[Image.Image]:
 
 def render_preview(emblems: list[Image.Image]) -> None:
     panel = Image.open(PANEL).convert("RGBA").resize((750, 240), Image.Resampling.LANCZOS)
-    # Preview the exact in-game layout at 3x scale for readable QA.  The small
-    # dark backplates cover the legacy diamond outlines baked into panel v1.
+    # Preview the exact in-game layout at 3x scale for readable QA.  Panel v2
+    # has no baked placeholders, so the emblems require no masking backplates.
     centers = [406, 458, 510, 562, 614]
     sizes = [30, 35, 39, 44, 48]
-    center_y = 204
-    draw = ImageDraw.Draw(panel, "RGBA")
+    center_y = 190
     for center, size, emblem in zip(centers, sizes, emblems):
-        half_backplate = size // 2 + 3
-        draw.rounded_rectangle((center - half_backplate, center_y - half_backplate,
-                                center + half_backplate, center_y + half_backplate),
-                               radius=6, fill=(3, 28, 32, 235))
         icon = emblem.resize((size, size), Image.Resampling.LANCZOS)
         panel.alpha_composite(icon, (center - size // 2, center_y - size // 2))
     PREVIEW.parent.mkdir(parents=True, exist_ok=True)

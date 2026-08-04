@@ -588,7 +588,6 @@ namespace Yunjianzi
         private static readonly Color RealmLit = new Color(.50f, 1f, 1f);
         private static readonly Color RealmPassed = new Color(.72f, .94f, .92f, .82f);
         private static readonly Color RealmLocked = new Color(.30f, .42f, .44f, .30f);
-        private static readonly Color RealmBackplate = new Color(.012f, .075f, .085f, .94f);
 
         public GizmoYunjianziCultivation() { Order = -100f; }
         public override float GetWidth(float maxWidth) { return 250f; }
@@ -637,8 +636,7 @@ namespace Yunjianzi
                 float size = sizes[i - 1];
                 if (i == comp.Realm)
                     size *= 1f + .035f * Mathf.Sin(Time.realtimeSinceStartup * 4f);
-                Rect marker = new Rect(centerX - size * .5f, outer.y + 68f - size * .5f, size, size);
-                Widgets.DrawBoxSolid(marker.ExpandedBy(1f), RealmBackplate);
+                Rect marker = new Rect(centerX - size * .5f, outer.y + 63.5f - size * .5f, size, size);
                 GUI.color = i == comp.Realm ? Color.white : (i < comp.Realm ? RealmPassed : RealmLocked);
                 GUI.DrawTexture(marker, RealmEmblems[i - 1], ScaleMode.ScaleToFit, true);
             }

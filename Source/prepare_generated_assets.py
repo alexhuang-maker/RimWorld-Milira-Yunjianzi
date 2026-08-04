@@ -67,7 +67,7 @@ crop_pad_resize(
     margin=0.02,
 )
 crop_resize_exact(
-    "CultivationUI_master_v1_transparent.png",
+    "CultivationUI_master_v2_clean.png",
     TEXTURES / "UI" / "CultivationPanel.png",
     750,
     240,
