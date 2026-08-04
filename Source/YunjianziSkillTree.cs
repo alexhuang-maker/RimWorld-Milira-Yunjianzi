@@ -103,10 +103,7 @@ namespace Yunjianzi
 
     public sealed partial class CompYunjianziCultivation
     {
-        // The sixth purchase is nominally the 100% tier, but the realm-wide
-        // expenditure ceiling is 200%. The first five purchases already total
-        // 140%, so the final settlement is capped at the remaining 60%.
-        private static readonly float[] SkillCostFractions = { 0f, .10f, .20f, .40f, .70f, .60f };
+        private static readonly float[] SkillCostFractions = { 0f, .10f, .20f, .40f, .70f, 1f };
         private List<string> learnedSkills = new List<string>();
 
         public bool HasSkill(string id)
@@ -126,8 +123,9 @@ namespace Yunjianzi
 
         internal int SkillCost(YunjianziSkillNode node)
         {
-            int bought = Mathf.Clamp(LearnedSkillCountAtRealm(node.Realm), 0, SkillCostFractions.Length - 1);
-            return Mathf.RoundToInt(EnergyCapForRealm(node.Realm) * SkillCostFractions[bought]);
+            int bought = LearnedSkillCountAtRealm(node.Realm);
+            float fraction = bought < SkillCostFractions.Length ? SkillCostFractions[bought] : 2f;
+            return Mathf.RoundToInt(EnergyCapForRealm(node.Realm) * fraction);
         }
 
         internal string SkillLockReason(YunjianziSkillNode node)
@@ -304,7 +302,7 @@ namespace Yunjianzi
                 int cost = comp.SkillCost(node);
                 string tip = node.Label + "（" + CompYunjianziCultivation.RealmName(node.Realm) + "）\n" + node.Description +
                     "\n\n本境界已学习：" + comp.LearnedSkillCountAtRealm(node.Realm) + "项\n本次消耗：" + cost + "当前灵力" +
-                    "\n同境界全部学习的累计费用不会超过该境界标准灵力上限的200%。";
+                    "\n费用序列：第1～6项为0%、10%、20%、40%、70%、100%；第7项起每项固定为该境界标准灵力上限的200%。";
                 if (!learned && reason != null) tip += "\n\n尚不可学习：" + reason;
                 TooltipHandler.TipRegion(rect, tip);
                 if (!learned && Widgets.ButtonInvisible(rect)) comp.TryLearnSkill(node);
