@@ -367,6 +367,84 @@ namespace Yunjianzi
         }
     }
 
+    public sealed class ThingYunjianziSwordRain : Thing
+    {
+        private const float BlastRadius = 3.9f;
+        private Pawn owner;
+        private int realmAtCast;
+        private int startTick;
+        private int wavesReleased;
+
+        public void Initialize(Pawn caster, int realm)
+        {
+            owner = caster;
+            realmAtCast = realm;
+            startTick = Find.TickManager.TicksGame;
+        }
+
+        protected override void Tick()
+        {
+            base.Tick();
+            if (!Spawned || Map == null)
+            {
+                if (!Destroyed) Destroy(DestroyMode.Vanish);
+                return;
+            }
+
+            int elapsed = Find.TickManager.TicksGame - startTick;
+            if (elapsed < 100 && this.IsHashIntervalTick(2)) SpawnFallingBlade();
+            if (wavesReleased == 0 && elapsed >= 35)
+            {
+                ReleaseWave();
+                wavesReleased = 1;
+            }
+            if (wavesReleased == 1 && elapsed >= 82)
+            {
+                ReleaseWave();
+                wavesReleased = 2;
+            }
+            if (elapsed >= 112) Destroy(DestroyMode.Vanish);
+        }
+
+        private void SpawnFallingBlade()
+        {
+            float angle = Rand.Range(0f, 360f);
+            float distance = Mathf.Sqrt(Rand.Value) * BlastRadius;
+            Vector3 point = Position.ToVector3Shifted();
+            point.x += Mathf.Cos(angle * Mathf.Deg2Rad) * distance;
+            point.z += Mathf.Sin(angle * Mathf.Deg2Rad) * distance;
+            FleckCreationData blade = FleckMaker.GetDataStatic(point, Map, YJZDefOf.YJZ_Fleck_SwordRainBlade,
+                Rand.Range(.78f, 1.22f));
+            blade.rotation = Rand.Range(-14f, 14f);
+            Map.flecks.CreateFleck(blade);
+            if (Rand.Chance(.25f)) FleckMaker.ThrowLightningGlow(point, Map, Rand.Range(.35f, .75f));
+        }
+
+        private void ReleaseWave()
+        {
+            for (int i = 0; i < 18; i++) SpawnFallingBlade();
+            FleckCreationData impact = FleckMaker.GetDataStatic(Position.ToVector3Shifted(), Map,
+                YJZDefOf.YJZ_Fleck_SwordRainImpact, 1.25f);
+            impact.rotation = Rand.Range(0f, 360f);
+            Map.flecks.CreateFleck(impact);
+            FleckMaker.ThrowLightningGlow(Position.ToVector3Shifted(), Map, 3.2f);
+            FleckMaker.ThrowMicroSparks(Position.ToVector3Shifted(), Map);
+
+            // Two restrained 42-damage waves: useful area damage at Purple
+            // Palace, but intentionally below a high-tier screen wipe.
+            GenExplosion.DoExplosion(Position, Map, BlastRadius, DamageDefOf.Cut, owner, 42, .62f);
+        }
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_References.Look(ref owner, "yjz_swordRainOwner");
+            Scribe_Values.Look(ref realmAtCast, "yjz_swordRainRealm", 3);
+            Scribe_Values.Look(ref startTick, "yjz_swordRainStartTick", 0);
+            Scribe_Values.Look(ref wavesReleased, "yjz_swordRainWaves", 0);
+        }
+    }
+
     [StaticConstructorOnStartup]
     public sealed class ThingYunjianziArrayCore : Building
     {
@@ -392,6 +470,21 @@ namespace Yunjianzi
         public Pawn Owner { get { return owner; } }
         public int RealmAtCast { get { return realmAtCast; } }
         public float Radius { get { return 4f + realmAtCast; } }
+        public IntVec3 EffectCenter
+        {
+            get { return followsOwner && owner != null && owner.Spawned && owner.Map == Map ? owner.Position : Position; }
+        }
+        private Vector3 EffectDrawCenter
+        {
+            get
+            {
+                Vector3 result = followsOwner && owner != null && owner.Spawned && owner.Map == Map
+                    ? owner.DrawPos
+                    : Position.ToVector3Shifted();
+                result.y = Altitudes.AltitudeFor(AltitudeLayer.FloorEmplacement);
+                return result;
+            }
+        }
         public bool Active { get { return Spawned && owner != null && !owner.Dead && (realmAtCast >= 4 || Find.TickManager.TicksGame < expireTick); } }
 
         public void Initialize(Pawn caster, bool follow, int realm, int durationTicks)
@@ -423,14 +516,6 @@ namespace Yunjianzi
                 return;
             }
             if (this.IsHashIntervalTick(30) && TryMigrateRealmDef()) return;
-            if (followsOwner && owner.Spawned && owner.Map == Map && Position != owner.Position && this.IsHashIntervalTick(15))
-            {
-                Map map = Map;
-                IntVec3 destination = owner.Position;
-                DeSpawn();
-                GenSpawn.Spawn(this, destination, map);
-                return;
-            }
             if (this.IsHashIntervalTick(60)) ApplyFriendlyEffects();
             if (this.IsHashIntervalTick(90)) ApplyTaunt();
             if (realmAtCast >= 2 && Find.TickManager.TicksGame >= nextLightningTick)
@@ -464,13 +549,18 @@ namespace Yunjianzi
 
         private void ApplyTaunt()
         {
+            // The fixed core remains the attackable anchor. The following field
+            // is a pawn-bound aura (as in MoeLotl's fire ring), so it must not
+            // redirect enemies toward its old ThingGrid cell.
+            if (followsOwner) return;
             if (Map == null || owner == null || Faction == null) return;
             float tauntRadius = Radius + 6f;
-            foreach (Pawn pawn in GenRadial.RadialDistinctThingsAround(Position, Map, tauntRadius, true).OfType<Pawn>())
+            IntVec3 center = EffectCenter;
+            foreach (Pawn pawn in GenRadial.RadialDistinctThingsAround(center, Map, tauntRadius, true).OfType<Pawn>())
             {
                 if (pawn.Dead || pawn.Downed || !pawn.Spawned || pawn.Faction == null || pawn.Faction == Faction.OfPlayer ||
                     pawn.InMentalState || !pawn.HostileTo(owner) || pawn.WorkTagIsDisabled(WorkTags.Violent) ||
-                    !GenSight.LineOfSight(pawn.Position, Position, Map)) continue;
+                    !GenSight.LineOfSight(pawn.Position, center, Map)) continue;
 
                 // Purple Palace and above can have a fixed and a following core.
                 // Keep the closest existing core so the two taunts do not make an
@@ -492,8 +582,9 @@ namespace Yunjianzi
         private IEnumerable<Pawn> PawnsInside()
         {
             if (Map == null) yield break;
+            IntVec3 center = EffectCenter;
             foreach (Pawn pawn in Map.mapPawns.AllPawnsSpawned)
-                if (!pawn.Dead && pawn.Position.DistanceTo(Position) <= Radius) yield return pawn;
+                if (!pawn.Dead && pawn.Position.DistanceTo(center) <= Radius) yield return pawn;
         }
 
         private bool Friendly(Pawn pawn)
@@ -514,7 +605,7 @@ namespace Yunjianzi
             if (!followsOwner && realmAtCast >= 2)
             {
                 CompYunjianziCultivation comp = owner.TryGetComp<CompYunjianziCultivation>();
-                if (comp != null && owner.Position.DistanceTo(Position) <= Radius) comp.Shield += 2f;
+                if (comp != null && owner.Position.DistanceTo(EffectCenter) <= Radius) comp.Shield += 2f;
             }
         }
 
@@ -534,10 +625,11 @@ namespace Yunjianzi
 
         private void CastLightning()
         {
-            List<Thing> enemies = GenRadial.RadialDistinctThingsAround(Position, Map, Radius, true)
+            IntVec3 center = EffectCenter;
+            List<Thing> enemies = GenRadial.RadialDistinctThingsAround(center, Map, Radius, true)
                 .Where(t => t != null && t.Spawned && t.HostileTo(owner) &&
                     ((t is Pawn && !((Pawn)t).Dead) || t is Building_Turret))
-                .OrderBy(t => t.Position.DistanceToSquared(Position)).Take(2).ToList();
+                .OrderBy(t => t.Position.DistanceToSquared(center)).Take(2).ToList();
             foreach (Thing enemy in enemies)
             {
                 DamageInfo info = new DamageInfo(DamageDefOf.Burn, realmAtCast >= 5 ? 22f : 16f, realmAtCast >= 5 ? .9f : .55f, -1f, owner);
@@ -555,18 +647,21 @@ namespace Yunjianzi
                     ? new Color(.75f, .96f, 1f, .30f)
                     : new Color(.58f, .90f, .95f, .22f);
                 fieldPropertyBlock.SetColor(ShaderPropertyIDs.Color, fieldColor);
-                Vector3 fieldPosition = Position.ToVector3ShiftedWithAltitude(AltitudeLayer.FloorEmplacement);
+                Vector3 fieldPosition = EffectDrawCenter;
                 Matrix4x4 matrix = Matrix4x4.TRS(
                     fieldPosition,
                     Quaternion.identity,
                     new Vector3(Radius * 2f, 1f, Radius * 2f));
                 Graphics.DrawMesh(MeshPool.plane10, matrix, ArrayFieldMaterial, 0, null, 0, fieldPropertyBlock);
             }
-            base.DrawAt(drawLoc, flip);
+            Vector3 coreDrawLoc = followsOwner && owner != null && owner.Spawned && owner.Map == Map
+                ? owner.DrawPos.WithY(drawLoc.y)
+                : drawLoc;
+            base.DrawAt(coreDrawLoc, flip);
             if (Active && Find.Selector.IsSelected(this))
             {
                 Color color = realmAtCast >= 5 ? new Color(.72f, .95f, 1f) : new Color(.35f, .85f, .92f);
-                GenDraw.DrawRadiusRing(Position, Radius, color);
+                GenDraw.DrawRadiusRing(EffectCenter, Radius, color);
             }
         }
 
@@ -626,7 +721,8 @@ namespace Yunjianzi
             IntVec3 origin = projectileLauncher != null && projectileLauncher.Spawned ? projectileLauncher.Position : current + new IntVec3(999, 0, 999);
             foreach (ThingYunjianziArrayCore core in ActiveOn(map).Where(c => c.realmAtCast >= 4))
             {
-                if (current.DistanceTo(core.Position) > core.Radius || origin.DistanceTo(core.Position) <= core.Radius) continue;
+                IntVec3 center = core.EffectCenter;
+                if (current.DistanceTo(center) > core.Radius || origin.DistanceTo(center) <= core.Radius) continue;
                 Thing launcher = projectileLauncher;
                 if (launcher != null && core.owner != null && !launcher.HostileTo(core.owner)) continue;
                 ThingDef projectileDef = projectile.def;
@@ -680,14 +776,13 @@ namespace Yunjianzi
             {
                 Command_Action blink = new Command_Action
                 {
-                    defaultLabel = "仙阵诀·阵遁",
-                    defaultDesc = "闪现到当前任一仙阵内部的可站立位置。冷却20秒，不额外消耗灵力。",
+                    defaultLabel = "仙阵诀·紫电阵遁",
+                    defaultDesc = "无论当前身在阵内或阵外，都可闪现到任一琉璃阵眼覆盖范围内的可站立位置。冷却20秒。紫府起，落点会击退附近敌人；境界越高，范围与距离越大。",
                     icon = YunjianziAbilityTextures.ImmortalArray,
                     action = BeginArrayBlink
                 };
                 int remaining = arrayBlinkReadyTick - Find.TickManager.TicksGame;
-                if (!ActiveArrays().Any(c => Pawn.Position.DistanceTo(c.Position) <= c.Radius)) blink.Disable("云间子必须先进入阵内。");
-                else if (remaining > 0) blink.Disable("冷却中：" + (remaining / 60f).ToString("0.0") + "秒");
+                if (remaining > 0) blink.Disable("冷却中：" + (remaining / 60f).ToString("0.0") + "秒");
                 yield return blink;
             }
         }
@@ -729,15 +824,55 @@ namespace Yunjianzi
 
         private void TryArrayBlink(IntVec3 cell)
         {
-            if (!cell.InBounds(Pawn.Map) || !cell.Standable(Pawn.Map) || !ActiveArrays().Any(c => cell.DistanceTo(c.Position) <= c.Radius))
+            if (!cell.InBounds(Pawn.Map) || !cell.Standable(Pawn.Map) || !ActiveArrays().Any(c => cell.DistanceTo(c.EffectCenter) <= c.Radius))
             {
-                Messages.Message("目标必须是仙阵内部的可站立位置。", Pawn, MessageTypeDefOf.RejectInput);
+                Messages.Message("目标必须是任一仙阵内部的可站立位置。", Pawn, MessageTypeDefOf.RejectInput);
                 return;
             }
+            Map map = Pawn.Map;
+            Vector3 origin = Pawn.DrawPos;
             Pawn.pather.StopDead();
             Pawn.Position = cell;
+            Pawn.Notify_Teleported(false, true);
             arrayBlinkReadyTick = Find.TickManager.TicksGame + 1200;
-            FleckMaker.Static(cell, Pawn.Map, FleckDefOf.PsycastAreaEffect, 1f);
+            YunjianziCombatEffects.ShowArrayTeleport(origin, Pawn.DrawPos, map);
+            if (Realm >= 3) ApplyArrayBlinkKnockback(cell, map);
+        }
+
+        private void ApplyArrayBlinkKnockback(IntVec3 center, Map map)
+        {
+            int radius = Mathf.Clamp(Realm - 2, 1, 3);
+            int distance = Mathf.Clamp(Realm - 1, 2, 4);
+            List<Pawn> enemies = GenRadial.RadialDistinctThingsAround(center, map, radius, true)
+                .OfType<Pawn>()
+                .Where(p => p != Pawn && !p.Dead && p.Spawned && p.HostileTo(Pawn))
+                .ToList();
+            for (int index = 0; index < enemies.Count; index++)
+            {
+                Pawn enemy = enemies[index];
+                int dx = Math.Sign(enemy.Position.x - center.x);
+                int dz = Math.Sign(enemy.Position.z - center.z);
+                if (dx == 0 && dz == 0)
+                {
+                    Rot4 fallback = new Rot4(index % 4);
+                    dx = fallback.FacingCell.x;
+                    dz = fallback.FacingCell.z;
+                }
+                IntVec3 direction = new IntVec3(dx, 0, dz);
+                IntVec3 destination = enemy.Position;
+                for (int step = 1; step <= distance; step++)
+                {
+                    IntVec3 candidate = enemy.Position + direction * step;
+                    if (!candidate.InBounds(map) || !candidate.Standable(map) || candidate.Fogged(map) || candidate.GetFirstPawn(map) != null) break;
+                    destination = candidate;
+                }
+                if (destination == enemy.Position) continue;
+                Vector3 from = enemy.DrawPos;
+                if (enemy.pather != null) enemy.pather.StopDead();
+                enemy.Position = destination;
+                enemy.Notify_Teleported(false, true);
+                YunjianziCombatEffects.ShowKnockback(from, enemy.DrawPos, map);
+            }
         }
 
         private void ExposeArrayData()

@@ -27,4 +27,61 @@
       <color>(210,255,255)</color>
     </graphicData>
   </FleckDef>
+
+  <FleckDef ParentName="FleckBase">
+    <defName>YJZ_Fleck_SwordRainBlade</defName>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <fadeInTime>0</fadeInTime>
+    <solidTime>0.10</solidTime>
+    <fadeOutTime>0.34</fadeOutTime>
+    <graphicData>
+      <texPath>Yunjianzi/Weapons/SwordShadow</texPath>
+      <shaderType>MoteGlow</shaderType>
+      <drawSize>(0.62,2.45)</drawSize>
+      <color>(205,250,255)</color>
+    </graphicData>
+  </FleckDef>
+
+  <FleckDef ParentName="FleckBase">
+    <defName>YJZ_Fleck_SwordRainImpact</defName>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <fadeInTime>0</fadeInTime>
+    <solidTime>0.08</solidTime>
+    <fadeOutTime>0.55</fadeOutTime>
+    <graphicData>
+      <texPath>Yunjianzi/Effects/BlinkSlash</texPath>
+      <shaderType>MoteGlow</shaderType>
+      <drawSize>(7.8,7.8)</drawSize>
+      <color>(190,220,255)</color>
+    </graphicData>
+  </FleckDef>
+
+  <!-- Purple recolour of Ariandel Library's reinforcement warp layers. -->
+  <FleckDef ParentName="FleckBase">
+    <defName>YJZ_Fleck_ArrayWarpA</defName>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <fadeInTime>0.05</fadeInTime>
+    <solidTime>0.10</solidTime>
+    <fadeOutTime>0.55</fadeOutTime>
+    <graphicData>
+      <texPath>AriandelLibrary/Effect/WarpLight/WarpLightA</texPath>
+      <shaderType>MoteGlow</shaderType>
+      <drawSize>2.8</drawSize>
+      <color>(176,105,255)</color>
+    </graphicData>
+  </FleckDef>
+
+  <FleckDef ParentName="FleckBase">
+    <defName>YJZ_Fleck_ArrayWarpB</defName>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <fadeInTime>0</fadeInTime>
+    <solidTime>0.08</solidTime>
+    <fadeOutTime>0.42</fadeOutTime>
+    <graphicData>
+      <texPath>AriandelLibrary/Effect/WarpLight/WarpLightB</texPath>
+      <shaderType>MoteGlow</shaderType>
+      <drawSize>2.3</drawSize>
+      <color>(125,205,255)</color>
+    </graphicData>
+  </FleckDef>
 </Defs>

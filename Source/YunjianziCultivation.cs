@@ -14,6 +14,8 @@ namespace Yunjianzi
         public static readonly Texture2D SummonZhuxie = ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/SummonZhuxie");
         public static readonly Texture2D BlinkStrike = ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/BlinkStrike");
         public static readonly Texture2D ImmortalArray = ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/ImmortalArray");
+        public static readonly Texture2D SwordRain =
+            ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/SwordRain", false) ?? BlinkStrike;
     }
 
     public sealed class CompProperties_YunjianziCultivation : CompProperties
@@ -29,6 +31,7 @@ namespace Yunjianzi
         private float shield = -1f;
         private int lastDamageTick = -99999;
         private int blinkReadyTick;
+        private int swordRainReadyTick;
         private int shadowCursor;
         private int deathLockUntil;
         private int deathLockReadyTick;
@@ -146,6 +149,20 @@ namespace Yunjianzi
                     int remaining = blinkReadyTick - Find.TickManager.TicksGame;
                     if (remaining > 0) blink.Disable(string.Format("冷却中：{0:0.0}秒", remaining / 60f));
                     yield return blink;
+
+                    Command_Action swordRain = new Command_Action
+                    {
+                        defaultLabel = "御剑诀·天剑雨",
+                        defaultDesc = "紫府境解锁。消耗80点灵力，在目标区域降下两轮诛邪剑雨。每轮覆盖约迫击炮弹爆炸范围，只造成中等纯粹伤害，不附带眩晕、落雷或击退。冷却30秒。",
+                        icon = YunjianziAbilityTextures.SwordRain,
+                        action = BeginSwordRainTargeting
+                    };
+                    int swordRainRemaining = swordRainReadyTick - Find.TickManager.TicksGame;
+                    if (swordRainRemaining > 0)
+                        swordRain.Disable(string.Format("冷却中：{0:0.0}秒", swordRainRemaining / 60f));
+                    else if (Energy < 80f)
+                        swordRain.Disable("灵力不足：需要80点。");
+                    yield return swordRain;
                 }
                 foreach (Gizmo arrayGizmo in GetArrayGizmos()) yield return arrayGizmo;
             }
@@ -172,6 +189,36 @@ namespace Yunjianzi
             Pawn.equipment.AddEquipment(sword);
             RemoveDuplicateZhuxie(sword);
             Messages.Message("诛邪，应念而来。", Pawn, MessageTypeDefOf.PositiveEvent);
+        }
+
+        private void BeginSwordRainTargeting()
+        {
+            if (Realm < 3 || Find.TickManager.TicksGame < swordRainReadyTick || Pawn == null || !Pawn.Spawned) return;
+            TargetingParameters parms = new TargetingParameters
+            {
+                canTargetLocations = true,
+                canTargetPawns = true,
+                canTargetBuildings = true,
+                canTargetItems = false,
+                validator = target => target.IsValid && target.Cell.InBounds(Pawn.Map) &&
+                    target.Cell.DistanceTo(Pawn.Position) <= 35.9f
+            };
+            Find.Targeter.BeginTargeting(parms, target => TryCastSwordRain(target.Cell));
+        }
+
+        private void TryCastSwordRain(IntVec3 center)
+        {
+            if (Realm < 3 || Pawn == null || !Pawn.Spawned || !center.InBounds(Pawn.Map) ||
+                center.DistanceTo(Pawn.Position) > 35.9f)
+            {
+                Messages.Message("天剑雨目标必须位于35.9格内。", Pawn, MessageTypeDefOf.RejectInput);
+                return;
+            }
+            if (!TrySpend(80f)) return;
+            ThingYunjianziSwordRain rain = (ThingYunjianziSwordRain)ThingMaker.MakeThing(YJZDefOf.YJZ_Thing_SwordRain);
+            rain.Initialize(Pawn, Realm);
+            GenSpawn.Spawn(rain, center, Pawn.Map);
+            swordRainReadyTick = Find.TickManager.TicksGame + 1800;
         }
 
         private ThingWithComps FindExistingZhuxie()
@@ -432,6 +479,7 @@ namespace Yunjianzi
             Scribe_Values.Look(ref shield, "yjz_shield", -1f);
             Scribe_Values.Look(ref lastDamageTick, "yjz_lastDamageTick", -99999);
             Scribe_Values.Look(ref blinkReadyTick, "yjz_blinkReadyTick", 0);
+            Scribe_Values.Look(ref swordRainReadyTick, "yjz_swordRainReadyTick", 0);
             Scribe_Values.Look(ref deathLockUntil, "yjz_deathLockUntil", 0);
             Scribe_Values.Look(ref deathLockReadyTick, "yjz_deathLockReadyTick", 0);
             Scribe_Collections.Look(ref shadowLightningReady, "yjz_shadowLightningReady", LookMode.Value);
@@ -526,6 +574,7 @@ namespace Yunjianzi
         public static BackstoryDef YJZ_Backstory_Adulthood;
         public static ThingDef YJZ_Weapon_Zhuxie;
         public static ThingDef YJZ_Projectile_SwordShadow;
+        public static ThingDef YJZ_Thing_SwordRain;
         public static ThingDef YJZ_Thing_ArrayCore;
         public static ThingDef YJZ_Thing_ArrayCore_Foundation;
         public static ThingDef YJZ_Thing_ArrayCore_PurplePalace;
@@ -534,6 +583,10 @@ namespace Yunjianzi
         public static HediffDef YJZ_ArrayShield;
         public static FleckDef YJZ_Fleck_SwordShadowAfterimage;
         public static FleckDef YJZ_Fleck_BlinkSlash;
+        public static FleckDef YJZ_Fleck_SwordRainBlade;
+        public static FleckDef YJZ_Fleck_SwordRainImpact;
+        public static FleckDef YJZ_Fleck_ArrayWarpA;
+        public static FleckDef YJZ_Fleck_ArrayWarpB;
         static YJZDefOf() { DefOfHelper.EnsureInitializedInCtor(typeof(YJZDefOf)); }
     }
 
@@ -570,6 +623,54 @@ namespace Yunjianzi
             }
             FleckMaker.ThrowMicroSparks(target, map);
             FleckMaker.ThrowLightningGlow(target, map, 1.1f);
+        }
+
+        public static void ShowArrayTeleport(Vector3 origin, Vector3 destination, Map map)
+        {
+            if (map == null) return;
+            DrawWarpGate(origin, map, false);
+            DrawWarpGate(destination, map, true);
+            for (int i = 1; i <= 7; i++)
+            {
+                Vector3 point = Vector3.Lerp(origin, destination, i / 8f);
+                FleckCreationData arc = FleckMaker.GetDataStatic(point, map, YJZDefOf.YJZ_Fleck_ArrayWarpB,
+                    .30f + i * .035f);
+                arc.rotation = i * 47f;
+                map.flecks.CreateFleck(arc);
+            }
+        }
+
+        private static void DrawWarpGate(Vector3 position, Map map, bool arrival)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                FleckCreationData ring = FleckMaker.GetDataStatic(position, map, YJZDefOf.YJZ_Fleck_ArrayWarpA,
+                    (arrival ? 1.25f : 1.05f) + i * .22f);
+                ring.rotation = i * 120f + (arrival ? 25f : -25f);
+                map.flecks.CreateFleck(ring);
+            }
+            FleckCreationData pillar = FleckMaker.GetDataStatic(position, map, YJZDefOf.YJZ_Fleck_ArrayWarpB,
+                arrival ? 1.55f : 1.25f);
+            pillar.rotation = arrival ? 35f : -35f;
+            map.flecks.CreateFleck(pillar);
+            FleckMaker.ThrowLightningGlow(position, map, arrival ? 2.2f : 1.7f);
+            FleckMaker.ThrowMicroSparks(position, map);
+        }
+
+        public static void ShowKnockback(Vector3 origin, Vector3 destination, Map map)
+        {
+            if (map == null) return;
+            Vector3 delta = destination - origin;
+            delta.y = 0f;
+            float angle = delta.sqrMagnitude < .001f ? 0f : Mathf.Atan2(delta.x, delta.z) * Mathf.Rad2Deg;
+            for (int i = 0; i <= 4; i++)
+            {
+                Vector3 point = Vector3.Lerp(origin, destination, i / 4f);
+                FleckCreationData arc = FleckMaker.GetDataStatic(point, map, YJZDefOf.YJZ_Fleck_ArrayWarpB, .42f + i * .08f);
+                arc.rotation = angle + 90f;
+                map.flecks.CreateFleck(arc);
+            }
+            FleckMaker.ThrowLightningGlow(destination, map, 1.1f);
         }
     }
 

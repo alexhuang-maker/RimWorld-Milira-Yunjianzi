@@ -21,6 +21,22 @@
     </graphicData>
   </ThingDef>
 
+  <ThingDef>
+    <defName>YJZ_Thing_SwordRain</defName>
+    <label>天剑雨</label>
+    <description>云间子在紫府境后以灵力凝成的两轮白玉剑雨。</description>
+    <thingClass>Yunjianzi.ThingYunjianziSwordRain</thingClass>
+    <category>Ethereal</category>
+    <tickerType>Normal</tickerType>
+    <drawerType>RealtimeOnly</drawerType>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <selectable>false</selectable>
+    <useHitPoints>false</useHitPoints>
+    <destroyable>true</destroyable>
+    <passability>Standable</passability>
+    <pathCost>0</pathCost>
+  </ThingDef>
+
   <ThingDef ParentName="BuildingBase" Name="YJZ_ArrayCoreBase" Abstract="True">
     <label>琉璃阵眼</label>
     <description>云间子以灵力凝成的琉璃玉珠，是仙阵的阵眼与防御枢机。其灵压会吸引附近敌人的注意；摧毁阵眼即可令对应仙阵消散。</description>
