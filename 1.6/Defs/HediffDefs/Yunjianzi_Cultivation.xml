@@ -13,47 +13,102 @@
     <stages>
       <li>
         <minSeverity>1</minSeverity><label>云间灵脉（练气）</label><becomeVisible>true</becomeVisible>
-        <statOffsets><MoveSpeed>0.10</MoveSpeed></statOffsets>
-        <statFactors><RestRateMultiplier>1.10</RestRateMultiplier></statFactors>
+        <painFactor>0.95</painFactor><totalBleedFactor>0.95</totalBleedFactor>
+        <statOffsets><MoveSpeed>0.15</MoveSpeed></statOffsets>
+        <statFactors>
+          <RestRateMultiplier>1.15</RestRateMultiplier>
+          <InjuryHealingFactor>1.15</InjuryHealingFactor>
+          <ImmunityGainSpeed>1.10</ImmunityGainSpeed>
+          <IncomingDamageFactor>0.95</IncomingDamageFactor>
+        </statFactors>
         <capMods>
-          <li><capacity>Moving</capacity><offset>0.02</offset></li>
-          <li><capacity>Manipulation</capacity><offset>0.03</offset></li>
+          <li><capacity>Consciousness</capacity><offset>0.02</offset></li>
+          <li><capacity>Moving</capacity><offset>0.05</offset></li>
+          <li><capacity>Manipulation</capacity><offset>0.05</offset></li>
         </capMods>
       </li>
       <li>
         <minSeverity>2</minSeverity><label>云间灵脉（筑基）</label><becomeVisible>true</becomeVisible>
-        <statOffsets><MoveSpeed>0.20</MoveSpeed></statOffsets>
-        <statFactors><RestRateMultiplier>1.20</RestRateMultiplier></statFactors>
+        <painFactor>0.85</painFactor><totalBleedFactor>0.85</totalBleedFactor>
+        <statOffsets><MoveSpeed>0.35</MoveSpeed></statOffsets>
+        <statFactors>
+          <RestRateMultiplier>1.30</RestRateMultiplier>
+          <InjuryHealingFactor>1.40</InjuryHealingFactor>
+          <ImmunityGainSpeed>1.25</ImmunityGainSpeed>
+          <IncomingDamageFactor>0.85</IncomingDamageFactor>
+        </statFactors>
         <capMods>
-          <li><capacity>Moving</capacity><offset>0.04</offset></li>
-          <li><capacity>Manipulation</capacity><offset>0.06</offset></li>
+          <li><capacity>Consciousness</capacity><offset>0.08</offset></li>
+          <li><capacity>Moving</capacity><offset>0.12</offset></li>
+          <li><capacity>Manipulation</capacity><offset>0.15</offset></li>
+          <li><capacity>Sight</capacity><offset>0.05</offset></li>
+          <li><capacity>Hearing</capacity><offset>0.05</offset></li>
         </capMods>
       </li>
       <li>
         <minSeverity>3</minSeverity><label>云间灵脉（紫府）</label><becomeVisible>true</becomeVisible>
-        <statOffsets><MoveSpeed>0.35</MoveSpeed></statOffsets>
-        <statFactors><RestRateMultiplier>1.35</RestRateMultiplier></statFactors>
+        <painFactor>0.60</painFactor><totalBleedFactor>0.60</totalBleedFactor>
+        <statOffsets><MoveSpeed>1.25</MoveSpeed></statOffsets>
+        <statFactors>
+          <RestRateMultiplier>1.75</RestRateMultiplier>
+          <InjuryHealingFactor>2.50</InjuryHealingFactor>
+          <ImmunityGainSpeed>1.75</ImmunityGainSpeed>
+          <IncomingDamageFactor>0.65</IncomingDamageFactor>
+        </statFactors>
         <capMods>
-          <li><capacity>Moving</capacity><offset>0.07</offset></li>
-          <li><capacity>Manipulation</capacity><offset>0.10</offset></li>
+          <li><capacity>Consciousness</capacity><offset>0.30</offset></li>
+          <li><capacity>Moving</capacity><offset>0.45</offset></li>
+          <li><capacity>Manipulation</capacity><offset>0.55</offset></li>
+          <li><capacity>Sight</capacity><offset>0.30</offset></li>
+          <li><capacity>Hearing</capacity><offset>0.20</offset></li>
+          <li><capacity>Breathing</capacity><offset>0.25</offset></li>
+          <li><capacity>BloodFiltration</capacity><offset>0.25</offset></li>
+          <li><capacity>BloodPumping</capacity><offset>0.25</offset></li>
+          <li><capacity>Metabolism</capacity><offset>0.20</offset></li>
         </capMods>
       </li>
       <li>
         <minSeverity>4</minSeverity><label>云间灵脉（金丹）</label><becomeVisible>true</becomeVisible>
-        <statOffsets><MoveSpeed>0.55</MoveSpeed></statOffsets>
-        <statFactors><RestRateMultiplier>1.60</RestRateMultiplier></statFactors>
+        <painFactor>0.25</painFactor><totalBleedFactor>0.25</totalBleedFactor>
+        <statOffsets><MoveSpeed>2.50</MoveSpeed></statOffsets>
+        <statFactors>
+          <RestRateMultiplier>2.50</RestRateMultiplier>
+          <InjuryHealingFactor>5.00</InjuryHealingFactor>
+          <ImmunityGainSpeed>2.75</ImmunityGainSpeed>
+          <IncomingDamageFactor>0.35</IncomingDamageFactor>
+        </statFactors>
         <capMods>
-          <li><capacity>Moving</capacity><offset>0.11</offset></li>
-          <li><capacity>Manipulation</capacity><offset>0.15</offset></li>
+          <li><capacity>Consciousness</capacity><offset>0.60</offset></li>
+          <li><capacity>Moving</capacity><offset>0.90</offset></li>
+          <li><capacity>Manipulation</capacity><offset>1.00</offset></li>
+          <li><capacity>Sight</capacity><offset>0.65</offset></li>
+          <li><capacity>Hearing</capacity><offset>0.45</offset></li>
+          <li><capacity>Breathing</capacity><offset>0.55</offset></li>
+          <li><capacity>BloodFiltration</capacity><offset>0.55</offset></li>
+          <li><capacity>BloodPumping</capacity><offset>0.55</offset></li>
+          <li><capacity>Metabolism</capacity><offset>0.45</offset></li>
         </capMods>
       </li>
       <li>
         <minSeverity>5</minSeverity><label>云间灵脉（化神）</label><becomeVisible>true</becomeVisible>
-        <statOffsets><MoveSpeed>0.85</MoveSpeed></statOffsets>
-        <statFactors><RestRateMultiplier>2.00</RestRateMultiplier></statFactors>
+        <painFactor>0.05</painFactor><totalBleedFactor>0.05</totalBleedFactor>
+        <statOffsets><MoveSpeed>5.00</MoveSpeed></statOffsets>
+        <statFactors>
+          <RestRateMultiplier>5.00</RestRateMultiplier>
+          <InjuryHealingFactor>12.00</InjuryHealingFactor>
+          <ImmunityGainSpeed>5.00</ImmunityGainSpeed>
+          <IncomingDamageFactor>0.10</IncomingDamageFactor>
+        </statFactors>
         <capMods>
-          <li><capacity>Moving</capacity><offset>0.16</offset></li>
-          <li><capacity>Manipulation</capacity><offset>0.22</offset></li>
+          <li><capacity>Consciousness</capacity><offset>1.50</offset></li>
+          <li><capacity>Moving</capacity><offset>2.00</offset></li>
+          <li><capacity>Manipulation</capacity><offset>2.00</offset></li>
+          <li><capacity>Sight</capacity><offset>1.50</offset></li>
+          <li><capacity>Hearing</capacity><offset>1.00</offset></li>
+          <li><capacity>Breathing</capacity><offset>1.50</offset></li>
+          <li><capacity>BloodFiltration</capacity><offset>1.50</offset></li>
+          <li><capacity>BloodPumping</capacity><offset>1.50</offset></li>
+          <li><capacity>Metabolism</capacity><offset>1.25</offset></li>
         </capMods>
       </li>
     </stages>
