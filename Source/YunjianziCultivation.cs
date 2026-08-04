@@ -33,6 +33,7 @@ namespace Yunjianzi
         private float shield = -1f;
         private int lastDamageTick = -99999;
         private int blinkReadyTick;
+        private bool autoBlink;
         private int swordRainReadyTick;
         private int shadowCursor;
         private int deathLockUntil;
@@ -111,6 +112,9 @@ namespace Yunjianzi
             }
             if (Realm >= 3 && Pawn.Spawned && !Pawn.Downed && Pawn.IsHashIntervalTick(30))
                 TryShadowStrike();
+            if (autoBlink && Realm >= 3 && Pawn.Spawned && Pawn.Drafted && !Pawn.Downed &&
+                Pawn.Awake() && Pawn.IsHashIntervalTick(15))
+                TryAutoBlink();
         }
 
         public bool TrySpend(float amount, bool message = true)
@@ -148,13 +152,16 @@ namespace Yunjianzi
                 };
                 if (Realm >= 3)
                 {
-                    Command_Action blink = new Command_Action
+                    Command_Action blink = new CommandYunjianziBlink
                     {
+                        comp = this,
                         defaultLabel = "御剑诀·瞬斩",
                         defaultDesc = "消耗20点灵力，闪现至射程内敌人身后并强力斩击。冷却5秒。",
                         icon = YunjianziAbilityTextures.BlinkStrike,
                         action = BeginBlinkTargeting
                     };
+                    blink.defaultLabel = autoBlink ? "御剑诀·瞬斩（自动）" : "御剑诀·瞬斩";
+                    blink.defaultDesc = "消耗20点灵力，闪现至射程内敌人身后并强力斩击，冷却5秒。\n\n右键：切换自动施放。自动模式仅在征召时生效，并会在冷却、灵力与目标条件满足时尽可能释放。";
                     int remaining = blinkReadyTick - Find.TickManager.TicksGame;
                     if (remaining > 0) blink.Disable(string.Format("冷却中：{0:0.0}秒", remaining / 60f));
                     yield return blink;
@@ -381,6 +388,30 @@ namespace Yunjianzi
             return true;
         }
 
+        private void TryAutoBlink()
+        {
+            if (!autoBlink || Find.TickManager.TicksGame < blinkReadyTick || Energy < 20f ||
+                Pawn == null || !Pawn.Spawned || Pawn.Map == null || Pawn.Downed || !Pawn.Drafted)
+                return;
+
+            Thing target = CombatTargetsInRange(25.9f)
+                .Where(t => !t.Position.Fogged(Pawn.Map))
+                .OrderBy(t => t is Pawn && ((Pawn)t).Downed ? 2 : t is Building_Turret ? 1 : 0)
+                .ThenBy(t => t.Position.DistanceToSquared(Pawn.Position))
+                .FirstOrDefault();
+            if (target != null)
+                TryBlink(target, false);
+        }
+
+        public void ToggleAutoBlink()
+        {
+            autoBlink = !autoBlink;
+            Messages.Message(autoBlink
+                    ? "瞬斩自动施放已开启：征召时会自动寻找目标。"
+                    : "瞬斩自动施放已关闭。",
+                Pawn, autoBlink ? MessageTypeDefOf.PositiveEvent : MessageTypeDefOf.NeutralEvent, false);
+        }
+
         private void TryShadowStrike()
         {
             if (ShadowCount <= 0) return;
@@ -505,6 +536,7 @@ namespace Yunjianzi
             Scribe_Values.Look(ref shield, "yjz_shield", -1f);
             Scribe_Values.Look(ref lastDamageTick, "yjz_lastDamageTick", -99999);
             Scribe_Values.Look(ref blinkReadyTick, "yjz_blinkReadyTick", 0);
+            Scribe_Values.Look(ref autoBlink, "yjz_autoBlink", false);
             Scribe_Values.Look(ref swordRainReadyTick, "yjz_swordRainReadyTick", 0);
             Scribe_Values.Look(ref deathLockUntil, "yjz_deathLockUntil", 0);
             Scribe_Values.Look(ref deathLockReadyTick, "yjz_deathLockReadyTick", 0);
@@ -512,6 +544,25 @@ namespace Yunjianzi
             if (Scribe.mode == LoadSaveMode.PostLoadInit && shadowLightningReady == null)
                 shadowLightningReady = new List<int> { 0, 0, 0, 0, 0, 0, 0, 0 };
             ExposeArrayData();
+        }
+    }
+
+    public sealed class CommandYunjianziBlink : Command_Action
+    {
+        public CompYunjianziCultivation comp;
+
+        public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth, GizmoRenderParms parms)
+        {
+            Event current = Event.current;
+            bool rightClicked = current != null && current.type == EventType.MouseDown && current.button == 1 &&
+                new Rect(topLeft.x, topLeft.y, GetWidth(maxWidth), 75f).Contains(current.mousePosition);
+
+            GizmoResult result = base.GizmoOnGUI(topLeft, maxWidth, parms);
+            if (!rightClicked || comp == null) return result;
+
+            comp.ToggleAutoBlink();
+            current.Use();
+            return new GizmoResult(GizmoState.Interacted, current);
         }
     }
 
