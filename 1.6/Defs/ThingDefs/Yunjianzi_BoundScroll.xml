@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ResourceBase">
+    <defName>YJZ_Item_BoundImmortalScroll</defName>
+    <label>云间子的遗仙宝卷</label>
+    <description>随云间子一同现世的白玉宝卷，其上封存着遗仙传承最初的一缕灵机。宝卷与云间子的神魂印记绑定，研读十秒后便会化作灵光，使她获得最初的十点灵力上限。</description>
+    <thingClass>ThingWithComps</thingClass>
+    <category>Item</category>
+    <stackLimit>1</stackLimit>
+    <thingCategories>
+      <li>Books</li>
+    </thingCategories>
+    <graphicData>
+      <texPath>Yunjianzi/Items/BoundImmortalScroll</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(0.82,0.82)</drawSize>
+    </graphicData>
+    <uiIconScale>0.88</uiIconScale>
+    <statBases>
+      <MarketValue>0</MarketValue>
+      <Mass>0.4</Mass>
+      <Flammability>0</Flammability>
+      <DeteriorationRate>0</DeteriorationRate>
+    </statBases>
+    <comps>
+      <li Class="Yunjianzi.CompProperties_YunjianziBoundScroll" />
+    </comps>
+  </ThingDef>
+</Defs>

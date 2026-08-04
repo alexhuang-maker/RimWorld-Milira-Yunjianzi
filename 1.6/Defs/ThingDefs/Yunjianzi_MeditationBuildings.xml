@@ -54,7 +54,7 @@
     <comps>
       <li Class="Yunjianzi.CompProperties_YunjianziMeditationSeat">
         <extraEnergyPerSecond>0.01</extraEnergyPerSecond>
-        <breakthroughPower>0.25</breakthroughPower>
+        <breakthroughPower>0</breakthroughPower>
       </li>
     </comps>
   </ThingDef>

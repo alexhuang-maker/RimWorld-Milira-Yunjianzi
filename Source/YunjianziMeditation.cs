@@ -47,8 +47,33 @@ namespace Yunjianzi
 
         public override string CompInspectStringExtra()
         {
-            return string.Format("打坐灵力恢复：自然恢复的约 {0:0.#} 倍\n云间旗帜：{1} / 4（每面 +25%）\n突破仪台强度：{2:0.##}",
-                TotalRecoveryFactor, LinkedBannerCount, Props.breakthroughPower);
+            return string.Format("打坐修行效率：约 {0:0.#} 倍\n云间旗帜：{1} / 4（每面 +25%）\n突破仪台加速：+{2:0}%",
+                TotalRecoveryFactor, LinkedBannerCount, Props.breakthroughPower * 100f);
+        }
+
+        public override IEnumerable<Gizmo> CompGetGizmosExtra()
+        {
+            foreach (Gizmo gizmo in base.CompGetGizmosExtra()) yield return gizmo;
+            if (!parent.Spawned || parent.Faction != Faction.OfPlayer) yield break;
+
+            Pawn yunjianzi = parent.Map.mapPawns.FreeColonistsSpawned.FirstOrDefault(pawn =>
+            {
+                CompYunjianziCultivation cultivation = pawn.TryGetComp<CompYunjianziCultivation>();
+                return cultivation != null && cultivation.IsYunjianzi && cultivation.CanBreakthrough;
+            });
+            if (yunjianzi == null) yield break;
+
+            CompYunjianziCultivation comp = yunjianzi.TryGetComp<CompYunjianziCultivation>();
+            Command_Action breakthrough = new Command_Action
+            {
+                defaultLabel = "命云间子闭关突破",
+                defaultDesc = "让云间子返回此修行设施闭关突破。突破期间无法移动，但紫府境之后的剑影仍会自主御敌。",
+                icon = YunjianziAbilityTextures.Meditate,
+                action = delegate { comp.BeginMeditationOrBreakthrough(parent as Building); }
+            };
+            if (comp.Realm >= 3 && parent.def != YJZDefOf.YJZ_Building_WhiteJadePlatform)
+                breakthrough.Disable("突破金丹及之后必须使用白玉修行台。");
+            yield return breakthrough;
         }
     }
 
@@ -86,13 +111,10 @@ namespace Yunjianzi
                 pawn.Rotation = Rot4.South;
                 if (pawn.IsHashIntervalTick(60))
                 {
-                    const float naturalRecoveryPerSecond = 0.005f;
-                    float bannerFactor = 1f + seatComp.LinkedBannerCount * 0.25f;
-                    float meditationRecovery =
-                        (naturalRecoveryPerSecond + seatComp.Props.extraEnergyPerSecond) * bannerFactor -
-                        naturalRecoveryPerSecond;
-                    cultivation.Energy += cultivation.EnergyMax * meditationRecovery;
-                    if (cultivation.Energy >= cultivation.EnergyMax - 0.01f)
+                    cultivation.MeditateForTicks(60, seatComp);
+                    if (!cultivation.HasOpenedBoundScroll ||
+                        (cultivation.Energy >= cultivation.EnergyMax - 0.01f &&
+                         cultivation.EnergyMax >= cultivation.RealmEnergyCap - 0.01f))
                     {
                         EndJobWith(JobCondition.Succeeded);
                         return;

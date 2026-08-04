@@ -53,7 +53,8 @@ namespace Yunjianzi
         public Hediff RealmHediff { get { return Pawn == null || Pawn.health == null ? null : Pawn.health.hediffSet.GetFirstHediffOfDef(YJZDefOf.YJZ_CultivationRealm); } }
         public int Realm { get { Hediff h = RealmHediff; return Mathf.Clamp(Mathf.FloorToInt(h == null ? 0f : h.Severity), 0, 5); } }
         public string RealmLabel { get { return new[] { "未入道", "练气", "筑基", "紫府", "金丹", "化神" }[Realm]; } }
-        public float EnergyMax { get { return EnergyCaps[Realm]; } }
+        public float RealmEnergyCap { get { return EnergyCaps[Realm]; } }
+        public float EnergyMax { get { return Mathf.Clamp(cultivatedEnergyMax, 0f, RealmEnergyCap); } }
         public float ShieldMax { get { return ShieldCaps[Realm]; } }
         public float Energy { get { return Mathf.Clamp(energy, 0f, EnergyMax); } set { energy = Mathf.Clamp(value, 0f, EnergyMax); } }
         public float Shield { get { return Mathf.Clamp(shield, 0f, ShieldMax); } set { shield = Mathf.Clamp(value, 0f, ShieldMax); } }
@@ -66,8 +67,10 @@ namespace Yunjianzi
             base.PostSpawnSetup(respawningAfterLoad);
             if (!IsYunjianzi) return;
             EnsureRealmAndAbilities();
+            InitializeCultivationProgress();
             if (energy < 0f) energy = EnergyMax;
             if (shield < 0f) shield = ShieldMax;
+            TryCreateBoundScroll();
         }
 
         private void EnsureRealmAndAbilities()
@@ -138,11 +141,14 @@ namespace Yunjianzi
             {
                 yield return new Command_Action
                 {
-                    defaultLabel = "打坐修行",
-                    defaultDesc = "选择云纹蒲团或白玉修行台，在其中央调息并加快灵力恢复。",
+                    defaultLabel = CanBreakthrough ? "闭关突破" : "打坐修行",
+                    defaultDesc = CanBreakthrough
+                        ? "选择蒲团或白玉修行台闭关突破。突破金丹及之后必须使用白玉修行台。"
+                        : "选择云纹蒲团或白玉修行台，在其中央调息并加快灵力恢复；灵力充满后继续积累灵力上限。",
                     icon = YunjianziAbilityTextures.Meditate,
                     action = BeginMeditationTargeting
                 };
+                foreach (Gizmo scrollGizmo in GetBoundScrollGizmos()) yield return scrollGizmo;
                 yield return new Command_Action
                 {
                     defaultLabel = "御剑诀·唤剑",
@@ -192,13 +198,7 @@ namespace Yunjianzi
                 canTargetBuildings = true,
                 validator = target => target.HasThing && target.Thing.TryGetComp<CompYunjianziMeditationSeat>() != null
             };
-            Find.Targeter.BeginTargeting(parms, target =>
-            {
-                Building seat = target.Thing as Building;
-                if (seat == null) return;
-                Job job = JobMaker.MakeJob(YJZDefOf.YJZ_Meditate, seat.Position, seat);
-                Pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
-            });
+            Find.Targeter.BeginTargeting(parms, target => BeginMeditationOrBreakthrough(target.Thing as Building));
         }
 
         private void SummonZhuxie()
@@ -544,6 +544,7 @@ namespace Yunjianzi
             if (Scribe.mode == LoadSaveMode.PostLoadInit && shadowLightningReady == null)
                 shadowLightningReady = new List<int> { 0, 0, 0, 0, 0, 0, 0, 0 };
             ExposeArrayData();
+            ExposeBreakthroughData();
         }
     }
 
@@ -604,8 +605,12 @@ namespace Yunjianzi
             float energyFill = comp.Energy / Mathf.Max(1f, comp.EnergyMax);
             Texture2D energyTexture = energyFill <= .2f ? EnergyLowFill : EnergyFill;
             Rect energyRect = new Rect(outer.x + 68f, outer.y + 26f, 168f, 17f);
-            DrawBar(energyRect, energyFill, energyTexture, string.Format("灵力  {0:0.0} / {1:0}", comp.Energy, comp.EnergyMax));
-            TooltipHandler.TipRegion(energyRect, "灵力用于施展御剑诀与仙阵诀。每秒自然恢复最大灵力的0.5%。");
+            DrawBar(energyRect, energyFill, energyTexture,
+                string.Format("灵力 {0:0.#}/{1:0.#}  修为 {1:0.#}/{2:0}",
+                    comp.Energy, comp.EnergyMax, comp.RealmEnergyCap));
+            TooltipHandler.TipRegion(energyRect,
+                "前一组数值是当前灵力与已解锁上限；后一组是当前修为上限与本境界极限。\n" +
+                "灵力充满后继续打坐，或由云间子消灭敌人，都会提高灵力上限。达到境界极限后可闭关突破。");
 
             if (comp.Realm >= 2)
             {
@@ -676,7 +681,12 @@ namespace Yunjianzi
         public static HediffDef YJZ_SwordHeartClarity;
         public static TraitDef YJZ_Trait_CloudseaSwordHeart;
         public static JobDef YJZ_Meditate;
+        public static JobDef YJZ_ReadBoundScroll;
+        public static JobDef YJZ_Breakthrough;
         public static ThingDef YJZ_Building_YunjianziBanner;
+        public static ThingDef YJZ_Building_MeditationCushion;
+        public static ThingDef YJZ_Building_WhiteJadePlatform;
+        public static ThingDef YJZ_Item_BoundImmortalScroll;
         public static BackstoryDef YJZ_Backstory_Childhood;
         public static BackstoryDef YJZ_Backstory_Adulthood;
         public static ThingDef YJZ_Weapon_Zhuxie;
