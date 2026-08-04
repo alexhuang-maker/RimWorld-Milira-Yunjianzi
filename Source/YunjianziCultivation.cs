@@ -865,6 +865,8 @@ namespace Yunjianzi
         public static ThingDef YJZ_Thing_ArrayCore_GoldenCore;
         public static ThingDef YJZ_Thing_ArrayCore_SpiritTransformation;
         public static HediffDef YJZ_ArrayShield;
+        public static HediffDef YJZ_ArrayEdgeSlow;
+        public static HediffDef YJZ_ArrayEdgeControlImmunity;
         public static FleckDef YJZ_Fleck_SwordShadowAfterimage;
         public static FleckDef YJZ_Fleck_BlinkSlash;
         public static FleckDef YJZ_Fleck_SwordRainBlade;

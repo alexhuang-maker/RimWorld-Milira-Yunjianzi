@@ -16,6 +16,7 @@ namespace Yunjianzi
         public const string SwordEnchantment = "sword.enchantment";
         public const string SwordWard = "sword.ward";
         public const string ArrayLightning = "array.lightning";
+        public const string ArrayEdgeSlow = "array.edge.slow";
         public const string SwordShadowsI = "sword.shadows.1";
         public const string BlinkStrike = "sword.blink";
         public const string SwordRain = "sword.rain";
@@ -30,6 +31,7 @@ namespace Yunjianzi
         public const string DeathLock = "sword.deathlock";
         public const string AllyArrayShield = "array.allyshield";
         public const string ArrayBarrier = "array.barrier";
+        public const string ArrayEdgeStun = "array.edge.stun";
         public const string SwordShadowsIII = "sword.shadows.3";
         public const string ArmorIgnore = "sword.armorignore";
         public const string ShadowAffixes = "sword.shadowaffixes";
@@ -47,6 +49,7 @@ namespace Yunjianzi
             N(SwordEnchantment, "诛邪附灵", "诛邪命中短暂眩晕生物、麻痹机械；目标随后获得控制免疫，不能形成永控。", 2, 0, 0, SummonZhuxie),
             N(SwordWard, "御剑护体", "解锁诛邪的灵力格挡条，脱离伤害后缓慢恢复。", 2, 0, 1, SummonZhuxie),
             N(ArrayLightning, "引雷入阵", "仙阵每10秒落下两道雷霆，尽量锁定不同敌人。", 2, 1, 0, ArrayCore),
+            N(ArrayEdgeSlow, "迟滞阵纹", "敌人触碰固定阵或随身阵边界时减速10秒；同一敌人短时间内不会再次触发。", 2, 1, 1, ArrayCore),
 
             N(SwordShadowsI, "剑影·双仪", "解锁两把剑影，在敌阵间持续穿梭攻击。", 3, 0, 0, SummonZhuxie),
             N(BlinkStrike, "瞬斩", "消耗20灵力闪现至敌人身后强力斩击，冷却5秒；可右键开启自动施放。", 3, 0, 1, SummonZhuxie),
@@ -62,6 +65,7 @@ namespace Yunjianzi
             N(SwordRainGolden, "天剑雨·藏锋", "天剑雨冷却缩短5秒，可储存两次充能，并扩大覆盖范围。", 4, 0, 4, SwordRain),
             N(AllyArrayShield, "众生灵盾", "阵内友方与友方机械获得弱版灵力护盾。", 4, 1, 0, ArrayCore),
             N(ArrayBarrier, "金丹界壁", "仙阵改为每秒消耗5灵力持续维持，并阻挡阵外射入的抛射物。", 4, 1, 1, AllyArrayShield),
+            N(ArrayEdgeStun, "镇魂阵纹", "迟滞阵纹强化：触碰阵法边界的敌人先被眩晕3秒，随后继续承受10秒减速。", 4, 1, 2, ArrayEdgeSlow),
 
             N(SwordShadowsIII, "剑影·八荒", "剑影数量由四把提升至八把。", 5, 0, 0, SwordShadowsII),
             N(ArmorIgnore, "破妄剑意", "诛邪、瞬斩与剑影攻击无视护甲。", 5, 0, 1, SummonZhuxie),

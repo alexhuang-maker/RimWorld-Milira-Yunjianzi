@@ -107,4 +107,39 @@
     </comps>
     <stages><li><becomeVisible>true</becomeVisible></li></stages>
   </HediffDef>
+
+  <HediffDef>
+    <defName>YJZ_ArrayEdgeSlow</defName>
+    <label>迟滞阵纹</label>
+    <description>触碰仙阵边界后，周身气机被阵纹牵引，移动速度暂时降低。</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <tendable>false</tendable>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <initialSeverity>1</initialSeverity>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>600</disappearsAfterTicks></li>
+    </comps>
+    <stages>
+      <li>
+        <becomeVisible>true</becomeVisible>
+        <statFactors><MoveSpeed>0.60</MoveSpeed></statFactors>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>YJZ_ArrayEdgeControlImmunity</defName>
+    <label>阵纹适应</label>
+    <description>刚刚触发过仙阵边界，短时间内不会再次受到同一边界控制。</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <tendable>false</tendable>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <initialSeverity>1</initialSeverity>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>1800</disappearsAfterTicks></li>
+    </comps>
+    <stages><li><becomeVisible>false</becomeVisible></li></stages>
+  </HediffDef>
 </Defs>

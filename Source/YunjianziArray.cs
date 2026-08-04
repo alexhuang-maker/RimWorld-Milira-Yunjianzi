@@ -557,6 +557,7 @@ namespace Yunjianzi
                 return;
             }
             if (this.IsHashIntervalTick(30) && TryMigrateRealmDef()) return;
+            if (OwnerHasSkill(YunjianziSkills.ArrayEdgeSlow) && this.IsHashIntervalTick(5)) ApplyEdgeControl();
             if (this.IsHashIntervalTick(60)) ApplyFriendlyEffects();
             if (this.IsHashIntervalTick(90)) ApplyTaunt();
             if (OwnerHasSkill(YunjianziSkills.ArrayLightning) && nextLightningTick == int.MaxValue)
@@ -632,6 +633,28 @@ namespace Yunjianzi
         private bool Friendly(Pawn pawn)
         {
             return pawn != null && owner != null && pawn.Faction == owner.Faction;
+        }
+
+        private void ApplyEdgeControl()
+        {
+            if (Map == null || owner == null) return;
+            foreach (Pawn pawn in Map.mapPawns.AllPawnsSpawned)
+            {
+                if (pawn == null || pawn.Dead || pawn.Downed || !pawn.HostileTo(owner) || pawn.health == null) continue;
+                bool touchesEdge = CoverageCenters().Any(center => Mathf.Abs(pawn.Position.DistanceTo(center) - Radius) <= 1.1f);
+                if (!touchesEdge || pawn.health.hediffSet.HasHediff(YJZDefOf.YJZ_ArrayEdgeControlImmunity)) continue;
+
+                Hediff slow = HediffMaker.MakeHediff(YJZDefOf.YJZ_ArrayEdgeSlow, pawn);
+                pawn.health.AddHediff(slow);
+                HediffComp_Disappears slowTimer = slow.TryGetComp<HediffComp_Disappears>();
+                if (slowTimer != null)
+                    slowTimer.SetDuration(OwnerHasSkill(YunjianziSkills.ArrayEdgeStun) ? 780 : 600);
+                Hediff immunity = HediffMaker.MakeHediff(YJZDefOf.YJZ_ArrayEdgeControlImmunity, pawn);
+                pawn.health.AddHediff(immunity);
+                if (OwnerHasSkill(YunjianziSkills.ArrayEdgeStun) && pawn.stances != null && pawn.stances.stunner != null)
+                    pawn.stances.stunner.StunFor(180, owner);
+                FleckMaker.Static(pawn.Position, Map, FleckDefOf.PsycastAreaEffect, .55f);
+            }
         }
 
         private void ApplyFriendlyEffects()
