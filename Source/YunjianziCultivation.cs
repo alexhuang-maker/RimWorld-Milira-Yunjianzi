@@ -625,6 +625,7 @@ namespace Yunjianzi
         public static HediffDef YJZ_SwordHeartClarity;
         public static TraitDef YJZ_Trait_CloudseaSwordHeart;
         public static JobDef YJZ_Meditate;
+        public static ThingDef YJZ_Building_YunjianziBanner;
         public static BackstoryDef YJZ_Backstory_Childhood;
         public static BackstoryDef YJZ_Backstory_Adulthood;
         public static ThingDef YJZ_Weapon_Zhuxie;

@@ -64,7 +64,14 @@
         </graphicData>
         <altitudeLayer>Skyfaller</altitudeLayer>
       </li>
+      <li Class="CompProperties_Facility">
+        <maxSimultaneous>4</maxSimultaneous>
+        <maxDistance>8</maxDistance>
+      </li>
     </comps>
+    <placeWorkers>
+      <li>PlaceWorker_ShowFacilitiesConnections</li>
+    </placeWorkers>
     <leaveResourcesWhenKilled>false</leaveResourcesWhenKilled>
     <resourcesFractionWhenDeconstructed>1</resourcesFractionWhenDeconstructed>
   </ThingDef>

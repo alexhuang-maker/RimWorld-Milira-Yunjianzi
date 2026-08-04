@@ -19,8 +19,15 @@
     </building>
     <comps>
       <li Class="CompProperties_Forbiddable" />
-      <li Class="CompProperties_Quality" />
+      <li Class="CompProperties_AffectedByFacilities">
+        <linkableFacilities>
+          <li>YJZ_Building_YunjianziBanner</li>
+        </linkableFacilities>
+      </li>
     </comps>
+    <placeWorkers>
+      <li>PlaceWorker_ShowFacilitiesConnections</li>
+    </placeWorkers>
   </ThingDef>
 
   <ThingDef ParentName="YJZ_MeditationBuildingBase">

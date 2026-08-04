@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -23,10 +24,31 @@ namespace Yunjianzi
             get { return (CompProperties_YunjianziMeditationSeat)props; }
         }
 
+        public int LinkedBannerCount
+        {
+            get
+            {
+                CompAffectedByFacilities affected = parent.TryGetComp<CompAffectedByFacilities>();
+                if (affected == null) return 0;
+                return System.Math.Min(4, affected.LinkedFacilitiesListForReading
+                    .Count(facility => facility != null && facility.Spawned &&
+                        facility.def == YJZDefOf.YJZ_Building_YunjianziBanner));
+            }
+        }
+
+        public float TotalRecoveryFactor
+        {
+            get
+            {
+                float baseFactor = 1f + Props.extraEnergyPerSecond / 0.005f;
+                return baseFactor * (1f + LinkedBannerCount * 0.25f);
+            }
+        }
+
         public override string CompInspectStringExtra()
         {
-            float totalFactor = 1f + Props.extraEnergyPerSecond / 0.005f;
-            return string.Format("打坐灵力恢复：自然恢复的约 {0:0.#} 倍\n突破仪台强度：{1:0.##}", totalFactor, Props.breakthroughPower);
+            return string.Format("打坐灵力恢复：自然恢复的约 {0:0.#} 倍\n云间旗帜：{1} / 4（每面 +25%）\n突破仪台强度：{2:0.##}",
+                TotalRecoveryFactor, LinkedBannerCount, Props.breakthroughPower);
         }
     }
 
@@ -64,7 +86,12 @@ namespace Yunjianzi
                 pawn.Rotation = Rot4.South;
                 if (pawn.IsHashIntervalTick(60))
                 {
-                    cultivation.Energy += cultivation.EnergyMax * seatComp.Props.extraEnergyPerSecond;
+                    const float naturalRecoveryPerSecond = 0.005f;
+                    float bannerFactor = 1f + seatComp.LinkedBannerCount * 0.25f;
+                    float meditationRecovery =
+                        (naturalRecoveryPerSecond + seatComp.Props.extraEnergyPerSecond) * bannerFactor -
+                        naturalRecoveryPerSecond;
+                    cultivation.Energy += cultivation.EnergyMax * meditationRecovery;
                     if (cultivation.Energy >= cultivation.EnergyMax - 0.01f)
                     {
                         EndJobWith(JobCondition.Succeeded);
