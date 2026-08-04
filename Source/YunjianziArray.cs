@@ -476,7 +476,10 @@ namespace Yunjianzi
             CompYunjianziCultivation comp = OwnerComp;
             return comp != null && comp.HasSkill(id);
         }
-        public float Radius { get { return 4f + realmAtCast; } }
+        // The original 5-9 cell progression was too cramped in actual combat.
+        // Keep the same realm scaling while enlarging every gameplay and visual
+        // use of the field by one third through this single authoritative value.
+        public float Radius { get { return (4f + realmAtCast) * (4f / 3f); } }
         private bool HasFollowingField
         {
             get
