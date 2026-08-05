@@ -8,9 +8,8 @@ Tools/Microsoft.Net.Compilers.Toolset.*.nupkg
 Tools/Microsoft.Net.Compilers.Toolset.*.zip
 Tools/*.test.dll
 
-# Rejected/unused Shenji visual drafts retained locally for comparison only
+# Rejected/unused Shenji visual draft retained locally for comparison only
 ArtSource/Shenji/ShenjiArmor_ThreeStage_Concept.png
-Content/Textures/Yunjianzi/Apparel/Shenji/ShenjiVisor*.png
 
 # IDE-local files
 *.user

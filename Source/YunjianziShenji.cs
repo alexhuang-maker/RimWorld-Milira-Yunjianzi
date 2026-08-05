@@ -21,7 +21,6 @@ namespace Yunjianzi
         private float shield;
         private int shieldBrokenUntil;
         private int rocketJumpReadyTick;
-        private int rocketDroneReadyTick;
         private int recallRepairReadyTick;
         private int lastArmorTier;
         private int boundTick;
@@ -68,6 +67,10 @@ namespace Yunjianzi
             base.PostSpawnSetup(respawningAfterLoad);
             // 新生成体会在 BindTo 中按当前境界定型；读档只补齐缺失装备，绝不自动升级旧型号。
             SynchronizeTier(!respawningAfterLoad);
+            // 旧版把“监督关系存在”误当成“已经进入控制组”。读档时重新核对一次，
+            // 成功后 nativeControlBound 会再次锁定，不会成为持续轮询负担。
+            if (respawningAfterLoad) nativeControlBound = false;
+            EnsureNativeControlRelation();
         }
 
         public override void CompTick()
@@ -84,7 +87,6 @@ namespace Yunjianzi
                     shield = Mathf.Min(ShieldMax, shield + ShieldMax / 120f);
                 TryAutomaticRocketJump();
             }
-            if (pawn.IsHashIntervalTick(90)) TryRocketDroneAttack();
         }
 
         private void EnsureNativeControlRelation()
@@ -97,12 +99,15 @@ namespace Yunjianzi
             if (owner.mechanitor == null) owner.mechanitor = new Pawn_MechanitorTracker(owner);
             if (!pawn.relations.DirectRelationExists(PawnRelationDefOf.Overseer, owner))
                 pawn.relations.AddDirectRelation(PawnRelationDefOf.Overseer, owner);
-            nativeControlBound = pawn.relations.DirectRelationExists(PawnRelationDefOf.Overseer, owner);
-            if (nativeControlBound)
+            if (pawn.relations.DirectRelationExists(PawnRelationDefOf.Overseer, owner))
             {
                 MechanitorControlGroup group = MechanitorUtility.GetMechControlGroup(pawn);
-                if (group != null && group.WorkMode != MechWorkModeDefOf.Work)
+                // AssignPawnControlGroup 本身负责创建缺失的控制组。旧逻辑只在 group
+                // 非空时调用，导致刚生成的神机永远只有监督关系、没有控制组。
+                if (group == null || group.WorkMode != MechWorkModeDefOf.Work)
                     owner.mechanitor.AssignPawnControlGroup(pawn, MechWorkModeDefOf.Work);
+                group = MechanitorUtility.GetMechControlGroup(pawn);
+                nativeControlBound = group != null;
             }
         }
 
@@ -163,6 +168,11 @@ namespace Yunjianzi
                         pawn.apparel.Wear(armor, false);
                     }
                 }
+                if (!pawn.apparel.WornApparel.Any(a => a.def == YJZDefOf.YJZ_Apparel_ShenjiVisor))
+                {
+                    Apparel visor = ThingMaker.MakeThing(YJZDefOf.YJZ_Apparel_ShenjiVisor) as Apparel;
+                    if (visor != null) pawn.apparel.Wear(visor, false);
+                }
                 if (force || lastArmorTier <= 0) lastArmorTier = tier;
             }
             if (pawn.equipment != null && (pawn.equipment.Primary == null || (force && pawn.equipment.Primary.def != DesiredWeapon)))
@@ -181,7 +191,7 @@ namespace Yunjianzi
             {
                 bool accessoriesUnlocked = cultivation != null && cultivation.HasSkill(YunjianziSkills.ShenjiAccessories);
                 List<Apparel> lockedAccessories = pawn.apparel.WornApparel
-                    .Where(a => !YunjianziShenjiApparelPolicy.IsIntrinsicArmor(a.def) &&
+                    .Where(a => !YunjianziShenjiApparelPolicy.IsIntrinsicApparel(a.def) &&
                         (!accessoriesUnlocked || !YunjianziShenjiApparelPolicy.IsAllowedAccessory(a.def)))
                     .ToList();
                 for (int i = 0; i < lockedAccessories.Count; i++)
@@ -257,18 +267,6 @@ namespace Yunjianzi
             rocketJumpReadyTick = Find.TickManager.TicksGame + 60000;
         }
 
-        private void TryRocketDroneAttack()
-        {
-            CompYunjianziCultivation c = Cultivation;
-            Pawn pawn = Pawn;
-            if (c == null || !c.HasSkill(YunjianziSkills.ShenjiRocketDrone) || pawn == null || !pawn.Spawned || pawn.Downed || Find.TickManager.TicksGame < rocketDroneReadyTick) return;
-            Thing target = GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, ThingRequest.ForGroup(ThingRequestGroup.AttackTarget), PathEndMode.Touch,
-                TraverseParms.For(pawn), 35.9f, t => t != pawn && t.HostileTo(pawn) && (!(t is Pawn) || !((Pawn)t).Dead));
-            if (target == null) return;
-            GenExplosion.DoExplosion(target.Position, pawn.Map, 1.9f, DamageDefOf.Bomb, pawn, 18, .25f, SoundDefOf.BulletImpact_Ground);
-            rocketDroneReadyTick = Find.TickManager.TicksGame + 600;
-        }
-
         public override void PostExposeData()
         {
             base.PostExposeData();
@@ -276,7 +274,6 @@ namespace Yunjianzi
             Scribe_Values.Look(ref shield, "yjz_shenjiShield", 0f);
             Scribe_Values.Look(ref shieldBrokenUntil, "yjz_shenjiShieldBrokenUntil", 0);
             Scribe_Values.Look(ref rocketJumpReadyTick, "yjz_shenjiRocketJumpReady", 0);
-            Scribe_Values.Look(ref rocketDroneReadyTick, "yjz_shenjiRocketDroneReady", 0);
             Scribe_Values.Look(ref recallRepairReadyTick, "yjz_shenjiRecallRepairReady", 0);
             Scribe_Values.Look(ref lastArmorTier, "yjz_shenjiArmorTier", 0);
             Scribe_Values.Look(ref boundTick, "yjz_shenjiBoundTick", 0);
@@ -328,6 +325,11 @@ namespace Yunjianzi
 
     internal static class YunjianziShenjiApparelPolicy
     {
+        public static bool IsIntrinsicApparel(ThingDef def)
+        {
+            return IsIntrinsicArmor(def) || def == YJZDefOf.YJZ_Apparel_ShenjiVisor;
+        }
+
         public static bool IsIntrinsicArmor(ThingDef def)
         {
             return def == YJZDefOf.YJZ_Apparel_ShenjiArmor_Base ||
@@ -445,9 +447,32 @@ namespace Yunjianzi
         private static void Postfix(Pawn pawn, Pawn mech, ref AcceptanceReport __result)
         {
             CompYunjianziCultivation cultivation = pawn == null ? null : pawn.TryGetComp<CompYunjianziCultivation>();
-            if (cultivation != null && cultivation.IsYunjianzi &&
-                (mech == null || mech.TryGetComp<CompYunjianziShenji>() == null))
-                __result = false;
+            if (cultivation == null || !cultivation.IsYunjianzi) return;
+            CompYunjianziShenji shenji = mech == null ? null : mech.TryGetComp<CompYunjianziShenji>();
+            // 神机诀本身就是控制授权，不要求云间子额外安装机械连接芯片或带宽器官；
+            // 但该授权严格限制在与她本人绑定的神机上。
+            __result = shenji != null && shenji.IsBoundTo(pawn);
+        }
+    }
+
+    /// <summary>
+    /// 米莉拉“配置”页的若干列默认假定装备由它自己的换装流程建立。
+    /// 神机使用固定的内置装甲与武器，强行塞进该页会让原版列访问不存在的
+    /// 配置状态并抛出空引用。只从配置页排除神机；米莉安工作页仍会正常列出。
+    /// </summary>
+    [HarmonyPatch]
+    internal static class Patch_MilianConfig_ExcludeIntrinsicShenji
+    {
+        private static MethodBase TargetMethod()
+        {
+            Type type = AccessTools.TypeByName("Milira.MainTabWindow_MilianConfig");
+            return type == null ? null : AccessTools.PropertyGetter(type, "Pawns");
+        }
+
+        private static void Postfix(ref IEnumerable<Pawn> __result)
+        {
+            if (__result != null)
+                __result = __result.Where(p => p == null || p.TryGetComp<CompYunjianziShenji>() == null);
         }
     }
 

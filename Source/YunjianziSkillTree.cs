@@ -44,7 +44,6 @@ namespace Yunjianzi
         public const string ShenjiShield = "shenji.shield";
         public const string ShenjiDualControl = "shenji.dualcontrol";
         public const string ShenjiGauss = "shenji.gauss";
-        public const string ShenjiRocketDrone = "shenji.rocketdrone";
         public const string ShenjiAccessories = "shenji.accessories";
         public const string ShenjiRecallRepair = "shenji.recallrepair";
         public const string ShenjiDarkShield = "shenji.darkshield";
@@ -94,7 +93,6 @@ namespace Yunjianzi
             N(ShenjiShield, "百灵护盾", "神机获得100点可恢复护盾。", 2, 2, 3, ShenjiSummon),
             N(ShenjiDualControl, "双机同调", "云间子可同时维持两台神机。", 3, 2, 7, ShenjiSummon),
             N(ShenjiGauss, "神机炮·辉光", "神机炮改用淡蓝色脉冲激光，火力达到米莉拉帝国高阶步枪级别。", 3, 2, 0, ShenjiGatling),
-            N(ShenjiRocketDrone, "火箭浮游炮", "神机展开一具自动发射微型火箭的浮游炮。", 3, 2, 4, ShenjiSummon),
             N(ShenjiAccessories, "万机接口", "开放米莉拉通用配件接口；不接入民主之翼专属配件。", 3, 2, 5, ShenjiSummon),
             N(ShenjiRecallRepair, "败阵归元", "神机被击溃时传送回云间子身边并完全修复，冷却两天。", 4, 2, 6, ShenjiSummon),
             N(ShenjiDarkShield, "暗质护盾", "护盾升级为米莉拉帝国暗物质护盾腰带级防护。", 4, 2, 3, ShenjiShield),
@@ -318,7 +316,7 @@ namespace Yunjianzi
         {
             new[] { "附灵", "护体·同契", "剑影", "瞬斩", "天剑雨", "护主", "破甲" },
             new[] { "回元", "雷域", "阵纹", "阵遁", "随身阵", "灵盾", "界壁" },
-            new[] { "主火力", "折射", "机动", "护盾", "浮游炮", "接口", "败阵归元", "控制" }
+            new[] { "主火力", "折射", "机动", "护盾", "预留", "接口", "败阵归元", "控制" }
         };
 
         public Window_YunjianziCultivationTree(CompYunjianziCultivation cultivation)

@@ -20,7 +20,6 @@
     </statBases>
     <apparel>
       <developmentalStageFilter>Child, Adult</developmentalStageFilter>
-      <renderSkipFlags><li>Head</li><li>Hair</li></renderSkipFlags>
       <bodyPartGroups><li>Neck</li><li>Torso</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups>
       <wornGraphicPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Base</wornGraphicPath>
       <tags><li>YJZ_ShenjiIntrinsic</li></tags>
@@ -46,7 +45,6 @@
     </statBases>
     <apparel>
       <developmentalStageFilter>Child, Adult</developmentalStageFilter>
-      <renderSkipFlags><li>Head</li><li>Hair</li></renderSkipFlags>
       <bodyPartGroups><li>Neck</li><li>Torso</li><li>Shoulders</li><li>Arms</li><li>Hands</li><li>Legs</li><li>Feet</li></bodyPartGroups>
       <wornGraphicPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Intermediate</wornGraphicPath>
       <tags><li>YJZ_ShenjiIntrinsic</li></tags>
@@ -72,11 +70,36 @@
     </statBases>
     <apparel>
       <developmentalStageFilter>Child, Adult</developmentalStageFilter>
-      <renderSkipFlags><li>Head</li><li>Hair</li></renderSkipFlags>
       <bodyPartGroups><li>Neck</li><li>Torso</li><li>Shoulders</li><li>Arms</li><li>Hands</li><li>Legs</li><li>Feet</li></bodyPartGroups>
       <wornGraphicPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Final</wornGraphicPath>
       <tags><li>YJZ_ShenjiIntrinsic</li></tags>
     </apparel>
     <equippedStatOffsets><RangedCooldownFactor>-0.20</RangedCooldownFactor><MoveSpeed>0.75</MoveSpeed><WorkSpeedGlobal>0.30</WorkSpeedGlobal></equippedStatOffsets>
+  </ThingDef>
+
+  <!-- 战术目镜必须使用米莉安原生头部服装层。若合并进身体装甲纹理，
+       Milian_Milian 渲染树会在它上面再次绘制头部和头发。 -->
+  <ThingDef ParentName="Milian_OverheadBase">
+    <defName>YJZ_Apparel_ShenjiVisor</defName>
+    <label>神机战术目镜</label>
+    <description>神机固定装束的一部分，仅用于保持三向头部图层正确。</description>
+    <tradeability>None</tradeability>
+    <graphicData>
+      <texPath>Yunjianzi/Apparel/Shenji/ShenjiVisor</texPath>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>9999</MaxHitPoints>
+      <Mass>0</Mass>
+      <ArmorRating_Sharp>0</ArmorRating_Sharp>
+      <ArmorRating_Blunt>0</ArmorRating_Blunt>
+      <ArmorRating_Heat>0</ArmorRating_Heat>
+      <StuffEffectMultiplierArmor>0</StuffEffectMultiplierArmor>
+    </statBases>
+    <apparel>
+      <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+      <bodyPartGroups><li>FullHead</li></bodyPartGroups>
+      <wornGraphicPath>Yunjianzi/Apparel/Shenji/ShenjiVisor</wornGraphicPath>
+      <tags><li>YJZ_ShenjiIntrinsic</li></tags>
+    </apparel>
   </ThingDef>
 </Defs>

@@ -169,40 +169,34 @@ def largest_alpha_component(image):
 
 
 def build_sprite(stage, direction):
-    # 采用用户选定的旧版“短发＋战术目镜”正交稿，而非云间子道袍式新概念。
-    source = Image.open(ORTHO).convert("RGBA")
-    x_ranges = {"south": (0, 342), "east": (342, 685), "north": (685, 1028)}
-    y_ranges = {1: (0, 370), 2: (370, 755), 3: (755, 1148)}
-    x0, x1 = x_ranges[direction]
-    y0, y1 = y_ranges[stage]
-    cell = source.crop((x0, y0, x1, y1))
-    character = largest_alpha_component(cell)
-    bbox = character.getbbox()
-    if bbox is None:
-        raise RuntimeError(f"No Shenji character found for stage={stage}, direction={direction}")
-    character = character.crop(bbox)
-    target_height = {1: 330, 2: 350, 3: 372}[stage]
-    target_width = max(1, round(character.width * target_height / character.height))
-    character = character.resize((target_width, target_height), Image.Resampling.LANCZOS)
-    canvas = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
-    canvas.alpha_composite(character, ((512-target_width)//2, 478-target_height))
-    return canvas
+    # 穿戴图只能包含装甲与目镜。旧实现把概念稿中的整个人物（头、脸、
+    # 头发和身体）再次画进服装层，米莉拉渲染树又绘制原生身体与双层头发，
+    # 因而出现两个角色叠在一起。现在保留米莉安原生固定短发，只绘制真正
+    # 的透明装甲层，并把用户选定的战术目镜合并到最前方。
+    if direction == "south":
+        layer = front_overlay(stage)
+    elif direction == "east":
+        layer = side_overlay(stage)
+    else:
+        layer = back_overlay(stage)
+    return layer
 
 
 def build_visor(direction):
     layer = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
     d = ImageDraw.Draw(layer)
     if direction == "south":
-        poly(d, [(198, 176), (314, 176), (304, 220), (256, 232), (208, 220)], JADE, 7)
-        d.polygon([(211, 205), (301, 205), (292, 217), (256, 225), (220, 217)], fill=TEAL, outline=INK, width=4)
-        line(d, [(225, 211), (287, 211)], CYAN, 5)
+        # 原生 N1 眼线中心约在 y=278；面罩必须遮眼，不能悬在刘海顶部。
+        poly(d, [(194, 246), (318, 246), (307, 288), (256, 301), (205, 288)], JADE, 7)
+        d.polygon([(207, 273), (305, 273), (296, 286), (256, 294), (216, 286)], fill=TEAL, outline=INK, width=4)
+        line(d, [(222, 280), (290, 280)], CYAN, 5)
     elif direction == "east":
-        poly(d, [(216, 178), (279, 183), (277, 216), (232, 229), (213, 213)], JADE, 7)
-        line(d, [(225, 210), (269, 204)], CYAN, 5)
+        poly(d, [(209, 247), (284, 252), (281, 286), (230, 300), (207, 283)], JADE, 7)
+        line(d, [(222, 282), (273, 276)], CYAN, 5)
     else:
         # 背面只露出目镜两侧的固定节点。
-        gem(layer, (203, 205), 6, 1)
-        gem(layer, (309, 205), 6, 1)
+        gem(layer, (199, 274), 6, 1)
+        gem(layer, (313, 274), 6, 1)
     return layer
 
 
@@ -219,10 +213,19 @@ def checker(size):
 
 def composite_preview(stage, direction, armor):
     body = Image.open(REF / "Milian" / "Pawn" / "Body" / f"Naked_Female_{direction}.png").convert("RGBA")
+    head = Image.open(REF / "Milian" / "Pawn" / "Head" / f"MilianHeadN1_{direction}.png").convert("RGBA")
+    front_hair = Image.open(REF / "Milian" / "Pawn" / "Hair" / "Milian_HairN1" / f"MiliraHair4_{direction}.png").convert("RGBA")
+    behind_hair = Image.open(REF / "Milira" / "Pawn" / "Hair" / "HairBackGround" / f"MiliraHairBG4_{direction}.png").convert("RGBA")
+    visor = build_visor(direction)
     canvas = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
-    # 实际游戏中该固有装甲跳过 Head/Hair，自身包含固定短发与战术目镜；
-    # 米莉安裸体仅作为被完全覆盖的底层保留碰撞和受伤结构。
-    for layer in (body, armor):
+    # 原版有少数侧/背发素材使用 128px，但游戏按节点尺寸自动缩放；本地验收
+    # 图必须先统一到 512px，才能准确复现同一套归一化坐标。
+    layers = (body, armor, head, behind_hair, front_hair, visor)
+    layers = tuple(layer if layer.size == canvas.size else layer.resize(canvas.size, Image.Resampling.LANCZOS)
+                   for layer in layers)
+    # 对应 Milian_Milian 渲染树：身体/身体服装 → 固定头 → 后发/前发 → 头部服装。
+    # 目镜必须是独立 Overhead 层，不能塞进身体装甲后被头发覆盖。
+    for layer in layers:
         canvas = Image.alpha_composite(canvas, layer)
     return canvas
 
@@ -241,6 +244,10 @@ def main():
         # 物品图标使用南向图，Graphic_Multi 会读取带方向的穿戴图。
         build_sprite(stage, "south").save(OUT / f"ShenjiArmor_{name}.png")
 
+    for direction in directions:
+        build_visor(direction).save(OUT / f"ShenjiVisor_Female_{direction}.png")
+    build_visor("south").save(OUT / "ShenjiVisor.png")
+
     tile = 300
     sheet = checker((tile * 3, tile * 3 + 70))
     sd = ImageDraw.Draw(sheet)
@@ -251,7 +258,7 @@ def main():
             crop = pawn.crop((120, 135, 392, 510)).resize((218, 300), Image.Resampling.LANCZOS)
             sheet.alpha_composite(crop, (col * tile + 41, row * tile + 5))
             sd.text((col * tile + 10, row * tile + 272), f"{labels[stage]}  {direction}", fill=(217, 246, 244, 255), stroke_width=2, stroke_fill=(7, 16, 22, 255))
-    sd.text((18, tile * 3 + 18), "实际游戏层级：米莉安身体（被覆盖）→ 固有神机全身甲；Head/Hair 跳过，短发与目镜不会重复。", fill=(135, 224, 225, 255))
+    sd.text((18, tile * 3 + 18), "实际游戏层级：米莉安原生身体与固定短发 → 透明神机甲与战术目镜；不再重复绘制头、脸和头发。", fill=(135, 224, 225, 255))
     sheet.save(QA)
     print(QA)
 

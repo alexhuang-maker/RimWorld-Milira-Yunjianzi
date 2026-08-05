@@ -941,6 +941,7 @@ namespace Yunjianzi
         public static ThingDef YJZ_Apparel_ShenjiArmor_Base;
         public static ThingDef YJZ_Apparel_ShenjiArmor_Intermediate;
         public static ThingDef YJZ_Apparel_ShenjiArmor_Final;
+        public static ThingDef YJZ_Apparel_ShenjiVisor;
         public static ThingDef YJZ_Projectile_ShenjiLaser;
         public static ThingDef YJZ_Projectile_ShenjiChainLaser;
         public static HediffDef YJZ_ShenjiArmor_Base;
