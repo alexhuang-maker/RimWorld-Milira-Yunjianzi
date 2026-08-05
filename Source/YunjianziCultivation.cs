@@ -25,6 +25,8 @@ namespace Yunjianzi
         public static readonly Texture2D SummonShenji =
             ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/SummonShenji", false) ??
             ContentFinder<Texture2D>.Get("Milian/Mechanoid_uiIcon/PawnI", false) ?? SummonZhuxie;
+        public static readonly Texture2D TalismanSlot =
+            ContentFinder<Texture2D>.Get("Yunjianzi/UI/TalismanSlot", false) ?? CultivationTree;
         public static readonly Texture2D DevX = MakeDevX();
 
         private static Texture2D MakeDevX()
@@ -61,7 +63,7 @@ namespace Yunjianzi
     }
 
     [StaticConstructorOnStartup]
-    public sealed partial class CompYunjianziCultivation : ThingComp
+    public sealed partial class CompYunjianziCultivation : ThingComp, IThingHolder
     {
         private static Material swordWardMaterial;
         private static MaterialPropertyBlock swordWardPropertyBlock;
@@ -268,6 +270,8 @@ namespace Yunjianzi
                     foreach (Gizmo arrayGizmo in GetArrayGizmos()) yield return arrayGizmo;
                 if (HasSkill(YunjianziSkills.ShenjiSummon))
                     foreach (Gizmo shenjiGizmo in GetShenjiGizmos()) yield return shenjiGizmo;
+                if (HasSkill(YunjianziSkills.YangfuPrimer))
+                    foreach (Gizmo talismanGizmo in GetTalismanGizmos()) yield return talismanGizmo;
 
                 if (Prefs.DevMode && DebugSettings.godMode)
                 {
@@ -742,6 +746,7 @@ namespace Yunjianzi
             ExposeArrayData();
             ExposeBreakthroughData();
             ExposeSkillTreeData();
+            ExposeTalismanData();
         }
     }
 
