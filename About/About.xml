@@ -52,6 +52,7 @@
     <li>Ancot.AncotLibrary</li>
     <li>Ancot.MiliraRace</li>
     <li>Ariandel.AriandelLibrary</li>
+    <li>co.uk.epicguru.meleeanimation</li>
   </loadAfter>
   <loadBefore>
     <li>void.charactereditor</li>
