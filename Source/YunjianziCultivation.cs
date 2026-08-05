@@ -906,6 +906,7 @@ namespace Yunjianzi
         public static HediffDef YJZ_SwordControlImmunity;
         public static HediffDef YJZ_SwordHeartClarity;
         public static TraitDef YJZ_Trait_CloudseaSwordHeart;
+        public static TimeAssignmentDef YJZ_Cultivate;
         public static JobDef YJZ_Meditate;
         public static JobDef YJZ_ReadBoundScroll;
         public static JobDef YJZ_Breakthrough;

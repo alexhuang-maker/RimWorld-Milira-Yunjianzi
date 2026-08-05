@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -113,6 +114,15 @@ namespace Yunjianzi
                 pawn.Rotation = Rot4.South;
                 if (pawn.IsHashIntervalTick(60))
                 {
+                    // Ordered right-click meditation remains in force until the
+                    // player cancels it.  Schedule-created meditation yields as
+                    // soon as the timetable leaves Cultivate/Meditate.
+                    if (!job.playerForced && !YunjianziCultivationSchedule.IsCultivationTime(pawn))
+                    {
+                        EndJobWith(JobCondition.Succeeded);
+                        return;
+                    }
+
                     cultivation.MeditateForTicks(60, seatComp);
                     if (!cultivation.HasOpenedBoundScroll ||
                         (cultivation.Energy >= cultivation.EnergyMax - 0.01f &&
@@ -126,6 +136,112 @@ namespace Yunjianzi
                     FleckMaker.Static(pawn.Position, pawn.Map, FleckDefOf.PsycastAreaEffect, 0.45f);
             };
             yield return meditate;
+        }
+    }
+
+    /// <summary>
+    /// Timetable bridge for Yunjianzi.  The custom assignment deliberately
+    /// borrows vanilla Meditate's priority calculation, while the actual job
+    /// is replaced with cultivation on the best reachable cultivation seat.
+    /// </summary>
+    internal static class YunjianziCultivationSchedule
+    {
+        internal static TimeAssignmentDef RawAssignment(Pawn pawn)
+        {
+            if (pawn == null || pawn.timetable == null) return null;
+            return pawn.timetable.GetAssignment(GenLocalDate.HourOfDay(pawn));
+        }
+
+        internal static bool IsCultivationTime(Pawn pawn)
+        {
+            TimeAssignmentDef assignment = RawAssignment(pawn);
+            return assignment == YJZDefOf.YJZ_Cultivate || assignment == TimeAssignmentDefOf.Meditate;
+        }
+
+        internal static bool CanAutoCultivate(Pawn pawn, out CompYunjianziCultivation cultivation)
+        {
+            cultivation = pawn == null ? null : pawn.TryGetComp<CompYunjianziCultivation>();
+            if (cultivation == null || !cultivation.IsYunjianzi || !cultivation.HasOpenedBoundScroll)
+                return false;
+            if (!pawn.Spawned || pawn.Dead || pawn.Downed || pawn.Drafted || pawn.InMentalState)
+                return false;
+            return cultivation.Energy < cultivation.EnergyMax - 0.01f ||
+                   cultivation.EnergyMax < cultivation.RealmEnergyCap - 0.01f;
+        }
+
+        internal static Building BestReachableSeat(Pawn pawn)
+        {
+            if (pawn == null || pawn.Map == null) return null;
+            IEnumerable<Thing> candidates =
+                pawn.Map.listerThings.ThingsOfDef(YJZDefOf.YJZ_Building_WhiteJadePlatform)
+                    .Concat(pawn.Map.listerThings.ThingsOfDef(YJZDefOf.YJZ_Building_MeditationCushion));
+
+            return candidates
+                .OfType<Building>()
+                .Where(seat => seat.Spawned && seat.Faction == pawn.Faction &&
+                    !seat.IsForbidden(pawn) &&
+                    seat.TryGetComp<CompYunjianziMeditationSeat>() != null &&
+                    pawn.CanReserveAndReach(seat, PathEndMode.OnCell, Danger.Deadly))
+                .OrderByDescending(seat => seat.TryGetComp<CompYunjianziMeditationSeat>().TotalRecoveryFactor)
+                .ThenBy(seat => pawn.Position.DistanceToSquared(seat.Position))
+                .FirstOrDefault();
+        }
+    }
+
+    /// <summary>
+    /// Make the custom timetable assignment participate in the exact same
+    /// vanilla priority path as Royalty's Meditate assignment, but only for
+    /// Yunjianzi.  The schedule grid itself still stores and displays Cultivate.
+    /// </summary>
+    [HarmonyPatch(typeof(Pawn_TimetableTracker), "get_CurrentAssignment")]
+    internal static class Patch_CurrentAssignment_YunjianziCultivate
+    {
+        private static void Postfix(Pawn ___pawn, ref TimeAssignmentDef __result)
+        {
+            if (__result != YJZDefOf.YJZ_Cultivate || ___pawn == null) return;
+            CompYunjianziCultivation cultivation = ___pawn.TryGetComp<CompYunjianziCultivation>();
+            if (cultivation != null && cultivation.IsYunjianzi)
+                __result = TimeAssignmentDefOf.Meditate;
+        }
+    }
+
+    /// <summary>
+    /// During either Cultivate or vanilla Meditate time, send Yunjianzi to the
+    /// most efficient free cultivation seat.  Vanilla meditation remains the
+    /// fallback for an explicit Meditate block if no cultivation seat is usable.
+    /// </summary>
+    [HarmonyPatch(typeof(JobGiver_Meditate), "TryGiveJob")]
+    internal static class Patch_JobGiverMeditate_YunjianziCultivate
+    {
+        private static bool Prefix(Pawn pawn, ref Job __result)
+        {
+            TimeAssignmentDef rawAssignment = YunjianziCultivationSchedule.RawAssignment(pawn);
+            bool customAssignment = rawAssignment == YJZDefOf.YJZ_Cultivate;
+            if (!customAssignment && rawAssignment != TimeAssignmentDefOf.Meditate) return true;
+
+            CompYunjianziCultivation cultivation;
+            if (YunjianziCultivationSchedule.CanAutoCultivate(pawn, out cultivation))
+            {
+                Building seat = YunjianziCultivationSchedule.BestReachableSeat(pawn);
+                if (seat != null)
+                {
+                    Job job = JobMaker.MakeJob(YJZDefOf.YJZ_Meditate, seat.Position, seat);
+                    job.expiryInterval = 300;
+                    job.checkOverrideOnExpire = true;
+                    __result = job;
+                    return false;
+                }
+            }
+
+            // A dedicated Cultivate block never degrades into unrelated vanilla
+            // meditation.  An explicit Meditate block may still use vanilla's
+            // meditation spot when no cultivation seat is available.
+            if (customAssignment)
+            {
+                __result = null;
+                return false;
+            }
+            return true;
         }
     }
 }
