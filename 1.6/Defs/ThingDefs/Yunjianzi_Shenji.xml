@@ -16,6 +16,17 @@
       <baseHealthScale>1.35</baseHealthScale>
     </race>
     <comps Inherit="False">
+      <!-- 神机使用米莉拉自己的双层发型渲染器。列表故意只留一项：
+           N1-3 是齐颈短发（北向的小辫属于同一套背发），因此生成与换向都不会随机。 -->
+      <li Class="Milira.CompProperties_MilianHairSwitch">
+        <gizmoIconPath>Milira/UI/HairChange</gizmoIconPath>
+        <frontHairPaths>
+          <li>Milian/Pawn/Hair/Milian_HairN1/MiliraHair3</li>
+        </frontHairPaths>
+        <behindHairPaths>
+          <li>Milira/Pawn/Hair/HairBackGround/MiliraHairBG3</li>
+        </behindHairPaths>
+      </li>
       <li Class="CompProperties_CanBeDormant" />
       <li Class="CompProperties_WakeUpDormant"><wakeUpOnDamage>true</wakeUpOnDamage><wakeUpCheckRadius>30</wakeUpCheckRadius><wakeUpSound>MechanoidsWakeUp</wakeUpSound></li>
       <li MayRequire="Ludeon.Rimworld.Biotech" Class="CompProperties_MechRepairable" />

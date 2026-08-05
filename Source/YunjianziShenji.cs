@@ -127,9 +127,12 @@ namespace Yunjianzi
                 }
             }
             CompYunjianziCultivation cultivation = Cultivation;
-            if (pawn.apparel != null && (cultivation == null || !cultivation.HasSkill(YunjianziSkills.ShenjiAccessories)) && pawn.apparel.WornApparelCount > 0)
+            if (pawn.apparel != null && pawn.apparel.WornApparelCount > 0)
             {
-                List<Apparel> lockedAccessories = pawn.apparel.WornApparel.ToList();
+                bool accessoriesUnlocked = cultivation != null && cultivation.HasSkill(YunjianziSkills.ShenjiAccessories);
+                List<Apparel> lockedAccessories = pawn.apparel.WornApparel
+                    .Where(a => !accessoriesUnlocked || !YunjianziShenjiApparelPolicy.IsAllowedAccessory(a.def))
+                    .ToList();
                 for (int i = 0; i < lockedAccessories.Count; i++)
                 {
                     Apparel dropped;
@@ -228,6 +231,23 @@ namespace Yunjianzi
         }
     }
 
+    internal static class YunjianziShenjiApparelPolicy
+    {
+        // 固有 Hediff 已提供装甲。配件节点只开放工具层，禁止实体装甲再次叠加。
+        public static bool IsAllowedAccessory(ThingDef def)
+        {
+            if (def == null || def.apparel == null || def.apparel.layers == null) return false;
+            for (int i = 0; i < def.apparel.layers.Count; i++)
+            {
+                ApparelLayerDef layer = def.apparel.layers[i];
+                if (layer == ApparelLayerDefOf.OnSkin || layer == ApparelLayerDefOf.Middle ||
+                    layer == ApparelLayerDefOf.Shell || layer == ApparelLayerDefOf.Overhead)
+                    return false;
+            }
+            return true;
+        }
+    }
+
     public sealed partial class CompYunjianziCultivation
     {
         private int ShenjiLimit
@@ -307,7 +327,7 @@ namespace Yunjianzi
                 string package = def.modContentPack == null ? string.Empty : def.modContentPack.PackageIdPlayerFacing.ToLowerInvariant();
                 bool officialMilira = package.Contains("ancot.milirarace") || package.Contains("ariandel.miliraimperium");
                 if (!officialMilira || package.Contains("wingsofdemocracy")) continue;
-                if (def.apparel != null && def.apparel.tags != null && def.apparel.tags.Any(t => t != null && t.StartsWith("Milian_")) && !def.apparel.tags.Contains("YJZ_Shenji"))
+                if (YunjianziShenjiApparelPolicy.IsAllowedAccessory(def) && def.apparel.tags != null && def.apparel.tags.Any(t => t != null && t.StartsWith("Milian_")) && !def.apparel.tags.Contains("YJZ_Shenji"))
                     def.apparel.tags.Add("YJZ_Shenji");
                 if (def.comps == null) continue;
                 for (int i = 0; i < def.comps.Count; i++)
