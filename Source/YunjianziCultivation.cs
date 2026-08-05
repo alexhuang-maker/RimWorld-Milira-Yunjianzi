@@ -62,6 +62,8 @@ namespace Yunjianzi
 
     public sealed partial class CompYunjianziCultivation : ThingComp
     {
+        private static Material swordWardMaterial;
+        private static MaterialPropertyBlock swordWardPropertyBlock;
         private static readonly float[] EnergyCaps = { 0f, 100f, 200f, 500f, 1000f, 2000f };
         private static readonly float[] ShieldCaps = { 0f, 0f, 70f, 140f, 280f, 560f };
         private float energy = -1f;
@@ -95,6 +97,37 @@ namespace Yunjianzi
         public float ShieldMax { get { return ShieldCaps[Realm]; } }
         public float Energy { get { return Mathf.Clamp(energy, 0f, EnergyMax); } set { energy = Mathf.Clamp(value, 0f, EnergyMax); } }
         public float Shield { get { return Mathf.Clamp(shield, 0f, ShieldMax); } set { shield = Mathf.Clamp(value, 0f, ShieldMax); } }
+
+        private static Material SwordWardMaterial
+        {
+            get
+            {
+                if (swordWardMaterial == null)
+                    swordWardMaterial = MaterialPool.MatFrom("Yunjianzi/Effects/SwordWardShield", ShaderDatabase.TransparentPostLight);
+                return swordWardMaterial;
+            }
+        }
+
+        internal void DrawSwordWardEffect(Vector3 drawLoc)
+        {
+            Pawn pawn = Pawn;
+            if (!IsYunjianzi || pawn == null || pawn.Dead || !pawn.Spawned || !pawn.Drafted ||
+                !HasSkill(YunjianziSkills.SwordWard) || Shield <= 0.001f || ShieldMax <= 0f)
+                return;
+
+            if (swordWardPropertyBlock == null) swordWardPropertyBlock = new MaterialPropertyBlock();
+            float ratio = Mathf.Clamp01(Shield / ShieldMax);
+            float pulse = Mathf.Sin((Find.TickManager.TicksGame + pawn.thingIDNumber * 17) * .045f) * .035f;
+            float hitFlash = Find.TickManager.TicksGame - lastDamageTick < 10 ? .18f : 0f;
+            float size = 2.02f + pulse + hitFlash;
+            float alpha = Mathf.Lerp(.32f, .62f, Mathf.Sqrt(ratio)) + hitFlash;
+            swordWardPropertyBlock.SetColor(ShaderPropertyIDs.Color, new Color(.82f, 1f, 1f, Mathf.Clamp01(alpha)));
+
+            drawLoc.y = Altitudes.AltitudeFor(AltitudeLayer.MoteOverhead);
+            float angle = (Find.TickManager.TicksGame * .12f + pawn.thingIDNumber * 29f) % 360f;
+            Matrix4x4 matrix = Matrix4x4.TRS(drawLoc, Quaternion.AngleAxis(angle, Vector3.up), new Vector3(size, 1f, size));
+            Graphics.DrawMesh(MeshPool.plane10, matrix, SwordWardMaterial, 0, null, 0, swordWardPropertyBlock);
+        }
         public int ShadowCount
         {
             get
@@ -851,6 +884,16 @@ namespace Yunjianzi
             Text.Anchor = TextAnchor.MiddleCenter;
             GUI.color = Color.white;
             Widgets.Label(rect, label);
+        }
+    }
+
+    [HarmonyPatch(typeof(Pawn), "DrawAt", new Type[] { typeof(Vector3), typeof(bool) })]
+    internal static class Patch_Pawn_DrawAt_YunjianziSwordWard
+    {
+        private static void Postfix(Pawn __instance, Vector3 drawLoc)
+        {
+            CompYunjianziCultivation comp = __instance == null ? null : __instance.TryGetComp<CompYunjianziCultivation>();
+            if (comp != null) comp.DrawSwordWardEffect(drawLoc);
         }
     }
 
