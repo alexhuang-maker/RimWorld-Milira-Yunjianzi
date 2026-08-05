@@ -3,12 +3,10 @@
   <ThingDef ParentName="Milira_MilianBase_Pawn">
     <defName>YJZ_Shenji_Race</defName>
     <label>神机米莉安</label>
-    <description>云间子以神机诀唤出的专属火力支援型米莉安。她不占用机械带宽，拥有自循环能源与随境界成长的固有装甲。</description>
+    <description>云间子以神机诀唤出的专属火力支援型米莉安。她不占用机械带宽，拥有自循环能源与随境界成长的专属神机甲。</description>
     <statBases>
       <MoveSpeed>4.6</MoveSpeed>
       <MarketValue>2200</MarketValue>
-      <ArmorRating_Blunt>0.18</ArmorRating_Blunt>
-      <ArmorRating_Sharp>0.30</ArmorRating_Sharp>
       <BandwidthCost MayRequire="Ludeon.Rimworld.Biotech">0</BandwidthCost>
       <MechEnergyLossPerHP MayRequire="Ludeon.Rimworld.Biotech">0</MechEnergyLossPerHP>
     </statBases>

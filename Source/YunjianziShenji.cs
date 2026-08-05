@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -23,6 +24,7 @@ namespace Yunjianzi
         private int rocketDroneReadyTick;
         private int recallRepairReadyTick;
         private int lastArmorTier;
+        private int boundTick;
 
         public Pawn Pawn { get { return parent as Pawn; } }
         public Pawn Owner
@@ -39,6 +41,8 @@ namespace Yunjianzi
             }
         }
         public CompYunjianziCultivation Cultivation { get { Pawn owner = Owner; return owner == null ? null : owner.TryGetComp<CompYunjianziCultivation>(); } }
+        public int BoundTick { get { return boundTick; } }
+        public bool IsBoundTo(Pawn owner) { return owner != null && ownerThingId == owner.thingIDNumber; }
         public float ShieldMax
         {
             get
@@ -52,6 +56,7 @@ namespace Yunjianzi
         public void BindTo(Pawn owner)
         {
             ownerThingId = owner == null ? -1 : owner.thingIDNumber;
+            boundTick = Find.TickManager == null ? 0 : Find.TickManager.TicksGame;
             shield = ShieldMax;
             SynchronizeTier(true);
         }
@@ -102,17 +107,47 @@ namespace Yunjianzi
             }
         }
 
+        private ThingDef DesiredArmor
+        {
+            get
+            {
+                int tier = ArmorTier;
+                if (tier >= 3) return YJZDefOf.YJZ_Apparel_ShenjiArmor_Final;
+                if (tier >= 2) return YJZDefOf.YJZ_Apparel_ShenjiArmor_Intermediate;
+                return YJZDefOf.YJZ_Apparel_ShenjiArmor_Base;
+            }
+        }
+
         private void SynchronizeTier(bool force)
         {
             Pawn pawn = Pawn;
             if (pawn == null || pawn.health == null) return;
             int tier = ArmorTier;
-            if (force || tier != lastArmorTier)
+            // 旧存档可能仍带有早期的固有装甲 Hediff；属性已迁移到可见的专属神机甲，必须清掉以免双算。
+            List<Hediff> oldArmor = pawn.health.hediffSet.hediffs.Where(h => h.def == YJZDefOf.YJZ_ShenjiArmor_Base || h.def == YJZDefOf.YJZ_ShenjiArmor_Intermediate || h.def == YJZDefOf.YJZ_ShenjiArmor_Final).ToList();
+            for (int i = 0; i < oldArmor.Count; i++) pawn.health.RemoveHediff(oldArmor[i]);
+
+            if (pawn.apparel != null)
             {
-                List<Hediff> oldArmor = pawn.health.hediffSet.hediffs.Where(h => h.def == YJZDefOf.YJZ_ShenjiArmor_Base || h.def == YJZDefOf.YJZ_ShenjiArmor_Intermediate || h.def == YJZDefOf.YJZ_ShenjiArmor_Final).ToList();
-                for (int i = 0; i < oldArmor.Count; i++) pawn.health.RemoveHediff(oldArmor[i]);
-                HediffDef armor = tier == 3 ? YJZDefOf.YJZ_ShenjiArmor_Final : tier == 2 ? YJZDefOf.YJZ_ShenjiArmor_Intermediate : YJZDefOf.YJZ_ShenjiArmor_Base;
-                pawn.health.AddHediff(armor);
+                ThingDef desiredArmor = DesiredArmor;
+                List<Apparel> obsoleteIntrinsicArmor = pawn.apparel.WornApparel
+                    .Where(a => YunjianziShenjiApparelPolicy.IsIntrinsicArmor(a.def) && a.def != desiredArmor).ToList();
+                for (int i = 0; i < obsoleteIntrinsicArmor.Count; i++)
+                {
+                    Apparel obsolete = obsoleteIntrinsicArmor[i];
+                    pawn.apparel.Remove(obsolete);
+                    obsolete.Destroy(DestroyMode.Vanish);
+                }
+                if (!pawn.apparel.WornApparel.Any(a => a.def == desiredArmor))
+                {
+                    Apparel armor = ThingMaker.MakeThing(desiredArmor) as Apparel;
+                    if (armor != null)
+                    {
+                        CompQuality quality = armor.TryGetComp<CompQuality>();
+                        if (quality != null) quality.SetQuality(tier >= 2 ? QualityCategory.Legendary : QualityCategory.Normal, ArtGenerationContext.Outsider);
+                        pawn.apparel.Wear(armor, false);
+                    }
+                }
                 lastArmorTier = tier;
             }
             if (pawn.equipment != null && (pawn.equipment.Primary == null || pawn.equipment.Primary.def != DesiredWeapon))
@@ -131,7 +166,8 @@ namespace Yunjianzi
             {
                 bool accessoriesUnlocked = cultivation != null && cultivation.HasSkill(YunjianziSkills.ShenjiAccessories);
                 List<Apparel> lockedAccessories = pawn.apparel.WornApparel
-                    .Where(a => !accessoriesUnlocked || !YunjianziShenjiApparelPolicy.IsAllowedAccessory(a.def))
+                    .Where(a => !YunjianziShenjiApparelPolicy.IsIntrinsicArmor(a.def) &&
+                        (!accessoriesUnlocked || !YunjianziShenjiApparelPolicy.IsAllowedAccessory(a.def)))
                     .ToList();
                 for (int i = 0; i < lockedAccessories.Count; i++)
                 {
@@ -228,6 +264,7 @@ namespace Yunjianzi
             Scribe_Values.Look(ref rocketDroneReadyTick, "yjz_shenjiRocketDroneReady", 0);
             Scribe_Values.Look(ref recallRepairReadyTick, "yjz_shenjiRecallRepairReady", 0);
             Scribe_Values.Look(ref lastArmorTier, "yjz_shenjiArmorTier", 0);
+            Scribe_Values.Look(ref boundTick, "yjz_shenjiBoundTick", 0);
         }
     }
 
@@ -275,7 +312,14 @@ namespace Yunjianzi
 
     internal static class YunjianziShenjiApparelPolicy
     {
-        // 固有 Hediff 已提供装甲。配件节点只开放工具层，禁止实体装甲再次叠加。
+        public static bool IsIntrinsicArmor(ThingDef def)
+        {
+            return def == YJZDefOf.YJZ_Apparel_ShenjiArmor_Base ||
+                def == YJZDefOf.YJZ_Apparel_ShenjiArmor_Intermediate ||
+                def == YJZDefOf.YJZ_Apparel_ShenjiArmor_Final;
+        }
+
+        // 专属神机甲已提供完整防护。配件节点只开放工具层，禁止其他实体装甲再次叠加。
         public static bool IsAllowedAccessory(ThingDef def)
         {
             if (def == null || def.apparel == null || def.apparel.layers == null) return false;
@@ -311,27 +355,46 @@ namespace Yunjianzi
                 icon = YunjianziAbilityTextures.SummonShenji,
                 action = SummonShenji
             };
-            int count = BoundShenji().Count();
-            if (count >= ShenjiLimit) summon.Disable(string.Format("神机数量已达上限：{0}/{1}", count, ShenjiLimit));
-            else if (Energy < 10f) summon.Disable("灵力不足：需要10点。");
+            int count = BoundShenji().Count;
+            if (count >= ShenjiLimit)
+                summon.defaultDesc += string.Format("\n\n当前神机：{0}/{1}。再次召唤将覆盖最早召唤的一台。", count, ShenjiLimit);
+            if (Energy < 10f) summon.Disable("灵力不足：需要10点。");
             yield return summon;
         }
 
-        private IEnumerable<Pawn> BoundShenji()
+        private List<Pawn> BoundShenji()
         {
-            if (Pawn == null) yield break;
-            foreach (Map map in Find.Maps)
-                foreach (Pawn candidate in map.mapPawns.AllPawns)
+            List<Pawn> result = new List<Pawn>();
+            if (Pawn == null) return result;
+            List<Map> maps = Find.Maps.ToList();
+            for (int m = 0; m < maps.Count; m++)
+            {
+                Pawn[] snapshot = maps[m].mapPawns.AllPawns.ToArray();
+                for (int i = 0; i < snapshot.Length; i++)
                 {
+                    Pawn candidate = snapshot[i];
                     CompYunjianziShenji comp = candidate.TryGetComp<CompYunjianziShenji>();
-                    if (comp != null && comp.Owner == Pawn && !candidate.Dead) yield return candidate;
+                    if (comp != null && comp.IsBoundTo(Pawn) && !candidate.Dead) result.Add(candidate);
                 }
+            }
+            return result;
         }
 
         private void SummonShenji()
         {
-            if (Pawn == null || !Pawn.Spawned || BoundShenji().Count() >= ShenjiLimit || !TrySpend(10f)) return;
+            if (Pawn == null || !Pawn.Spawned || !TrySpend(10f)) return;
+            List<Pawn> bound = BoundShenji();
             Pawn shenji = PawnGenerator.GeneratePawn(YJZDefOf.YJZ_Shenji, Faction.OfPlayer);
+            int removeCount = Math.Max(0, bound.Count - ShenjiLimit + 1);
+            foreach (Pawn old in bound.OrderBy(p =>
+            {
+                CompYunjianziShenji c = p.TryGetComp<CompYunjianziShenji>();
+                return c == null ? 0 : c.BoundTick;
+            }).ThenBy(p => p.thingIDNumber).Take(removeCount).ToList())
+            {
+                if (old.Spawned) FleckMaker.Static(old.Position, old.Map, FleckDefOf.PsycastSkipFlashEntry, 1.2f);
+                old.Destroy(DestroyMode.Vanish);
+            }
             IntVec3 cell = CellFinder.RandomClosewalkCellNear(Pawn.Position, Pawn.Map, 3);
             if (!cell.IsValid) cell = Pawn.Position;
             GenSpawn.Spawn(shenji, cell, Pawn.Map);
@@ -349,6 +412,37 @@ namespace Yunjianzi
         {
             CompYunjianziShenji comp = __instance == null ? null : __instance.TryGetComp<CompYunjianziShenji>();
             return comp == null || !comp.TryPreventDeath();
+        }
+    }
+
+    // 米莉拉原版工作/配置页会排除没有 OverseerSubject 的机械体。
+    // 神机刻意不接机械师带宽，因此只在界面结果中补入，不伪造监督者关系，也不会触发失控机制。
+    [HarmonyPatch]
+    internal static class Patch_MilianPawnTables_IncludeYunjianziShenji
+    {
+        private static IEnumerable<MethodBase> TargetMethods()
+        {
+            foreach (string typeName in new[] { "Milira.MainTabWindow_MilianWork", "Milira.MainTabWindow_MilianConfig" })
+            {
+                Type type = AccessTools.TypeByName(typeName);
+                MethodInfo getter = type == null ? null : AccessTools.PropertyGetter(type, "Pawns");
+                if (getter != null) yield return getter;
+            }
+        }
+
+        private static IEnumerable<Pawn> Postfix(IEnumerable<Pawn> __result)
+        {
+            List<Pawn> pawns = __result == null ? new List<Pawn>() : __result.ToList();
+            Map map = Find.CurrentMap;
+            if (map == null) return pawns;
+            Pawn[] snapshot = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToArray();
+            for (int i = 0; i < snapshot.Length; i++)
+            {
+                Pawn pawn = snapshot[i];
+                if (pawn != null && !pawn.Dead && pawn.TryGetComp<CompYunjianziShenji>() != null && !pawns.Contains(pawn))
+                    pawns.Add(pawn);
+            }
+            return pawns;
         }
     }
 

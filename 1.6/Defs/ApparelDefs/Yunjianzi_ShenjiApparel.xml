@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- 功能版专属神机甲：沿用米莉拉原生三向米莉安甲衣素材，保证所有方向稳定渲染。
+       只有这三件允许神机穿戴；升级时旧甲直接消失，不掉落到地图。 -->
+  <ThingDef ParentName="Milian_MiddleBase">
+    <defName>YJZ_Apparel_ShenjiArmor_Base</defName>
+    <label>神机白玉甲·初式</label>
+    <description>练气与筑基阶段的专属神机甲。装甲属性全部由这件可见甲衣提供。</description>
+    <tradeability>None</tradeability>
+    <graphicData>
+      <texPath>Milian/Apparel/Middle/LightArmor/LightArmor</texPath>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>320</MaxHitPoints>
+      <Mass>4.0</Mass>
+      <ArmorRating_Sharp>0.58</ArmorRating_Sharp>
+      <ArmorRating_Blunt>0.38</ArmorRating_Blunt>
+      <ArmorRating_Heat>0.35</ArmorRating_Heat>
+      <StuffEffectMultiplierArmor>0</StuffEffectMultiplierArmor>
+    </statBases>
+    <apparel>
+      <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+      <bodyPartGroups><li>Neck</li><li>Torso</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups>
+      <wornGraphicPath>Milian/Apparel/Middle/LightArmor/LightArmor</wornGraphicPath>
+      <tags><li>YJZ_ShenjiIntrinsic</li></tags>
+    </apparel>
+    <equippedStatOffsets><RangedCooldownFactor>-0.05</RangedCooldownFactor></equippedStatOffsets>
+  </ThingDef>
+
+  <ThingDef ParentName="Milian_MiddleBase">
+    <defName>YJZ_Apparel_ShenjiArmor_Intermediate</defName>
+    <label>神机白玉甲·紫府</label>
+    <description>紫府与金丹阶段的专属神机甲，以传奇日盘钢百夫长套装为防护基准。</description>
+    <tradeability>None</tradeability>
+    <graphicData>
+      <texPath>Milian/Apparel/Middle/GuardianArmor/GuardianArmor</texPath>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>720</MaxHitPoints>
+      <Mass>6.5</Mass>
+      <ArmorRating_Sharp>0.95</ArmorRating_Sharp>
+      <ArmorRating_Blunt>0.70</ArmorRating_Blunt>
+      <ArmorRating_Heat>0.75</ArmorRating_Heat>
+      <StuffEffectMultiplierArmor>0</StuffEffectMultiplierArmor>
+    </statBases>
+    <apparel>
+      <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+      <bodyPartGroups><li>Neck</li><li>Torso</li><li>Shoulders</li><li>Arms</li><li>Hands</li><li>Legs</li><li>Feet</li></bodyPartGroups>
+      <wornGraphicPath>Milian/Apparel/Middle/GuardianArmor/GuardianArmor</wornGraphicPath>
+      <tags><li>YJZ_ShenjiIntrinsic</li></tags>
+    </apparel>
+    <equippedStatOffsets><RangedCooldownFactor>-0.12</RangedCooldownFactor><MoveSpeed>0.25</MoveSpeed></equippedStatOffsets>
+  </ThingDef>
+
+  <ThingDef ParentName="Milian_MiddleBase">
+    <defName>YJZ_Apparel_ShenjiArmor_Final</defName>
+    <label>神机白玉甲·化神</label>
+    <description>化神阶段完全展开的终极神机甲，在传奇日盘钢百夫长套装基础上全面强化。</description>
+    <tradeability>None</tradeability>
+    <graphicData>
+      <texPath>Milian/Apparel/Middle/PaladinArmor/PaladinArmor</texPath>
+      <shaderType>CutoutComplex</shaderType>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>1400</MaxHitPoints>
+      <Mass>8.0</Mass>
+      <ArmorRating_Sharp>1.40</ArmorRating_Sharp>
+      <ArmorRating_Blunt>0.95</ArmorRating_Blunt>
+      <ArmorRating_Heat>1.10</ArmorRating_Heat>
+      <StuffEffectMultiplierArmor>0</StuffEffectMultiplierArmor>
+    </statBases>
+    <apparel>
+      <useWornGraphicMask>true</useWornGraphicMask>
+      <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+      <bodyPartGroups><li>Neck</li><li>Torso</li><li>Shoulders</li><li>Arms</li><li>Hands</li><li>Legs</li><li>Feet</li></bodyPartGroups>
+      <wornGraphicPath>Milian/Apparel/Middle/PaladinArmor/PaladinArmor</wornGraphicPath>
+      <tags><li>YJZ_ShenjiIntrinsic</li></tags>
+    </apparel>
+    <equippedStatOffsets><RangedCooldownFactor>-0.20</RangedCooldownFactor><MoveSpeed>0.75</MoveSpeed><WorkSpeedGlobal>0.30</WorkSpeedGlobal></equippedStatOffsets>
+  </ThingDef>
+</Defs>
