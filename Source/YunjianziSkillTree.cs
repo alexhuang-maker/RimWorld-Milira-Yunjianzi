@@ -405,29 +405,26 @@ namespace Yunjianzi
         private static void DrawYangfuConcept(Rect panel)
         {
             float top = panel.y + 72f;
-            float gap = 14f;
-            float cardWidth = (panel.width - 48f - gap) * .5f;
-            Rect life = new Rect(panel.x + 17f, top, cardWidth, 196f);
-            Rect combat = new Rect(life.xMax + gap, top, cardWidth, 196f);
-            DrawConceptCard(life, "随身符 · 装配生效",
-                "在画符台制作实体符箓，并装入云间子的专属符位。可灵活替换生活型或战斗强化型符箓，改善劳作、休息与修行，或强化命中、防护、机动与灵力运转；境界提升后可同时维持更多符箓。",
-                new Color(.16f, .43f, .36f, .92f));
-            DrawConceptCard(combat, "战斗术符 · 右键择法",
-                "战斗术符作为另一项技能：右键在已掌握法术之间切换，左键对目标施放。符箓只是承载法术的媒介，不占普通衣着层；每种法术拥有自己的图标、灵力消耗、冷却与直线境界进阶。",
-                new Color(.44f, .29f, .18f, .92f));
+            float gap = 10f;
+            float cardWidth = (panel.width - 34f - gap * 3f) / 4f;
+            float cardHeight = 398f;
+            DrawConceptCard(new Rect(panel.x + 17f, top, cardWidth, cardHeight), "筑基 · 一符位",
+                "啄玉符：大幅提高成品品阶\n\n神截符：大幅提高科研速度\n\n神行符：大幅提高移动速度\n\n寄情符：美景转化为魅力与心境\n\n百草符：精通医术，避免灾难性失败\n\n心剑符：洞彻人心，提高贸易优势",
+                new Color(.15f, .35f, .31f, .94f));
+            DrawConceptCard(new Rect(panel.x + 17f + cardWidth + gap, top, cardWidth, cardHeight), "紫府 · 二符位",
+                "北斗符：攻速提升，缩短武器特效冷却\n\n归海符：大幅提高灵力恢复速度\n\n神炼符：大幅提高制作工作效率\n\n惠剑斩念符：免疫负面心灵低语与精神扰动",
+                new Color(.22f, .25f, .46f, .94f));
+            DrawConceptCard(new Rect(panel.x + 17f + (cardWidth + gap) * 2f, top, cardWidth, cardHeight), "金丹 · 三符位",
+                "不昧真灵符：心境圆满，法门施放加快\n\n劫心符：消耗本源，全面淬炼肉身\n\n六阳真形符：战斗技能20级；艺术归零，并大幅降低心境",
+                new Color(.47f, .33f, .12f, .94f));
+            DrawConceptCard(new Rect(panel.x + 17f + (cardWidth + gap) * 3f, top, cardWidth, cardHeight), "化神 · 四符位",
+                "天道符：所有未被背景禁止的技能按20级结算\n\n换日符：生理年龄停止增长\n\n符位只限制同时生效数量；已学会和储存的符咒不受限制。",
+                new Color(.40f, .18f, .42f, .94f));
 
-            float routeTop = life.yMax + 22f;
-            float routeGap = 12f;
-            float routeWidth = (panel.width - 46f - routeGap * 2f) / 3f;
-            DrawConceptCard(new Rect(panel.x + 17f, routeTop, routeWidth, 230f), "火龙卷",
-                "唤起可移动的烈焰旋风，沿途灼烧并扰乱敌阵。其境界进阶只强化持续时间、移动控制、覆盖范围与燃烧表现，不分叉到其他术式。",
-                new Color(.48f, .20f, .10f, .92f));
-            DrawConceptCard(new Rect(panel.x + 17f + routeWidth + routeGap, routeTop, routeWidth, 230f), "天雷神风",
-                "先以神风牵引、聚拢范围内敌人，再于汇聚处降下雷霆。其进阶沿聚怪强度、作用半径、雷击轮数与控制时长直线成长。",
-                new Color(.18f, .31f, .52f, .92f));
-            DrawConceptCard(new Rect(panel.x + 17f + (routeWidth + routeGap) * 2f, routeTop, routeWidth, 230f), "撒豆成兵",
-                "撒出符豆化为短暂存在的符兵。符兵不承担工作，只会锁定敌人冲锋，并在接触目标或寿命结束时自毁爆炸；进阶提升数量、寻敌与爆破表现。",
-                new Color(.40f, .35f, .16f, .92f));
+            Rect combat = new Rect(panel.x + 17f, top + cardHeight + 14f, panel.width - 34f, 92f);
+            DrawConceptCard(combat, "战斗术符 · 独立直线进阶",
+                "火龙卷：移动焚烧与区域驱赶　　天雷神风：聚拢敌军后雷击　　撒豆成兵：召唤短命符兵冲锋自爆。右键选择术式，左键施放；三条路线分别进阶。",
+                new Color(.38f, .22f, .15f, .94f));
         }
 
         private static void DrawConceptCard(Rect rect, string title, string body, Color fill)
