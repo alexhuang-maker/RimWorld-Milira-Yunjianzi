@@ -1,5 +1,7 @@
 # Local compiler intermediates
 Source/bin/
+Tools/roslyn-*/
+Tools/*.nupkg
 Source/obj/
 
 # Portable local Roslyn compiler used for reproducible RimWorld DLL builds

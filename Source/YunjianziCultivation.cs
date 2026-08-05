@@ -27,6 +27,12 @@ namespace Yunjianzi
             ContentFinder<Texture2D>.Get("Milian/Mechanoid_uiIcon/PawnI", false) ?? SummonZhuxie;
         public static readonly Texture2D TalismanSlot =
             ContentFinder<Texture2D>.Get("Yunjianzi/UI/TalismanSlot", false) ?? CultivationTree;
+        public static readonly Texture2D FireTornado =
+            ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/FireTornado", false) ?? ImmortalArray;
+        public static readonly Texture2D ThunderWind =
+            ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/ThunderWind", false) ?? ImmortalArray;
+        public static readonly Texture2D BeanSoldiers =
+            ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/BeanSoldiers", false) ?? SummonShenji;
         public static readonly Texture2D DevX = MakeDevX();
 
         private static Texture2D MakeDevX()
@@ -270,6 +276,8 @@ namespace Yunjianzi
                     foreach (Gizmo arrayGizmo in GetArrayGizmos()) yield return arrayGizmo;
                 if (HasSkill(YunjianziSkills.ShenjiSummon))
                     foreach (Gizmo shenjiGizmo in GetShenjiGizmos()) yield return shenjiGizmo;
+                if (HasSkill(YunjianziSkills.YangfuPrimer))
+                    foreach (Gizmo combatTalismanGizmo in GetYangfuCombatGizmos()) yield return combatTalismanGizmo;
                 if (HasSkill(YunjianziSkills.YangfuPrimer))
                     foreach (Gizmo talismanGizmo in GetTalismanGizmos()) yield return talismanGizmo;
 
@@ -747,6 +755,7 @@ namespace Yunjianzi
             ExposeBreakthroughData();
             ExposeSkillTreeData();
             ExposeTalismanData();
+            ExposeYangfuCombatData();
         }
     }
 
@@ -952,6 +961,16 @@ namespace Yunjianzi
         public static HediffDef YJZ_ShenjiArmor_Base;
         public static HediffDef YJZ_ShenjiArmor_Intermediate;
         public static HediffDef YJZ_ShenjiArmor_Final;
+        public static ThingDef YJZ_Effect_TalismanRed;
+        public static ThingDef YJZ_Effect_TalismanPurple;
+        public static ThingDef YJZ_Effect_TalismanGreen;
+        public static ThingDef YJZ_Effect_FireTornado;
+        public static ThingDef YJZ_Effect_ThunderWind;
+        public static ThingDef YJZ_BeanSoldier_1;
+        public static ThingDef YJZ_BeanSoldier_2;
+        public static ThingDef YJZ_BeanSoldier_3;
+        public static ThingDef YJZ_BeanSoldier_4;
+        public static ThingDef YJZ_BeanSoldier_5;
         static YJZDefOf() { DefOfHelper.EnsureInitializedInCtor(typeof(YJZDefOf)); }
     }
 

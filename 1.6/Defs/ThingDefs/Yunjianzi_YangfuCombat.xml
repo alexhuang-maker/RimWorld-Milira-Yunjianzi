@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef Name="YJZ_YangfuEffectBase" Abstract="True">
+    <category>Ethereal</category>
+    <tickerType>Normal</tickerType>
+    <selectable>false</selectable>
+    <drawGUIOverlay>false</drawGUIOverlay>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <useHitPoints>false</useHitPoints>
+    <thingClass>Yunjianzi.ThingYangfuCastMarker</thingClass>
+    <graphicData>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>TransparentPostLight</shaderType>
+      <drawSize>(1.35,1.35)</drawSize>
+    </graphicData>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_YangfuEffectBase">
+    <defName>YJZ_Effect_TalismanRed</defName>
+    <label>火龙卷符</label>
+    <graphicData><texPath>Yunjianzi/Effects/Yangfu/TalismanRed</texPath></graphicData>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_YangfuEffectBase">
+    <defName>YJZ_Effect_TalismanPurple</defName>
+    <label>天雷神风符</label>
+    <graphicData><texPath>Yunjianzi/Effects/Yangfu/TalismanPurple</texPath></graphicData>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_YangfuEffectBase">
+    <defName>YJZ_Effect_TalismanGreen</defName>
+    <label>撒豆成兵符</label>
+    <graphicData><texPath>Yunjianzi/Effects/Yangfu/TalismanGreen</texPath></graphicData>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_YangfuEffectBase">
+    <defName>YJZ_Effect_FireTornado</defName>
+    <label>火龙卷</label>
+    <thingClass>Yunjianzi.ThingYangfuFireTornado</thingClass>
+    <altitudeLayer>Weather</altitudeLayer>
+    <graphicData>
+      <texPath>Yunjianzi/Effects/Yangfu/FireTornado</texPath>
+      <drawSize>(2.2,2.2)</drawSize>
+    </graphicData>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_YangfuEffectBase">
+    <defName>YJZ_Effect_ThunderWind</defName>
+    <label>天雷神风</label>
+    <thingClass>Yunjianzi.ThingYangfuThunderWind</thingClass>
+    <graphicData>
+      <texPath>Yunjianzi/Effects/Yangfu/ThunderWindField</texPath>
+      <drawSize>(10,10)</drawSize>
+    </graphicData>
+  </ThingDef>
+
+  <ThingDef Name="YJZ_BeanSoldierBase" Abstract="True">
+    <category>Item</category>
+    <thingClass>Yunjianzi.ThingYangfuBeanSoldier</thingClass>
+    <tickerType>Normal</tickerType>
+    <selectable>true</selectable>
+    <altitudeLayer>Pawn</altitudeLayer>
+    <useHitPoints>true</useHitPoints>
+    <pathCost>12</pathCost>
+    <passability>PassThroughOnly</passability>
+    <drawGUIOverlay>true</drawGUIOverlay>
+    <graphicData>
+      <texPath>Yunjianzi/Effects/Yangfu/BeanSoldier</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(0.62,0.62)</drawSize>
+    </graphicData>
+    <statBases>
+      <MarketValue>0</MarketValue>
+      <Mass>8</Mass>
+      <Flammability>0</Flammability>
+    </statBases>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierBase"><defName>YJZ_BeanSoldier_1</defName><label>练气符兵</label><statBases><MaxHitPoints>100</MaxHitPoints></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierBase"><defName>YJZ_BeanSoldier_2</defName><label>筑基符兵</label><statBases><MaxHitPoints>250</MaxHitPoints></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierBase"><defName>YJZ_BeanSoldier_3</defName><label>紫府符兵</label><statBases><MaxHitPoints>450</MaxHitPoints></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierBase"><defName>YJZ_BeanSoldier_4</defName><label>金丹符兵</label><statBases><MaxHitPoints>700</MaxHitPoints></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierBase"><defName>YJZ_BeanSoldier_5</defName><label>化神符兵</label><statBases><MaxHitPoints>1000</MaxHitPoints></statBases></ThingDef>
+</Defs>

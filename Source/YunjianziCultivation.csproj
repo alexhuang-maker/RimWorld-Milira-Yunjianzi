@@ -38,5 +38,9 @@
       <HintPath>C:\Program Files (x86)\Steam\steamapps\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="AncotLibrary">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\workshop\content\294100\2988801276\1.6\Assemblies\AncotLibrary.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 </Project>

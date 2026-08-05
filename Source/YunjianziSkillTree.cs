@@ -66,6 +66,21 @@ namespace Yunjianzi
         public const string TalismanLiuyang = "yangfu.liuyang";
         public const string TalismanTiandao = "yangfu.tiandao";
         public const string TalismanHuanri = "yangfu.huanri";
+        public const string FireTornadoI = "yangfu.firetornado.1";
+        public const string FireTornadoII = "yangfu.firetornado.2";
+        public const string FireTornadoIII = "yangfu.firetornado.3";
+        public const string FireTornadoIV = "yangfu.firetornado.4";
+        public const string FireTornadoV = "yangfu.firetornado.5";
+        public const string ThunderWindI = "yangfu.thunderwind.1";
+        public const string ThunderWindII = "yangfu.thunderwind.2";
+        public const string ThunderWindIII = "yangfu.thunderwind.3";
+        public const string ThunderWindIV = "yangfu.thunderwind.4";
+        public const string ThunderWindV = "yangfu.thunderwind.5";
+        public const string BeanSoldiersI = "yangfu.beansoldiers.1";
+        public const string BeanSoldiersII = "yangfu.beansoldiers.2";
+        public const string BeanSoldiersIII = "yangfu.beansoldiers.3";
+        public const string BeanSoldiersIV = "yangfu.beansoldiers.4";
+        public const string BeanSoldiersV = "yangfu.beansoldiers.5";
 
         public static readonly List<YunjianziSkillNode> All = new List<YunjianziSkillNode>
         {
@@ -117,21 +132,36 @@ namespace Yunjianzi
             N(ShenjiQuadControl, "四象神机", "云间子可同时维持四台终极神机。", 5, 2, 7, ShenjiDualControl),
 
             N(YangfuPrimer, "阳符入门", "研墨裁纸，以灵力落笔。参悟后开启画符台与阳符传承。", 1, 3, 2),
+            N(FireTornadoI, "火龙卷·燃符", "向十五格内凝出赤符，符破后生成受控火龙卷，持续游戏内半小时。", 1, 3, 6, YangfuPrimer),
+            N(ThunderWindI, "天雷神风·引风", "向十五格内掷出紫符，聚拢十格内敌人十秒，随后降下一道强化天雷。", 1, 3, 7, YangfuPrimer),
+            N(BeanSoldiersI, "撒豆成兵·二灵", "向十五格内掷出青符，在目标周围唤出两台追敌自爆的符兵。", 1, 3, 8, YangfuPrimer),
             N(TalismanZhuoyu, "啄玉符", "大幅提高制作物品的品阶。参悟后可在画符台绘制啄玉符。", 2, 3, 0, YangfuPrimer),
             N(TalismanShenjie, "神截符", "截天地神妙秘藏于自身，大幅提升科研速度。", 2, 3, 1, YangfuPrimer),
             N(TalismanShenxing, "神行符", "引轻灵之气入体，大幅提升移动速度。", 2, 3, 2, YangfuPrimer),
             N(TalismanJiqing, "寄情符", "寄情山水草木；环境越华丽，魅力与心境增益越高。", 2, 3, 3, YangfuPrimer),
             N(TalismanBaicao, "百草符", "通晓百草，大幅提升医术并避免灾难性的治疗失败。", 2, 3, 4, YangfuPrimer),
             N(TalismanXinjian, "心剑符", "心剑洞彻人心，提高贸易优势。", 2, 3, 5, YangfuPrimer),
+            N(FireTornadoII, "火龙卷·筑基", "施法距离增至二十格，火龙卷更持久、更炽烈。", 2, 3, 6, FireTornadoI),
+            N(ThunderWindII, "天雷神风·筑基", "聚拢持续十五秒，最终连续降下两道强化天雷。", 2, 3, 7, ThunderWindI),
+            N(BeanSoldiersII, "撒豆成兵·五灵", "符兵增至五台，耐久与自爆威力同步提升。", 2, 3, 8, BeanSoldiersI),
             N(TalismanBeidou, "北斗符", "北斗星辉辟易外邪，提高攻速并缩短武器特效冷却。", 3, 3, 2, TalismanShenxing),
             N(TalismanGuihai, "归海符", "真元如海，万脉归流，大幅提升灵力恢复速度。", 3, 3, 1, TalismanShenjie),
             N(TalismanShenlian, "神炼符", "神念锻器，大幅提升制作工作的效率。", 3, 3, 0, TalismanZhuoyu),
             N(TalismanHuijian, "惠剑斩念符", "惠剑斩妄念，不再受到心灵低语影响。", 3, 3, 3, TalismanJiqing),
+            N(FireTornadoIII, "火龙卷·紫府", "施法距离增至二十五格，龙卷持续约一个半游戏时辰。", 3, 3, 6, FireTornadoII),
+            N(ThunderWindIII, "天雷神风·紫府", "聚拢持续二十秒，最终降下三道强化天雷。", 3, 3, 7, ThunderWindII),
+            N(BeanSoldiersIII, "撒豆成兵·八灵", "符兵增至八台，拥有四百五十点耐久。", 3, 3, 8, BeanSoldiersII),
             N(TalismanBumei, "不昧真灵符", "凝聚万世记忆，抵达不昧心境，心境永不退转。", 4, 3, 3, TalismanHuijian),
             N(TalismanJiexin, "劫心符", "消耗本源心血淬炼肉身，全面提升身体属性。", 4, 3, 4, TalismanBaicao),
             N(TalismanLiuyang, "六阳真形符", "战斗技能臻于极限，却失去艺术感知并使心境浮躁。", 4, 3, 2, TalismanBeidou),
+            N(FireTornadoIV, "火龙卷·金丹", "施法距离增至三十格，火龙卷进一步扩大持续与伤害。", 4, 3, 6, FireTornadoIII),
+            N(ThunderWindIV, "天雷神风·金丹", "聚拢持续二十五秒，最终降下四道强化天雷。", 4, 3, 7, ThunderWindIII),
+            N(BeanSoldiersIV, "撒豆成兵·十一灵", "符兵增至十一台，拥有七百点耐久。", 4, 3, 8, BeanSoldiersIII),
             N(TalismanTiandao, "天道符", "既度天劫，洞彻天道：所有未被背景禁用的技能视作二十级。", 5, 3, 0, TalismanShenlian, TalismanBumei),
             N(TalismanHuanri, "换日符", "偷天而后换日，使生理寿元不再流逝。", 5, 3, 4, TalismanJiexin)
+            ,N(FireTornadoV, "火龙卷·化神", "施法距离增至三十五格，火龙卷持续两个游戏时辰并达到最高威力。", 5, 3, 6, FireTornadoIV)
+            ,N(ThunderWindV, "天雷神风·化神", "聚拢持续三十秒，最终降下五道最高威力的强化天雷。", 5, 3, 7, ThunderWindIV)
+            ,N(BeanSoldiersV, "撒豆成兵·十五灵", "符兵增至十五台，拥有一千点耐久与三倍自爆威力。", 5, 3, 8, BeanSoldiersIV)
         };
 
         private static YunjianziSkillNode N(string id, string label, string description, int realm, int branch, int lane, params string[] prerequisites)
@@ -351,7 +381,7 @@ namespace Yunjianzi
             new[] { "附灵", "护体·同契", "剑影", "瞬斩", "天剑雨", "护主", "破甲" },
             new[] { "回元", "雷域", "阵纹", "阵遁", "随身阵", "灵盾", "界壁" },
             new[] { "主火力", "折射", "机动", "护盾", "预留", "接口", "败阵归元", "控制" },
-            new[] { "器道", "悟道", "身法", "心境", "医身", "心剑" }
+            new[] { "器道", "悟道", "身法", "心境", "医身", "心剑", "火龙卷", "天雷神风", "撒豆成兵" }
         };
 
         public Window_YunjianziCultivationTree(CompYunjianziCultivation cultivation)
