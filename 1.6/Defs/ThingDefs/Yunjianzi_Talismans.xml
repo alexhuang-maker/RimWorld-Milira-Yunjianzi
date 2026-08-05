@@ -79,6 +79,9 @@
       <Mass>0.05</Mass>
       <Flammability>0.35</Flammability>
     </statBases>
+    <comps>
+      <li Class="Yunjianzi.CompProperties_YunjianziTalisman" />
+    </comps>
   </ThingDef>
 
   <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Zhuoyu</defName><label>啄玉符</label><description>令器物精琢如玉的筑基阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Zhuoyu</texPath></graphicData><statBases><MarketValue>500</MarketValue></statBases></ThingDef>

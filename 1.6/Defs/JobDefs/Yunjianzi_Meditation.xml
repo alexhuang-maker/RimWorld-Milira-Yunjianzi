@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
   <JobDef>
+    <defName>YJZ_EquipTalisman</defName>
+    <driverClass>Yunjianzi.JobDriver_YunjianziEquipTalisman</driverClass>
+    <reportString>正在佩用TargetA。</reportString>
+    <playerInterruptible>true</playerInterruptible>
+    <checkOverrideOnExpire>true</checkOverrideOnExpire>
+  </JobDef>
+  <JobDef>
     <defName>YJZ_Meditate</defName>
     <driverClass>Yunjianzi.JobDriver_YunjianziMeditate</driverClass>
     <reportString>在TargetB上打坐修行。</reportString>

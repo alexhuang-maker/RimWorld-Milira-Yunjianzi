@@ -4,9 +4,72 @@ using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 
 namespace Yunjianzi
 {
+    public sealed class CompProperties_YunjianziTalisman : CompProperties
+    {
+        public CompProperties_YunjianziTalisman()
+        {
+            compClass = typeof(CompYunjianziTalisman);
+        }
+    }
+
+    /// <summary>
+    /// Makes the physical talisman itself actionable.  The original slot-only
+    /// implementation left crafted talismans behaving like inert resources.
+    /// </summary>
+    public sealed class CompYunjianziTalisman : ThingComp
+    {
+        public override IEnumerable<FloatMenuOption> CompFloatMenuOptions(Pawn selPawn)
+        {
+            CompYunjianziCultivation cultivation = selPawn == null ? null : selPawn.TryGetComp<CompYunjianziCultivation>();
+            if (cultivation == null || !cultivation.IsYunjianzi)
+            {
+                yield return new FloatMenuOption("装备阳符（仅云间子可佩用）", null);
+                yield break;
+            }
+            if (cultivation.TalismanSlotCount <= 0)
+            {
+                yield return new FloatMenuOption("装备阳符（筑基境解锁第一个阳符位）", null);
+                yield break;
+            }
+            if (!cultivation.CanEquipTalismanDef(parent.def))
+            {
+                yield return new FloatMenuOption("装备「" + parent.LabelCap + "」（尚未参悟此符）", null);
+                yield break;
+            }
+
+            for (int slot = 0; slot < cultivation.TalismanSlotCount; slot++)
+            {
+                int capturedSlot = slot;
+                Thing current = cultivation.ActiveTalismanThingAt(slot);
+                if (current != null && current.def == parent.def)
+                {
+                    yield return new FloatMenuOption("阳符位·" + (slot + 1) + "已装备「" + parent.LabelCap + "」", null);
+                    continue;
+                }
+
+                string replacement = current == null ? string.Empty : "（替换「" + current.LabelCap + "」）";
+                FloatMenuOption option = new FloatMenuOption(
+                    "装备到阳符位·" + (slot + 1) + replacement,
+                    delegate { cultivation.OrderEquipTalisman(capturedSlot, parent); });
+                if (parent.Spawned && !selPawn.CanReserveAndReach(parent, PathEndMode.Touch, Danger.Deadly))
+                {
+                    option.Disabled = true;
+                    option.Label += "（无法抵达或已被预定）";
+                }
+                yield return option;
+            }
+        }
+
+        public override string CompInspectStringExtra()
+        {
+            return "选中云间子后右键此符，可将它装备到已解锁的阳符位。";
+        }
+    }
+
     public sealed class YunjianziTalismanRecipeExtension : DefModExtension
     {
         public string skillId;
@@ -138,7 +201,7 @@ namespace Yunjianzi
                 Thing captured = talisman;
                 string location = captured.holdingOwner == (Pawn.inventory == null ? null : Pawn.inventory.innerContainer) ? "随身" : "地图";
                 options.Add(new FloatMenuOption("装备「" + captured.LabelCap + "」  ·  " + location,
-                    delegate { EquipTalisman(slot, captured); }, captured.def.uiIcon, Color.white));
+                    delegate { OrderEquipTalisman(slot, captured); }, captured.def.uiIcon, Color.white));
             }
 
             if (options.Count == 0)
@@ -150,7 +213,7 @@ namespace Yunjianzi
         {
             IEnumerable<Thing> carried = Pawn.inventory == null ? Enumerable.Empty<Thing>() : Pawn.inventory.innerContainer;
             IEnumerable<Thing> mapThings = Pawn.Spawned && Pawn.Map != null ? Pawn.Map.listerThings.AllThings : Enumerable.Empty<Thing>();
-            return carried.Concat(mapThings).Where(thing => thing != null && IsTalisman(thing.def) && CanEquipTalisman(thing.def));
+            return carried.Concat(mapThings).Where(thing => thing != null && IsTalisman(thing.def) && CanEquipTalismanDef(thing.def));
         }
 
         private static bool IsTalisman(ThingDef def)
@@ -158,15 +221,41 @@ namespace Yunjianzi
             return def != null && TalismanSkills.ContainsKey(def.defName);
         }
 
-        private bool CanEquipTalisman(ThingDef def)
+        internal bool CanEquipTalismanDef(ThingDef def)
         {
             string skill;
             return def != null && TalismanSkills.TryGetValue(def.defName, out skill) && HasSkill(skill);
         }
 
-        private void EquipTalisman(int slot, Thing source)
+        internal Thing ActiveTalismanThingAt(int slot)
         {
-            if (slot < 0 || slot >= TalismanSlotCount || source == null || !CanEquipTalisman(source.def)) return;
+            EnsureTalismanState();
+            return ActiveTalismanThing(slot);
+        }
+
+        internal void OrderEquipTalisman(int slot, Thing source)
+        {
+            if (slot < 0 || slot >= TalismanSlotCount || source == null || !CanEquipTalismanDef(source.def)) return;
+            if (!source.Spawned)
+            {
+                EquipTalisman(slot, source);
+                return;
+            }
+            if (Pawn == null || Pawn.jobs == null || !Pawn.CanReserveAndReach(source, PathEndMode.Touch, Danger.Deadly))
+            {
+                Messages.Message("无法抵达或预定这张符咒。", source, MessageTypeDefOf.RejectInput, false);
+                return;
+            }
+
+            Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("YJZ_EquipTalisman"), source);
+            job.count = slot + 1;
+            job.playerForced = true;
+            Pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+        }
+
+        internal bool EquipTalisman(int slot, Thing source)
+        {
+            if (slot < 0 || slot >= TalismanSlotCount || source == null || !CanEquipTalismanDef(source.def)) return false;
             UnequipTalisman(slot, false);
 
             Thing one = source.stackCount > 1 ? source.SplitOff(1) : source;
@@ -175,10 +264,11 @@ namespace Yunjianzi
             {
                 if (Pawn.Spawned) GenPlace.TryPlaceThing(one, Pawn.Position, Pawn.Map, ThingPlaceMode.Near);
                 Messages.Message("符咒未能收入符位。", Pawn, MessageTypeDefOf.RejectInput, false);
-                return;
+                return false;
             }
             activeTalismanDefs[slot] = one.def.defName;
             Messages.Message("阳符位·" + (slot + 1) + "已装备「" + one.LabelCap + "」。", Pawn, MessageTypeDefOf.PositiveEvent, false);
+            return true;
         }
 
         private void UnequipTalisman(int slot, bool message)
@@ -204,16 +294,41 @@ namespace Yunjianzi
         public CompYunjianziCultivation comp;
         public int slot;
 
-        public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth, GizmoRenderParms parms)
+        public override IEnumerable<FloatMenuOption> RightClickFloatMenuOptions
         {
-            Event current = Event.current;
-            bool rightClicked = current != null && current.type == EventType.MouseDown && current.button == 1 &&
-                new Rect(topLeft.x, topLeft.y, GetWidth(maxWidth), 75f).Contains(current.mousePosition);
-            GizmoResult result = base.GizmoOnGUI(topLeft, maxWidth, parms);
-            if (!rightClicked || comp == null) return result;
-            comp.OpenTalismanMenu(slot);
-            current.Use();
-            return new GizmoResult(GizmoState.Interacted, current);
+            get
+            {
+                if (comp == null) yield break;
+                yield return new FloatMenuOption("管理阳符位·" + (slot + 1), delegate { comp.OpenTalismanMenu(slot); });
+            }
+        }
+    }
+
+    public sealed class JobDriver_YunjianziEquipTalisman : JobDriver
+    {
+        private Thing Talisman { get { return job.targetA.Thing; } }
+
+        public override bool TryMakePreToilReservations(bool errorOnFailed)
+        {
+            return pawn.Reserve(job.targetA, job, 1, 1, null, errorOnFailed);
+        }
+
+        protected override IEnumerable<Toil> MakeNewToils()
+        {
+            this.FailOnDespawnedNullOrForbidden(TargetIndex.A);
+            yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
+
+            Toil equip = new Toil();
+            equip.defaultCompleteMode = ToilCompleteMode.Instant;
+            equip.initAction = delegate
+            {
+                Thing talisman = Talisman;
+                CompYunjianziCultivation cultivation = pawn.TryGetComp<CompYunjianziCultivation>();
+                int slot = Mathf.Max(0, pawn.CurJob.count - 1);
+                if (talisman == null || cultivation == null || !cultivation.EquipTalisman(slot, talisman))
+                    pawn.jobs.EndCurrentJob(JobCondition.Incompletable);
+            };
+            yield return equip;
         }
     }
 }
