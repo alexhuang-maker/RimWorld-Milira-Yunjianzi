@@ -34,6 +34,11 @@
       <steamWorkshopUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=3665997350</steamWorkshopUrl>
     </li>
     <li>
+      <packageId>Ariandel.MiliraImperium</packageId>
+      <displayName>Milira Faction: Milira Imperium</displayName>
+      <steamWorkshopUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=3588393755</steamWorkshopUrl>
+    </li>
+    <li>
       <packageId>Ludeon.RimWorld.Royalty</packageId>
       <displayName>Royalty</displayName>
     </li>
@@ -52,6 +57,7 @@
     <li>Ancot.AncotLibrary</li>
     <li>Ancot.MiliraRace</li>
     <li>Ariandel.AriandelLibrary</li>
+    <li>Ariandel.MiliraImperium</li>
     <li>co.uk.epicguru.meleeanimation</li>
   </loadAfter>
   <loadBefore>

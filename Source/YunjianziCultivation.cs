@@ -22,6 +22,9 @@ namespace Yunjianzi
             ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/ArrayTeleport", false) ?? ImmortalArray;
         public static readonly Texture2D CultivationTree =
             ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/CultivationTree", false) ?? SummonZhuxie;
+        public static readonly Texture2D SummonShenji =
+            ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/SummonShenji", false) ??
+            ContentFinder<Texture2D>.Get("Milian/Mechanoid_uiIcon/PawnI", false) ?? SummonZhuxie;
         public static readonly Texture2D DevX = MakeDevX();
 
         private static Texture2D MakeDevX()
@@ -229,6 +232,8 @@ namespace Yunjianzi
                 }
                 if (HasSkill(YunjianziSkills.ArrayCore))
                     foreach (Gizmo arrayGizmo in GetArrayGizmos()) yield return arrayGizmo;
+                if (HasSkill(YunjianziSkills.ShenjiSummon))
+                    foreach (Gizmo shenjiGizmo in GetShenjiGizmos()) yield return shenjiGizmo;
 
                 if (Prefs.DevMode && DebugSettings.godMode)
                 {
@@ -883,6 +888,14 @@ namespace Yunjianzi
         public static FleckDef YJZ_Fleck_SwordRainImpact;
         public static FleckDef YJZ_Fleck_ArrayWarpA;
         public static FleckDef YJZ_Fleck_ArrayWarpB;
+        public static PawnKindDef YJZ_Shenji;
+        public static ThingDef YJZ_Weapon_Shenji_Assault;
+        public static ThingDef YJZ_Weapon_Shenji_Gatling;
+        public static ThingDef YJZ_Weapon_Shenji_Gauss;
+        public static ThingDef YJZ_Weapon_Shenji_Legendary;
+        public static HediffDef YJZ_ShenjiArmor_Base;
+        public static HediffDef YJZ_ShenjiArmor_Intermediate;
+        public static HediffDef YJZ_ShenjiArmor_Final;
         static YJZDefOf() { DefOfHelper.EnsureInitializedInCtor(typeof(YJZDefOf)); }
     }
 

@@ -38,6 +38,18 @@ namespace Yunjianzi
         public const string ArrayReflect = "array.reflect";
         public const string ArrayStorm = "array.storm";
         public const string ArrayTeleportMastery = "array.teleport.mastery";
+        public const string ShenjiSummon = "shenji.summon";
+        public const string ShenjiGatling = "shenji.gatling";
+        public const string ShenjiRocketJump = "shenji.rocketjump";
+        public const string ShenjiShield = "shenji.shield";
+        public const string ShenjiDualControl = "shenji.dualcontrol";
+        public const string ShenjiGauss = "shenji.gauss";
+        public const string ShenjiRocketDrone = "shenji.rocketdrone";
+        public const string ShenjiAccessories = "shenji.accessories";
+        public const string ShenjiRecallRepair = "shenji.recallrepair";
+        public const string ShenjiDarkShield = "shenji.darkshield";
+        public const string ShenjiLegendaryFirepower = "shenji.legendary";
+        public const string ShenjiQuadControl = "shenji.quadcontrol";
 
         public static readonly List<YunjianziSkillNode> All = new List<YunjianziSkillNode>
         {
@@ -73,7 +85,20 @@ namespace Yunjianzi
             N(SwordRainSpirit, "天剑雨·化神", "天剑雨冷却再次缩短5秒，并在原有两轮后追加两轮攻击。", 5, 0, 3, SwordRainGolden),
             N(ArrayReflect, "返照界壁", "界壁不再仅仅阻挡，而会把敌方抛射物反射回去。", 5, 1, 0, ArrayBarrier),
             N(ArrayStorm, "万钧雷域", "仙阵落雷频率提升至5秒，并强化雷击。", 5, 1, 1, ArrayLightning),
-            N(ArrayTeleportMastery, "化神阵遁", "阵遁的击退范围与距离提升至化神层次。", 5, 1, 2, ArrayTeleportShock)
+            N(ArrayTeleportMastery, "化神阵遁", "阵遁的击退范围与距离提升至化神层次。", 5, 1, 2, ArrayTeleportShock),
+
+            N(ShenjiSummon, "唤神机", "消耗10灵力召唤一台不占机械带宽、与云间子绑定的专属火力支援米莉安。", 1, 2, 0),
+            N(ShenjiGatling, "神机炮·连星", "神机炮强化到原版速射机枪级火力。", 2, 2, 0, ShenjiSummon),
+            N(ShenjiRocketJump, "火箭跃迁", "神机获得冷却一天的火箭跳跃；自动战斗会在近敌压迫时后撤跃迁。", 2, 2, 1, ShenjiSummon),
+            N(ShenjiShield, "百灵护盾", "神机获得100点可恢复护盾。", 2, 2, 2, ShenjiSummon),
+            N(ShenjiDualControl, "双机同调", "云间子可同时维持两台神机。", 3, 2, 0, ShenjiSummon),
+            N(ShenjiGauss, "神机炮·辉光", "火力强化到米莉拉帝国高阶高斯步枪级别。", 3, 2, 1, ShenjiGatling),
+            N(ShenjiRocketDrone, "火箭浮游炮", "神机展开一具自动发射微型火箭的浮游炮。", 3, 2, 2, ShenjiSummon),
+            N(ShenjiAccessories, "万机接口", "开放米莉拉通用配件接口；不接入民主之翼专属配件。", 3, 2, 3, ShenjiSummon),
+            N(ShenjiRecallRepair, "败阵归元", "神机被击溃时传送回云间子身边并完全修复，冷却两天。", 4, 2, 0, ShenjiSummon),
+            N(ShenjiDarkShield, "暗质护盾", "护盾升级为米莉拉帝国暗物质护盾腰带级防护。", 4, 2, 1, ShenjiShield),
+            N(ShenjiLegendaryFirepower, "神机炮·传说", "神机炮达到传奇高斯步枪级火力，武器能量永不枯竭。", 4, 2, 2, ShenjiGauss),
+            N(ShenjiQuadControl, "四象神机", "云间子可同时维持四台终极神机。", 5, 2, 0, ShenjiDualControl)
         };
 
         private static YunjianziSkillNode N(string id, string label, string description, int realm, int branch, int column, params string[] prerequisites)
@@ -281,7 +306,7 @@ namespace Yunjianzi
             forcePause = true;
         }
 
-        public override Vector2 InitialSize { get { return new Vector2(1180f, 820f); } }
+        public override Vector2 InitialSize { get { return new Vector2(1480f, 820f); } }
 
         public override void DoWindowContents(Rect inRect)
         {
@@ -299,13 +324,16 @@ namespace Yunjianzi
             }
             Widgets.DrawLineHorizontal(18f, 55f, inRect.width - 36f);
 
-            Rect swordPanel = new Rect(18f, 70f, 530f, 665f);
-            Rect arrayPanel = new Rect(562f, 70f, 530f, 665f);
+            Rect swordPanel = new Rect(18f, 70f, 440f, 665f);
+            Rect arrayPanel = new Rect(472f, 70f, 440f, 665f);
+            Rect shenjiPanel = new Rect(926f, 70f, 440f, 665f);
             DrawBranchPanel(swordPanel, 0, "御剑诀", "先天已掌握：唤起诛邪");
             DrawBranchPanel(arrayPanel, 1, "仙阵诀", "从琉璃阵眼起步，逐层拆分阵法特效");
+            DrawBranchPanel(shenjiPanel, 2, "神机诀", "专属米莉安、火力支援与境界同调");
             DrawPrerequisiteLines();
             DrawBranchNodes(swordPanel, 0);
             DrawBranchNodes(arrayPanel, 1);
+            DrawBranchNodes(shenjiPanel, 2);
 
             Rect future = new Rect(18f, 744f, inRect.width - 36f, 24f);
             GUI.color = new Color(.62f, .72f, .74f);
@@ -342,17 +370,18 @@ namespace Yunjianzi
             for (int i = 0; i < nodes.Count; i++)
             {
                 YunjianziSkillNode node = nodes[i];
-                float x = panel.x + 65f + node.Column * 89f;
+                float x = panel.x + 55f + node.Column * 76f;
                 float y = panel.y + 77f + (node.Realm - 1) * 115f;
-                nodeRects[node.Id] = new Rect(x, y, 84f, 54f);
+                nodeRects[node.Id] = new Rect(x, y, 72f, 54f);
             }
         }
 
         private void DrawPrerequisiteLines()
         {
             nodeRects.Clear();
-            CacheNodeRects(new Rect(18f, 70f, 530f, 665f), 0);
-            CacheNodeRects(new Rect(562f, 70f, 530f, 665f), 1);
+            CacheNodeRects(new Rect(18f, 70f, 440f, 665f), 0);
+            CacheNodeRects(new Rect(472f, 70f, 440f, 665f), 1);
+            CacheNodeRects(new Rect(926f, 70f, 440f, 665f), 2);
             foreach (YunjianziSkillNode node in YunjianziSkills.All)
             {
                 Rect child;

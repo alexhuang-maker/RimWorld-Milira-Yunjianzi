@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="Milira_MilianBase_Pawn">
+    <defName>YJZ_Shenji_Race</defName>
+    <label>神机米莉安</label>
+    <description>云间子以神机诀唤出的专属火力支援型米莉安。她不占用机械带宽，拥有自循环能源与随境界成长的固有装甲。</description>
+    <statBases>
+      <MoveSpeed>4.6</MoveSpeed>
+      <MarketValue>2200</MarketValue>
+      <ArmorRating_Blunt>0.18</ArmorRating_Blunt>
+      <ArmorRating_Sharp>0.30</ArmorRating_Sharp>
+      <BandwidthCost MayRequire="Ludeon.Rimworld.Biotech">0</BandwidthCost>
+      <MechEnergyLossPerHP MayRequire="Ludeon.Rimworld.Biotech">0</MechEnergyLossPerHP>
+    </statBases>
+    <race>
+      <baseHealthScale>1.35</baseHealthScale>
+    </race>
+    <comps Inherit="False">
+      <li Class="CompProperties_CanBeDormant" />
+      <li Class="CompProperties_WakeUpDormant"><wakeUpOnDamage>true</wakeUpOnDamage><wakeUpCheckRadius>30</wakeUpCheckRadius><wakeUpSound>MechanoidsWakeUp</wakeUpSound></li>
+      <li MayRequire="Ludeon.Rimworld.Biotech" Class="CompProperties_MechRepairable" />
+      <li Class="Milira.CompProperties_MilianApparelRender" />
+      <li><compClass>Milira.CompStripMilian</compClass></li>
+      <li Class="AncotLibrary.CompProperties_MechAutoFight"><hediffDef>Milira_MilianAutoFightHint</hediffDef><requireResearch>Milira_MilianTech_AutoFight</requireResearch></li>
+      <li Class="Milira.CompProperties_EquipMilian"><useJob>Milira_EquipMilianPre</useJob><useDuration>0</useDuration><warmupMote>Mote_ResurrectAbility</warmupMote></li>
+      <li Class="Milira.CompProperties_TargetEffect_EquipMilian" />
+      <li Class="Milira.CompProperties_TargetableWeapon"><compClass>Milira.CompTargetableWeapon</compClass><ignoreQuestLodgerPawns>true</ignoreQuestLodgerPawns></li>
+      <li Class="Yunjianzi.CompProperties_YunjianziShenji" />
+    </comps>
+    <uiIconPath>Milian/Mechanoid_uiIcon/PawnI</uiIconPath>
+  </ThingDef>
+
+  <PawnKindDef ParentName="BaseMilianKind_Mechanoid">
+    <defName>YJZ_Shenji</defName>
+    <label>神机米莉安</label>
+    <race>YJZ_Shenji_Race</race>
+    <combatPower>220</combatPower>
+    <forceNormalGearQuality>true</forceNormalGearQuality>
+    <weaponMoney>0</weaponMoney>
+    <apparelMoney>0</apparelMoney>
+    <techHediffsMoney>0</techHediffsMoney>
+  </PawnKindDef>
+
+  <ThingDef ParentName="Gun_AssaultRifle">
+    <defName>YJZ_Weapon_Shenji_Assault</defName>
+    <label>神机炮·初式</label>
+    <description>练气阶段的神机炮，性能与制式突击步枪相近。</description>
+    <graphicData><texPath>Things/Item/Equipment/WeaponRanged/AssaultRifle</texPath></graphicData>
+  </ThingDef>
+
+  <ThingDef ParentName="Gun_Minigun">
+    <defName>YJZ_Weapon_Shenji_Gatling</defName>
+    <label>神机炮·连星</label>
+    <description>筑基阶段展开的速射神机炮。</description>
+    <graphicData><texPath>Things/Item/Equipment/WeaponRanged/Minigun</texPath></graphicData>
+  </ThingDef>
+
+  <ThingDef ParentName="Gun_AssaultRifle" Name="YJZ_Weapon_Shenji_Gauss_Base">
+    <defName>YJZ_Weapon_Shenji_Gauss</defName>
+    <label>神机炮·辉光</label>
+    <description>紫府阶段的高斯神机炮，火力对齐米莉拉帝国高阶自动步枪。</description>
+    <graphicData><texPath>MiliraImperium/Weapon/GaussAutorifle</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>1.4</drawSize></graphicData>
+    <verbs>
+      <li>
+        <verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand>
+        <defaultProjectile>MiliraBullet_Autorifle</defaultProjectile><warmupTime>1.0</warmupTime>
+        <range>35.9</range><burstShotCount>6</burstShotCount><ticksBetweenBurstShots>4</ticksBetweenBurstShots>
+        <soundCast>Shot_AssaultRifle</soundCast><muzzleFlashScale>9</muzzleFlashScale>
+      </li>
+    </verbs>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_Weapon_Shenji_Gauss_Base">
+    <defName>YJZ_Weapon_Shenji_Legendary</defName>
+    <label>神机炮·传说</label>
+    <description>金丹阶段完全展开的神机炮，以传奇级帝国高斯步枪为基准。</description>
+    <verbs>
+      <li>
+        <verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand>
+        <defaultProjectile>MiliraBullet_Autorifle</defaultProjectile><warmupTime>0.65</warmupTime>
+        <range>39.9</range><burstShotCount>9</burstShotCount><ticksBetweenBurstShots>3</ticksBetweenBurstShots>
+        <soundCast>Shot_AssaultRifle</soundCast><muzzleFlashScale>11</muzzleFlashScale>
+      </li>
+    </verbs>
+  </ThingDef>
+</Defs>
