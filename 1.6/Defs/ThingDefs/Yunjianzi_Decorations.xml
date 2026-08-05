@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef Name="YJZ_DecorationBase" ParentName="BuildingBase" Abstract="True">
+    <thingClass>Building</thingClass>
+    <category>Building</category>
+    <tickerType>Never</tickerType>
+    <drawerType>MapMeshOnly</drawerType>
+    <altitudeLayer>BuildingOnTop</altitudeLayer>
+    <designationCategory>Ideology</designationCategory>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <thingCategories><li>BuildingsFurniture</li></thingCategories>
+    <size>(1,1)</size>
+    <passability>Standable</passability>
+    <pathCost>8</pathCost>
+    <fillPercent>0.12</fillPercent>
+    <rotatable>false</rotatable>
+    <building>
+      <isEdifice>false</isEdifice>
+      <canPlaceOverImpassablePlant>false</canPlaceOverImpassablePlant>
+      <ai_chillDestination>false</ai_chillDestination>
+    </building>
+    <comps>
+      <li Class="CompProperties_Forbiddable" />
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_DecorationBase">
+    <defName>YJZ_Decoration_EverlightLamp</defName>
+    <label>云月长明灯</label>
+    <description>以辉钢塑成白玉般的云月灯架，灵珠将柔和的青光洒在修行场所。它兼具米莉拉精密构造与古老法器的含蓄美感。</description>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/Decoration/EverlightLamp</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(1.25,1.25)</drawSize>
+      <drawOffset>(0,0,0.12)</drawOffset>
+    </graphicData>
+    <costList><Milira_SplendidSteel>35</Milira_SplendidSteel></costList>
+    <statBases>
+      <MaxHitPoints>180</MaxHitPoints><WorkToBuild>900</WorkToBuild><Mass>6</Mass>
+      <Beauty>18</Beauty><Flammability>0</Flammability>
+    </statBases>
+    <constructionSkillPrerequisite>4</constructionSkillPrerequisite>
+    <comps>
+      <li Class="CompProperties_Forbiddable" />
+      <li Class="CompProperties_Glower">
+        <glowRadius>6</glowRadius>
+        <glowColor>(145,235,245,0)</glowColor>
+      </li>
+    </comps>
+    <uiOrder>3960</uiOrder>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_DecorationBase">
+    <defName>YJZ_Decoration_CloudCenser</defName>
+    <label>云纹灵香炉</label>
+    <description>一座辉钢打造的八角灵香炉。云纹与青色灵路沿炉身交错，悬于炉盖上方的玉珠使周围气息显得安宁而庄重。</description>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/Decoration/CloudCenser</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(1.2,1.2)</drawSize>
+    </graphicData>
+    <costList><Milira_SplendidSteel>45</Milira_SplendidSteel></costList>
+    <statBases>
+      <MaxHitPoints>220</MaxHitPoints><WorkToBuild>1100</WorkToBuild><Mass>9</Mass>
+      <Beauty>22</Beauty><Flammability>0</Flammability>
+    </statBases>
+    <constructionSkillPrerequisite>4</constructionSkillPrerequisite>
+    <uiOrder>3961</uiOrder>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_DecorationBase">
+    <defName>YJZ_Decoration_FloatingJadeDisplay</defName>
+    <label>浮玉陈设台</label>
+    <description>辉钢基座托起一枚悬浮灵珠，四枚剑形饰件与倾斜玉环缓慢维持其姿态。它没有战斗用途，只为道场增添清贵而神秘的气氛。</description>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/Decoration/FloatingJadeDisplay</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(1.3,1.3)</drawSize>
+    </graphicData>
+    <costList><Milira_SplendidSteel>60</Milira_SplendidSteel></costList>
+    <statBases>
+      <MaxHitPoints>260</MaxHitPoints><WorkToBuild>1500</WorkToBuild><Mass>12</Mass>
+      <Beauty>30</Beauty><Flammability>0</Flammability>
+    </statBases>
+    <constructionSkillPrerequisite>5</constructionSkillPrerequisite>
+    <comps>
+      <li Class="CompProperties_Forbiddable" />
+      <li Class="CompProperties_Glower">
+        <glowRadius>3</glowRadius>
+        <glowColor>(120,225,240,0)</glowColor>
+      </li>
+    </comps>
+    <uiOrder>3962</uiOrder>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_DecorationBase">
+    <defName>YJZ_Decoration_CloudScreen</defName>
+    <label>云间灵玉屏</label>
+    <description>以辉钢构成的双扇屏风。深青半透屏面刻有流云与灵路，既可划分修炼场所，也是一件端庄的室内陈设。</description>
+    <size>(2,1)</size>
+    <rotatable>true</rotatable>
+    <passability>PassThroughOnly</passability>
+    <pathCost>30</pathCost>
+    <fillPercent>0.25</fillPercent>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/Decoration/CloudScreen</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(2,1)</drawSize>
+    </graphicData>
+    <costList><Milira_SplendidSteel>80</Milira_SplendidSteel></costList>
+    <statBases>
+      <MaxHitPoints>360</MaxHitPoints><WorkToBuild>2200</WorkToBuild><Mass>18</Mass>
+      <Beauty>36</Beauty><Flammability>0</Flammability>
+    </statBases>
+    <constructionSkillPrerequisite>5</constructionSkillPrerequisite>
+    <uiOrder>3963</uiOrder>
+  </ThingDef>
+</Defs>
