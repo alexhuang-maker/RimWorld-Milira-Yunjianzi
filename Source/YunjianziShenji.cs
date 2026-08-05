@@ -25,6 +25,7 @@ namespace Yunjianzi
         private int recallRepairReadyTick;
         private int lastArmorTier;
         private int boundTick;
+        private bool nativeControlBound;
 
         public Pawn Pawn { get { return parent as Pawn; } }
         public Pawn Owner
@@ -59,6 +60,7 @@ namespace Yunjianzi
             boundTick = Find.TickManager == null ? 0 : Find.TickManager.TicksGame;
             shield = ShieldMax;
             SynchronizeTier(true);
+            EnsureNativeControlRelation();
         }
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
@@ -75,12 +77,33 @@ namespace Yunjianzi
             if (pawn == null || pawn.Dead) return;
             if (pawn.IsHashIntervalTick(60))
             {
+                // 旧存档仅执行到成功为止；建立后不再轮询控制关系。
+                if (!nativeControlBound) EnsureNativeControlRelation();
                 if (pawn.needs != null && pawn.needs.energy != null) pawn.needs.energy.CurLevelPercentage = 1f;
                 if (Find.TickManager.TicksGame >= shieldBrokenUntil && ShieldMax > 0f)
                     shield = Mathf.Min(ShieldMax, shield + ShieldMax / 120f);
                 TryAutomaticRocketJump();
             }
             if (pawn.IsHashIntervalTick(90)) TryRocketDroneAttack();
+        }
+
+        private void EnsureNativeControlRelation()
+        {
+            if (nativeControlBound || !ModsConfig.BiotechActive) return;
+            Pawn pawn = Pawn;
+            Pawn owner = Owner;
+            if (pawn == null || owner == null || pawn.relations == null) return;
+            // 旧存档里的云间子可能早于该兼容逻辑生成，补建一次 tracker。
+            if (owner.mechanitor == null) owner.mechanitor = new Pawn_MechanitorTracker(owner);
+            if (!pawn.relations.DirectRelationExists(PawnRelationDefOf.Overseer, owner))
+                pawn.relations.AddDirectRelation(PawnRelationDefOf.Overseer, owner);
+            nativeControlBound = pawn.relations.DirectRelationExists(PawnRelationDefOf.Overseer, owner);
+            if (nativeControlBound)
+            {
+                MechanitorControlGroup group = MechanitorUtility.GetMechControlGroup(pawn);
+                if (group != null && group.WorkMode != MechWorkModeDefOf.Work)
+                    owner.mechanitor.AssignPawnControlGroup(pawn, MechWorkModeDefOf.Work);
+            }
         }
 
         private int ArmorTier
@@ -257,6 +280,7 @@ namespace Yunjianzi
             Scribe_Values.Look(ref recallRepairReadyTick, "yjz_shenjiRecallRepairReady", 0);
             Scribe_Values.Look(ref lastArmorTier, "yjz_shenjiArmorTier", 0);
             Scribe_Values.Look(ref boundTick, "yjz_shenjiBoundTick", 0);
+            Scribe_Values.Look(ref nativeControlBound, "yjz_shenjiNativeControlBound", false);
         }
     }
 
@@ -392,8 +416,38 @@ namespace Yunjianzi
             GenSpawn.Spawn(shenji, cell, Pawn.Map);
             CompYunjianziShenji comp = shenji.TryGetComp<CompYunjianziShenji>();
             if (comp != null) comp.BindTo(Pawn);
+            // 使用原版机械师/米莉安共用的监督关系，建立征召、控制组与工作模式。
+            // 神机 BandwidthCost 为 0，不会挤占普通机械体的带宽。
             FleckMaker.Static(cell, Pawn.Map, FleckDefOf.PsycastSkipOuterRingExit, 1.5f);
             Messages.Message("神机应召而至。", shenji, MessageTypeDefOf.PositiveEvent, false);
+        }
+    }
+
+    /// <summary>
+    /// 云间子以神机诀直接控制专属米莉安。让她拥有原版 Mechanitor tracker，
+    /// 监督关系才能驱动征召和工作 AI；神机仍为零带宽单位。
+    /// </summary>
+    [HarmonyPatch(typeof(MechanitorUtility), nameof(MechanitorUtility.ShouldBeMechanitor))]
+    internal static class Patch_MechanitorUtility_YunjianziController
+    {
+        private static void Postfix(Pawn p, ref bool __result)
+        {
+            if (__result || p == null) return;
+            CompYunjianziCultivation cultivation = p.TryGetComp<CompYunjianziCultivation>();
+            if (cultivation != null && cultivation.IsYunjianzi) __result = true;
+        }
+    }
+
+    // 专属 tracker 只服务于神机，不让云间子借此零带宽接管其他机械体。
+    [HarmonyPatch(typeof(MechanitorUtility), nameof(MechanitorUtility.CanControlMech))]
+    internal static class Patch_MechanitorUtility_YunjianziOnlyControlsShenji
+    {
+        private static void Postfix(Pawn pawn, Pawn mech, ref AcceptanceReport __result)
+        {
+            CompYunjianziCultivation cultivation = pawn == null ? null : pawn.TryGetComp<CompYunjianziCultivation>();
+            if (cultivation != null && cultivation.IsYunjianzi &&
+                (mech == null || mech.TryGetComp<CompYunjianziShenji>() == null))
+                __result = false;
         }
     }
 
@@ -410,34 +464,7 @@ namespace Yunjianzi
     // 米莉拉原版工作/配置页会排除没有 OverseerSubject 的机械体。
     // 神机刻意不接机械师带宽，因此只在界面结果中补入，不伪造监督者关系，也不会触发失控机制。
     [HarmonyPatch]
-    internal static class Patch_MilianPawnTables_IncludeYunjianziShenji
-    {
-        private static IEnumerable<MethodBase> TargetMethods()
-        {
-            foreach (string typeName in new[] { "Milira.MainTabWindow_MilianWork", "Milira.MainTabWindow_MilianConfig" })
-            {
-                Type type = AccessTools.TypeByName(typeName);
-                MethodInfo getter = type == null ? null : AccessTools.PropertyGetter(type, "Pawns");
-                if (getter != null) yield return getter;
-            }
-        }
-
-        private static IEnumerable<Pawn> Postfix(IEnumerable<Pawn> __result)
-        {
-            List<Pawn> pawns = __result == null ? new List<Pawn>() : __result.ToList();
-            Map map = Find.CurrentMap;
-            if (map == null) return pawns;
-            Pawn[] snapshot = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToArray();
-            for (int i = 0; i < snapshot.Length; i++)
-            {
-                Pawn pawn = snapshot[i];
-                if (pawn != null && !pawn.Dead && pawn.TryGetComp<CompYunjianziShenji>() != null && !pawns.Contains(pawn))
-                    pawns.Add(pawn);
-            }
-            return pawns;
-        }
-    }
-
+    // 米莉拉配件白名单兼容。
     [StaticConstructorOnStartup]
     internal static class YunjianziShenjiAccessoryCompatibility
     {

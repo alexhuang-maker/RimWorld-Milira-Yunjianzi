@@ -8,7 +8,7 @@
     <description>练气与筑基阶段的专属神机甲。装甲属性全部由这件可见甲衣提供。</description>
     <tradeability>None</tradeability>
     <graphicData>
-      <texPath>Milian/Apparel/Middle/LightArmor/LightArmor</texPath>
+      <texPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Base</texPath>
     </graphicData>
     <statBases>
       <MaxHitPoints>320</MaxHitPoints>
@@ -20,8 +20,9 @@
     </statBases>
     <apparel>
       <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+      <renderSkipFlags><li>Head</li><li>Hair</li></renderSkipFlags>
       <bodyPartGroups><li>Neck</li><li>Torso</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups>
-      <wornGraphicPath>Milian/Apparel/Middle/LightArmor/LightArmor</wornGraphicPath>
+      <wornGraphicPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Base</wornGraphicPath>
       <tags><li>YJZ_ShenjiIntrinsic</li></tags>
     </apparel>
     <equippedStatOffsets><RangedCooldownFactor>-0.05</RangedCooldownFactor></equippedStatOffsets>
@@ -33,7 +34,7 @@
     <description>紫府与金丹阶段的专属神机甲，以传奇日盘钢百夫长套装为防护基准。</description>
     <tradeability>None</tradeability>
     <graphicData>
-      <texPath>Milian/Apparel/Middle/GuardianArmor/GuardianArmor</texPath>
+      <texPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Intermediate</texPath>
     </graphicData>
     <statBases>
       <MaxHitPoints>720</MaxHitPoints>
@@ -45,8 +46,9 @@
     </statBases>
     <apparel>
       <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+      <renderSkipFlags><li>Head</li><li>Hair</li></renderSkipFlags>
       <bodyPartGroups><li>Neck</li><li>Torso</li><li>Shoulders</li><li>Arms</li><li>Hands</li><li>Legs</li><li>Feet</li></bodyPartGroups>
-      <wornGraphicPath>Milian/Apparel/Middle/GuardianArmor/GuardianArmor</wornGraphicPath>
+      <wornGraphicPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Intermediate</wornGraphicPath>
       <tags><li>YJZ_ShenjiIntrinsic</li></tags>
     </apparel>
     <equippedStatOffsets><RangedCooldownFactor>-0.12</RangedCooldownFactor><MoveSpeed>0.25</MoveSpeed></equippedStatOffsets>
@@ -58,8 +60,7 @@
     <description>化神阶段完全展开的终极神机甲，在传奇日盘钢百夫长套装基础上全面强化。</description>
     <tradeability>None</tradeability>
     <graphicData>
-      <texPath>Milian/Apparel/Middle/PaladinArmor/PaladinArmor</texPath>
-      <shaderType>CutoutComplex</shaderType>
+      <texPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Final</texPath>
     </graphicData>
     <statBases>
       <MaxHitPoints>1400</MaxHitPoints>
@@ -70,10 +71,10 @@
       <StuffEffectMultiplierArmor>0</StuffEffectMultiplierArmor>
     </statBases>
     <apparel>
-      <useWornGraphicMask>true</useWornGraphicMask>
       <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+      <renderSkipFlags><li>Head</li><li>Hair</li></renderSkipFlags>
       <bodyPartGroups><li>Neck</li><li>Torso</li><li>Shoulders</li><li>Arms</li><li>Hands</li><li>Legs</li><li>Feet</li></bodyPartGroups>
-      <wornGraphicPath>Milian/Apparel/Middle/PaladinArmor/PaladinArmor</wornGraphicPath>
+      <wornGraphicPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Final</wornGraphicPath>
       <tags><li>YJZ_ShenjiIntrinsic</li></tags>
     </apparel>
     <equippedStatOffsets><RangedCooldownFactor>-0.20</RangedCooldownFactor><MoveSpeed>0.75</MoveSpeed><WorkSpeedGlobal>0.30</WorkSpeedGlobal></equippedStatOffsets>

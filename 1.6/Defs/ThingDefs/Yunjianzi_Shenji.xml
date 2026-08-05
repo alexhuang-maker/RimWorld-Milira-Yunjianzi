@@ -19,16 +19,26 @@
       <li Class="Milira.CompProperties_MilianHairSwitch">
         <gizmoIconPath>Milira/UI/HairChange</gizmoIconPath>
         <frontHairPaths>
-          <li>Milian/Pawn/Hair/Milian_HairN1/MiliraHair3</li>
+          <li>Milian/Pawn/Hair/Milian_HairN1/MiliraHair4</li>
         </frontHairPaths>
         <behindHairPaths>
-          <li>Milira/Pawn/Hair/HairBackGround/MiliraHairBG3</li>
+          <li>Milira/Pawn/Hair/HairBackGround/MiliraHairBG4</li>
         </behindHairPaths>
       </li>
       <li Class="CompProperties_CanBeDormant" />
       <li Class="CompProperties_WakeUpDormant"><wakeUpOnDamage>true</wakeUpOnDamage><wakeUpCheckRadius>30</wakeUpCheckRadius><wakeUpSound>MechanoidsWakeUp</wakeUpSound></li>
+      <!-- 神机带宽费用为 0，但征召、控制组与米莉安工作管理依赖原生监督关系。 -->
+      <li MayRequire="Ludeon.Rimworld.Biotech" Class="CompProperties_OverseerSubject">
+        <needsOverseerEffect>MechUncontrolled</needsOverseerEffect>
+        <delayUntilFeralCheck>60000</delayUntilFeralCheck>
+        <feralMtbDays>10</feralMtbDays>
+        <feralCascadeRadialDistance>25</feralCascadeRadialDistance>
+      </li>
       <li MayRequire="Ludeon.Rimworld.Biotech" Class="CompProperties_MechRepairable" />
       <li Class="Milira.CompProperties_MilianApparelRender" />
+      <li Class="Milira.CompProperties_GainHediffSpawn">
+        <hediffDef>Milian_ClassHediff_Pawn</hediffDef>
+      </li>
       <li><compClass>Milira.CompStripMilian</compClass></li>
       <li Class="AncotLibrary.CompProperties_MechAutoFight"><hediffDef>Milira_MilianAutoFightHint</hediffDef><requireResearch>Milira_MilianTech_AutoFight</requireResearch></li>
       <li Class="Milira.CompProperties_EquipMilian"><useJob>Milira_EquipMilianPre</useJob><useDuration>0</useDuration><warmupMote>Mote_ResurrectAbility</warmupMote></li>
