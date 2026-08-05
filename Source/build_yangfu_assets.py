@@ -94,12 +94,12 @@ def table_south():
 
 
 south = table_south()
-south.save(BUILDING / "TalismanTable_south.png")
-ImageOps.flip(south).save(BUILDING / "TalismanTable_north.png")
+south.save(QA / "LegacyTalismanTable_south.png")
+ImageOps.flip(south).save(QA / "LegacyTalismanTable_north.png")
 east = south.rotate(90, expand=False)
-east.save(BUILDING / "TalismanTable_east.png")
-ImageOps.mirror(east).save(BUILDING / "TalismanTable_west.png")
-south.save(BUILDING / "TalismanTable.png")
+east.save(QA / "LegacyTalismanTable_east.png")
+ImageOps.mirror(east).save(QA / "LegacyTalismanTable_west.png")
+south.save(QA / "LegacyTalismanTable.png")
 
 sheet = Image.new("RGB", (1280, 940), (13, 26, 31))
 sd = ImageDraw.Draw(sheet)
