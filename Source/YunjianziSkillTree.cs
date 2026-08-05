@@ -300,12 +300,13 @@ namespace Yunjianzi
         private readonly Dictionary<string, Rect> nodeRects = new Dictionary<string, Rect>();
         private int selectedBranch;
 
-        private static readonly string[] BranchTitles = { "御剑诀", "仙阵诀", "神机诀" };
-        private static readonly string[] BranchSubtitles =
+        private static readonly string[] BranchTitles = { "御剑诀", "仙阵诀", "神机诀", "阳符诀" };
+        private static readonly string[] BranchIntroductions =
         {
-            "诛邪为根基；附灵、剑影、瞬斩、天剑雨等专精沿固定纵向轨道进阶。",
-            "琉璃阵眼为根基；回元、雷域、阵纹、阵遁、随身阵与界壁彼此分栏。",
-            "唤神机为根基；火力、机动、护盾、浮游炮、接口、归元与控制分别成长。"
+            "白刃至今，御剑之术由杀伐之道而生。山门以灵御剑，诛邪无数，又以剑正道之谬。以剑载敌、遁行为小乘；凭心御剑，方是大道。",
+            "阵法之道，玄妙非常。入道之人可凭一器演化，瞒天拘地；亦可引动天地雷霆，困敌于阵中，或融入心神，御敌无形。一人起阵，亦自成方圆。",
+            "器者载道，机者通神。神机诀取米莉拉灵械之学，合阵枢、灵纹与修行之法，以心御机，以机行道。灵念所至，百工与兵锋皆如臂使指。",
+            "古有五经论道，观天地广阔、五行变换，皆可采其意而书于符中。符可护身益生，亦可蕴火、雷、风、兵之术；一纸虽轻，落笔即成法。"
         };
         private static readonly string[] BranchRootIds =
         {
@@ -353,7 +354,7 @@ namespace Yunjianzi
             Rect future = new Rect(18f, 744f, inRect.width - 36f, 24f);
             GUI.color = new Color(.62f, .72f, .74f);
             Text.Anchor = TextAnchor.MiddleCenter;
-            Widgets.Label(future, "纵向专精轨道 · 青色为已掌握，金色为可参悟    |    阳符诀 · 后续开放");
+            Widgets.Label(future, "纵向专精轨道 · 青色为已掌握，金色为可参悟");
             Text.Anchor = TextAnchor.UpperLeft;
             GUI.color = Color.white;
         }
@@ -361,10 +362,10 @@ namespace Yunjianzi
         private void DrawTechniqueTabs(Rect tabsRect)
         {
             float gap = 8f;
-            float width = (tabsRect.width - gap * 2f) / 3f;
+            float width = (tabsRect.width - gap * (BranchTitles.Length - 1)) / BranchTitles.Length;
             Text.Anchor = TextAnchor.MiddleCenter;
             Text.Font = GameFont.Small;
-            for (int branch = 0; branch < 3; branch++)
+            for (int branch = 0; branch < BranchTitles.Length; branch++)
             {
                 Rect tab = new Rect(tabsRect.x + branch * (width + gap), tabsRect.y, width, tabsRect.height);
                 bool selected = branch == selectedBranch;
@@ -384,8 +385,16 @@ namespace Yunjianzi
             Text.Font = GameFont.Tiny;
             Text.Anchor = TextAnchor.MiddleCenter;
             GUI.color = new Color(.66f, .83f, .84f);
-            Widgets.Label(new Rect(panel.x + 16f, panel.y + 5f, panel.width - 32f, 22f), BranchSubtitles[branch]);
+            Widgets.Label(new Rect(panel.x + 34f, panel.y + 5f, panel.width - 68f, 48f), BranchIntroductions[branch]);
             GUI.color = Color.white;
+
+            if (branch == 3)
+            {
+                DrawYangfuConcept(panel);
+                Text.Anchor = TextAnchor.UpperLeft;
+                Text.Font = GameFont.Small;
+                return;
+            }
 
             CacheNodeRects(panel, branch);
             DrawRealmBands(panel, branch);
@@ -393,6 +402,48 @@ namespace Yunjianzi
             DrawBranchNodes(branch);
             Text.Anchor = TextAnchor.UpperLeft;
             Text.Font = GameFont.Small;
+        }
+
+        private static void DrawYangfuConcept(Rect panel)
+        {
+            float top = panel.y + 72f;
+            float gap = 14f;
+            float cardWidth = (panel.width - 48f - gap) * .5f;
+            Rect life = new Rect(panel.x + 17f, top, cardWidth, 196f);
+            Rect combat = new Rect(life.xMax + gap, top, cardWidth, 196f);
+            DrawConceptCard(life, "随身符 · 装配生效",
+                "在画符台制作实体符箓，并装入云间子的专属符位。可灵活替换生活型或战斗强化型符箓，改善劳作、休息与修行，或强化命中、防护、机动与灵力运转；境界提升后可同时维持更多符箓。",
+                new Color(.16f, .43f, .36f, .92f));
+            DrawConceptCard(combat, "战斗术符 · 右键择法",
+                "战斗术符作为另一项技能：右键在已掌握法术之间切换，左键对目标施放。符箓只是承载法术的媒介，不占普通衣着层；每种法术拥有自己的图标、灵力消耗、冷却与直线境界进阶。",
+                new Color(.44f, .29f, .18f, .92f));
+
+            float routeTop = life.yMax + 22f;
+            float routeGap = 12f;
+            float routeWidth = (panel.width - 46f - routeGap * 2f) / 3f;
+            DrawConceptCard(new Rect(panel.x + 17f, routeTop, routeWidth, 230f), "火龙卷",
+                "唤起可移动的烈焰旋风，沿途灼烧并扰乱敌阵。其境界进阶只强化持续时间、移动控制、覆盖范围与燃烧表现，不分叉到其他术式。",
+                new Color(.48f, .20f, .10f, .92f));
+            DrawConceptCard(new Rect(panel.x + 17f + routeWidth + routeGap, routeTop, routeWidth, 230f), "天雷神风",
+                "先以神风牵引、聚拢范围内敌人，再于汇聚处降下雷霆。其进阶沿聚怪强度、作用半径、雷击轮数与控制时长直线成长。",
+                new Color(.18f, .31f, .52f, .92f));
+            DrawConceptCard(new Rect(panel.x + 17f + (routeWidth + routeGap) * 2f, routeTop, routeWidth, 230f), "撒豆成兵",
+                "撒出符豆化为短暂存在的符兵。符兵不承担工作，只会锁定敌人冲锋，并在接触目标或寿命结束时自毁爆炸；进阶提升数量、寻敌与爆破表现。",
+                new Color(.40f, .35f, .16f, .92f));
+        }
+
+        private static void DrawConceptCard(Rect rect, string title, string body, Color fill)
+        {
+            Widgets.DrawBoxSolid(rect, fill);
+            Widgets.DrawBox(rect, 1);
+            Text.Anchor = TextAnchor.UpperLeft;
+            Text.Font = GameFont.Small;
+            GUI.color = new Color(.88f, .95f, .91f);
+            Widgets.Label(new Rect(rect.x + 14f, rect.y + 12f, rect.width - 28f, 28f), title);
+            Text.Font = GameFont.Tiny;
+            GUI.color = new Color(.88f, .90f, .88f);
+            Widgets.Label(new Rect(rect.x + 14f, rect.y + 48f, rect.width - 28f, rect.height - 60f), body);
+            GUI.color = Color.white;
         }
 
         private void DrawRealmBands(Rect panel, int branch)
@@ -406,10 +457,10 @@ namespace Yunjianzi
             Text.Anchor = TextAnchor.MiddleCenter;
             GUI.color = new Color(.54f, .76f, .78f);
             for (int lane = 0; lane < lanes.Length; lane++)
-                Widgets.Label(new Rect(contentX + lane * laneStep, panel.y + 28f, laneStep, 22f), lanes[lane]);
+                Widgets.Label(new Rect(contentX + lane * laneStep, panel.y + 56f, laneStep, 22f), lanes[lane]);
             GUI.color = Color.white;
 
-            float rowStart = panel.y + 146f;
+            float rowStart = panel.y + 174f;
             for (int realm = 1; realm <= 5; realm++)
             {
                 float y = rowStart + (realm - 1) * 88f;
@@ -429,14 +480,14 @@ namespace Yunjianzi
         {
             nodeRects.Clear();
             string rootId = BranchRootIds[branch];
-            nodeRects[rootId] = new Rect(panel.center.x - 86f, panel.y + 60f, 172f, 52f);
+            nodeRects[rootId] = new Rect(panel.center.x - 86f, panel.y + 88f, 172f, 52f);
 
             string[] lanes = BranchLaneLabels[branch];
             float contentX = panel.x + 86f;
             float contentWidth = panel.width - 108f;
             float laneStep = contentWidth / lanes.Length;
             float nodeWidth = Mathf.Min(148f, laneStep - 14f);
-            float rowStart = panel.y + 146f;
+            float rowStart = panel.y + 174f;
             List<YunjianziSkillNode> nodes = YunjianziSkills.All
                 .Where(n => n.Branch == branch && n.Id != rootId).ToList();
             for (int i = 0; i < nodes.Count; i++)
