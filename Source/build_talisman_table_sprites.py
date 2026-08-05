@@ -9,6 +9,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 south = Image.open(SOURCE).convert("RGBA").resize((768, 512), Image.Resampling.LANCZOS)
 south.save(OUT / "TalismanTable.png")
 south.save(OUT / "TalismanTable_south.png")
-south.rotate(180, expand=True, resample=Image.Resampling.BICUBIC).save(OUT / "TalismanTable_north.png")
+# Preserve the raised jade console and work surface instead of turning them over.
+south.save(OUT / "TalismanTable_north.png")
 south.rotate(90, expand=True, resample=Image.Resampling.BICUBIC).save(OUT / "TalismanTable_east.png")
 south.rotate(270, expand=True, resample=Image.Resampling.BICUBIC).save(OUT / "TalismanTable_west.png")

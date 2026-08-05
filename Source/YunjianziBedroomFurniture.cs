@@ -9,9 +9,9 @@ namespace Yunjianzi
 {
     public sealed class CompProperties_YunjianziSereneBed : CompProperties
     {
-        // Natural recovery is 0.5% per in-game second.  This extra 1% makes
-        // sleeping in the bed recover spiritual energy at three times the base rate.
-        public float extraEnergyFractionPerSecond = 0.01f;
+        // Natural recovery is 0.5% per in-game second. This extra 0.05% makes
+        // sleeping in the bed recover spiritual energy at 1.1 times the base rate.
+        public float extraEnergyFractionPerSecond = 0.0005f;
 
         public CompProperties_YunjianziSereneBed()
         {
@@ -44,7 +44,7 @@ namespace Yunjianzi
 
         public override string CompInspectStringExtra()
         {
-            return "云间子在此入睡时，灵力恢复速度为自然恢复的三倍，并免疫普通睡眠打扰。";
+            return "云间子在此入睡时，灵力恢复速度为自然恢复的1.1倍，并免疫普通睡眠打扰。";
         }
     }
 
@@ -87,12 +87,16 @@ namespace Yunjianzi
         public override AcceptanceReport AllowsPlacing(BuildableDef checkingDef, IntVec3 loc, Rot4 rot, Map map,
             Thing thingToIgnore = null, Thing thing = null)
         {
-            foreach (IntVec3 cell in GenAdj.CellsAdjacentCardinal(loc, rot, checkingDef.Size))
+            CellRect occupied = GenAdj.OccupiedRect(loc, rot, checkingDef.Size);
+            IntVec3 facing = rot.FacingCell;
+            foreach (IntVec3 cell in occupied.Cells)
             {
-                if (cell.InBounds(map) && cell.GetEdifice(map) != null && cell.GetEdifice(map).def.IsWall)
-                    return true;
+                IntVec3 wallCell = cell + facing;
+                if (!wallCell.InBounds(map)) continue;
+                Building edifice = wallCell.GetEdifice(map);
+                if (edifice != null && edifice.def.IsWall) return true;
             }
-            return "壁挂书架必须紧邻一面墙。";
+            return "悬书架背面必须正对并紧贴一面墙。";
         }
     }
 }

@@ -3,14 +3,14 @@
   <ThingDef ParentName="BedBase">
     <defName>YJZ_Bedroom_SereneBed</defName>
     <label>云梦安神榻</label>
-    <description>以辉钢和灵玉回路制成的云间子风格单人床。床头灵珠会在睡眠时梳理灵脉，使云间子的灵力恢复速度提升至自然恢复的三倍，并阻止“睡眠被打扰”的负面记忆。它不会屏蔽火灾、伤病、袭击等真实危险。
+    <description>以辉钢和灵玉回路制成的云间子风格单人床。床头灵珠会在睡眠时梳理灵脉，使云间子的灵力恢复速度提升至自然恢复的1.1倍，并阻止“睡眠被打扰”的负面记忆。它不会屏蔽火灾、伤病、袭击等真实危险。
 
 所有文化均可建造。</description>
     <graphicData>
       <texPath>Yunjianzi/Buildings/Bedroom/SereneBed</texPath>
       <graphicClass>Graphic_Multi</graphicClass>
       <shaderType>CutoutComplex</shaderType>
-      <drawSize>(1.7,2.15)</drawSize>
+      <drawSize>(1.9,2.15)</drawSize>
       <damageData><rect>(0,0.05,1,1.95)</rect></damageData>
     </graphicData>
     <designationCategory>Ideology</designationCategory>
@@ -36,7 +36,7 @@
           <li>VitalsMonitor</li><li MayRequire="Ludeon.RimWorld.Ideology">SleepAccelerator</li>
         </linkableFacilities>
       </li>
-      <li Class="Yunjianzi.CompProperties_YunjianziSereneBed"><extraEnergyFractionPerSecond>0.01</extraEnergyFractionPerSecond></li>
+      <li Class="Yunjianzi.CompProperties_YunjianziSereneBed"><extraEnergyFractionPerSecond>0.0005</extraEnergyFractionPerSecond></li>
     </comps>
   </ThingDef>
 
@@ -106,10 +106,18 @@
     <label>五卷悬书阁</label>
     <description>贴墙安置的辉钢悬书架，仅能储存五本书。书籍不会在其中腐坏，并会像普通书架一样提高同室研究工作的效率与书架美观度。</description>
     <designationCategory>Ideology</designationCategory>
-    <graphicData><texPath>Yunjianzi/Buildings/Bedroom/WallBookcase</texPath><graphicClass>Graphic_Multi</graphicClass><shaderType>CutoutComplex</shaderType><drawSize>(1.45,1.45)</drawSize></graphicData>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/Bedroom/WallBookcase</texPath><graphicClass>Graphic_Multi</graphicClass><shaderType>CutoutComplex</shaderType>
+      <drawOffsetNorth>(0,0.1,0.78)</drawOffsetNorth><drawOffsetSouth>(0,0.1,-0.58)</drawOffsetSouth>
+      <drawOffsetWest>(-0.58,0.1,0.08)</drawOffsetWest><drawOffsetEast>(0.58,0.1,0.08)</drawOffsetEast>
+      <drawSize>(1.18,1.18)</drawSize>
+    </graphicData>
     <size>(1,1)</size><stuffCategories Inherit="False"/><costList><Milira_SplendidSteel>55</Milira_SplendidSteel></costList>
+    <altitudeLayer>BuildingOnTop</altitudeLayer><passability>Standable</passability><pathCost>0</pathCost>
+    <terrainAffordanceNeeded IsNull="True"/><defaultPlacingRot>South</defaultPlacingRot><overrideMinifiedRot>North</overrideMinifiedRot>
     <statBases><MaxHitPoints>260</MaxHitPoints><Beauty>18</Beauty><WorkToBuild>1100</WorkToBuild><Mass>9</Mass><Flammability>0</Flammability></statBases>
     <building>
+      <isEdifice>false</isEdifice><isAttachment>true</isAttachment>
       <maxItemsInCell>5</maxItemsInCell>
       <bookendGraphicEast><texPath>Yunjianzi/Buildings/Bedroom/WallBookcase_Bookend_east</texPath><graphicClass>Graphic_Single</graphicClass><addTopAltitudeBias>true</addTopAltitudeBias><drawSize>(1,1)</drawSize></bookendGraphicEast>
       <bookendGraphicNorth><texPath>Yunjianzi/Buildings/Bedroom/WallBookcase_Bookend_north</texPath><graphicClass>Graphic_Single</graphicClass><addTopAltitudeBias>true</addTopAltitudeBias><drawSize>(1,1)</drawSize></bookendGraphicNorth>

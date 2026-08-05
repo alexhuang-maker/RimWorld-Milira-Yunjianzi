@@ -37,9 +37,8 @@ for name in ("EverlightLamp", "CloudCenser", "FloatingJadeDisplay"):
 screen = fit_to_canvas(SOURCE / "CloudScreen_Transparent.png", (1024, 512), 0.04)
 screen.save(OUT / "CloudScreen.png")
 screen.save(OUT / "CloudScreen_south.png")
-screen.rotate(180, expand=False, resample=Image.Resampling.BICUBIC).save(
-    OUT / "CloudScreen_north.png"
-)
+# Preserve the upright crest and feet for the opposite long-axis orientation.
+screen.save(OUT / "CloudScreen_north.png")
 screen.rotate(90, expand=True, resample=Image.Resampling.BICUBIC).save(
     OUT / "CloudScreen_east.png"
 )
