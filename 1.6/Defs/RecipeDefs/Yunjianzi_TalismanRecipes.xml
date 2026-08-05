@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef Name="YJZ_TalismanRecipeBase" Abstract="True">
+    <workerClass>Yunjianzi.RecipeWorker_YunjianziTalisman</workerClass>
+    <jobString>正在凝神画符。</jobString>
+    <workSkill>Crafting</workSkill>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    <effectWorking>Tailor</effectWorking>
+    <soundWorking>Recipe_Tailor</soundWorking>
+    <recipeUsers><li>YJZ_Building_TalismanTable</li></recipeUsers>
+    <fixedIngredientFilter>
+      <categories><li>Textiles</li></categories>
+      <thingDefs>
+        <li>Jade</li>
+        <li>Milira_SolarCrystal</li>
+        <li>Milira_SunLightFuel</li>
+        <li>Milira_SunPlateSteel</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+  </RecipeDef>
+
+  <RecipeDef Name="YJZ_TalismanRecipeFoundation" ParentName="YJZ_TalismanRecipeBase" Abstract="True">
+    <workAmount>6000</workAmount>
+    <ingredients>
+      <li><filter><categories><li>Textiles</li></categories></filter><count>40</count></li>
+      <li><filter><thingDefs><li>Jade</li></thingDefs></filter><count>20</count></li>
+      <li><filter><thingDefs><li>Milira_SolarCrystal</li></thingDefs></filter><count>8</count></li>
+      <li><filter><thingDefs><li>Milira_SunLightFuel</li></thingDefs></filter><count>15</count></li>
+    </ingredients>
+  </RecipeDef>
+
+  <RecipeDef Name="YJZ_TalismanRecipePurple" ParentName="YJZ_TalismanRecipeBase" Abstract="True">
+    <workAmount>12000</workAmount>
+    <ingredients>
+      <li><filter><categories><li>Textiles</li></categories></filter><count>60</count></li>
+      <li><filter><thingDefs><li>Jade</li></thingDefs></filter><count>40</count></li>
+      <li><filter><thingDefs><li>Milira_SolarCrystal</li></thingDefs></filter><count>20</count></li>
+      <li><filter><thingDefs><li>Milira_SunLightFuel</li></thingDefs></filter><count>40</count></li>
+      <li><filter><thingDefs><li>Milira_SunPlateSteel</li></thingDefs></filter><count>20</count></li>
+    </ingredients>
+  </RecipeDef>
+
+  <RecipeDef Name="YJZ_TalismanRecipeGolden" ParentName="YJZ_TalismanRecipeBase" Abstract="True">
+    <workAmount>24000</workAmount>
+    <ingredients>
+      <li><filter><categories><li>Textiles</li></categories></filter><count>80</count></li>
+      <li><filter><thingDefs><li>Jade</li></thingDefs></filter><count>70</count></li>
+      <li><filter><thingDefs><li>Milira_SolarCrystal</li></thingDefs></filter><count>40</count></li>
+      <li><filter><thingDefs><li>Milira_SunLightFuel</li></thingDefs></filter><count>70</count></li>
+      <li><filter><thingDefs><li>Milira_SunPlateSteel</li></thingDefs></filter><count>50</count></li>
+    </ingredients>
+  </RecipeDef>
+
+  <RecipeDef Name="YJZ_TalismanRecipeSpirit" ParentName="YJZ_TalismanRecipeBase" Abstract="True">
+    <workAmount>48000</workAmount>
+    <ingredients>
+      <li><filter><categories><li>Textiles</li></categories></filter><count>100</count></li>
+      <li><filter><thingDefs><li>Jade</li></thingDefs></filter><count>100</count></li>
+      <li><filter><thingDefs><li>Milira_SolarCrystal</li></thingDefs></filter><count>70</count></li>
+      <li><filter><thingDefs><li>Milira_SunLightFuel</li></thingDefs></filter><count>100</count></li>
+      <li><filter><thingDefs><li>Milira_SunPlateSteel</li></thingDefs></filter><count>95</count></li>
+    </ingredients>
+  </RecipeDef>
+
+  <RecipeDef ParentName="YJZ_TalismanRecipeFoundation"><defName>YJZ_Draw_Zhuoyu</defName><label>绘制啄玉符</label><products><YJZ_Talisman_Zhuoyu>1</YJZ_Talisman_Zhuoyu></products><modExtensions><li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>yangfu.zhuoyu</skillId></li></modExtensions></RecipeDef>
+  <RecipeDef ParentName="YJZ_TalismanRecipeFoundation"><defName>YJZ_Draw_Shenjie</defName><label>绘制神截符</label><products><YJZ_Talisman_Shenjie>1</YJZ_Talisman_Shenjie></products><modExtensions><li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>yangfu.shenjie</skillId></li></modExtensions></RecipeDef>
+  <RecipeDef ParentName="YJZ_TalismanRecipeFoundation"><defName>YJZ_Draw_Shenxing</defName><label>绘制神行符</label><products><YJZ_Talisman_Shenxing>1</YJZ_Talisman_Shenxing></products><modExtensions><li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>yangfu.shenxing</skillId></li></modExtensions></RecipeDef>
+  <RecipeDef ParentName="YJZ_TalismanRecipeFoundation"><defName>YJZ_Draw_Jiqing</defName><label>绘制寄情符</label><products><YJZ_Talisman_Jiqing>1</YJZ_Talisman_Jiqing></products><modExtensions><li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>yangfu.jiqing</skillId></li></modExtensions></RecipeDef>
+  <RecipeDef ParentName="YJZ_TalismanRecipeFoundation"><defName>YJZ_Draw_Baicao</defName><label>绘制百草符</label><products><YJZ_Talisman_Baicao>1</YJZ_Talisman_Baicao></products><modExtensions><li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>yangfu.baicao</skillId></li></modExtensions></RecipeDef>
+  <RecipeDef ParentName="YJZ_TalismanRecipeFoundation"><defName>YJZ_Draw_Xinjian</defName><label>绘制心剑符</label><products><YJZ_Talisman_Xinjian>1</YJZ_Talisman_Xinjian></products><modExtensions><li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>yangfu.xinjian</skillId></li></modExtensions></RecipeDef>
+
+  <RecipeDef ParentName="YJZ_TalismanRecipePurple"><defName>YJZ_Draw_Beidou</defName><label>绘制北斗符</label><products><YJZ_Talisman_Beidou>1</YJZ_Talisman_Beidou></products><modExtensions><li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>yangfu.beidou</skillId></li></modExtensions></RecipeDef>
+  <RecipeDef ParentName="YJZ_TalismanRecipePurple"><defName>YJZ_Draw_Guihai</defName><label>绘制归海符</label><products><YJZ_Talisman_Guihai>1</YJZ_Talisman_Guihai></products><modExtensions><li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>yangfu.guihai</skillId></li></modExtensions></RecipeDef>
+  <RecipeDef ParentName="YJZ_TalismanRecipePurple"><defName>YJZ_Draw_Shenlian</defName><label>绘制神炼符</label><products><YJZ_Talisman_Shenlian>1</YJZ_Talisman_Shenlian></products><modExtensions><li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>yangfu.shenlian</skillId></li></modExtensions></RecipeDef>
+  <RecipeDef ParentName="YJZ_TalismanRecipePurple"><defName>YJZ_Draw_Huijian</defName><label>绘制惠剑斩念符</label><products><YJZ_Talisman_Huijian>1</YJZ_Talisman_Huijian></products><modExtensions><li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>yangfu.huijian</skillId></li></modExtensions></RecipeDef>
+
+  <RecipeDef ParentName="YJZ_TalismanRecipeGolden"><defName>YJZ_Draw_Bumei</defName><label>绘制不昧真灵符</label><products><YJZ_Talisman_Bumei>1</YJZ_Talisman_Bumei></products><modExtensions><li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>yangfu.bumei</skillId></li></modExtensions></RecipeDef>
+  <RecipeDef ParentName="YJZ_TalismanRecipeGolden"><defName>YJZ_Draw_Jiexin</defName><label>绘制劫心符</label><products><YJZ_Talisman_Jiexin>1</YJZ_Talisman_Jiexin></products><modExtensions><li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>yangfu.jiexin</skillId></li></modExtensions></RecipeDef>
+  <RecipeDef ParentName="YJZ_TalismanRecipeGolden"><defName>YJZ_Draw_Liuyang</defName><label>绘制六阳真形符</label><products><YJZ_Talisman_Liuyang>1</YJZ_Talisman_Liuyang></products><modExtensions><li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>yangfu.liuyang</skillId></li></modExtensions></RecipeDef>
+
+  <RecipeDef ParentName="YJZ_TalismanRecipeSpirit"><defName>YJZ_Draw_Tiandao</defName><label>绘制天道符</label><products><YJZ_Talisman_Tiandao>1</YJZ_Talisman_Tiandao></products><modExtensions><li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>yangfu.tiandao</skillId></li></modExtensions></RecipeDef>
+  <RecipeDef ParentName="YJZ_TalismanRecipeSpirit"><defName>YJZ_Draw_Huanri</defName><label>绘制换日符</label><products><YJZ_Talisman_Huanri>1</YJZ_Talisman_Huanri></products><modExtensions><li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>yangfu.huanri</skillId></li></modExtensions></RecipeDef>
+</Defs>

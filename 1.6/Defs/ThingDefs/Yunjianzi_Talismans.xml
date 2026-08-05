@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase">
+    <defName>YJZ_Building_TalismanTable</defName>
+    <label>云间画符台</label>
+    <description>以白玉、日棱晶与米莉拉精密构件制成的画符台。云间子参悟某种符咒后，对应绘制配方才会显现。</description>
+    <thingClass>Building_WorkTable</thingClass>
+    <size>(2,3)</size>
+    <rotatable>true</rotatable>
+    <graphicData>
+      <texPath>Yunjianzi/Building/TalismanTable</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(2,3)</drawSize>
+    </graphicData>
+    <altitudeLayer>Building</altitudeLayer>
+    <statBases>
+      <MaxHitPoints>420</MaxHitPoints>
+      <WorkToBuild>5000</WorkToBuild>
+      <Mass>80</Mass>
+      <Beauty>24</Beauty>
+      <Flammability>0.18</Flammability>
+      <WorkTableWorkSpeedFactor>1</WorkTableWorkSpeedFactor>
+      <WorkTableEfficiencyFactor>1</WorkTableEfficiencyFactor>
+    </statBases>
+    <costList>
+      <WoodLog>80</WoodLog>
+      <Jade>30</Jade>
+      <Milira_SolarCrystal>8</Milira_SolarCrystal>
+      <Milira_SunPlateSteel>20</Milira_SunPlateSteel>
+    </costList>
+    <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
+    <designationCategory>Ideology</designationCategory>
+    <uiOrder>3950</uiOrder>
+    <passability>PassThroughOnly</passability>
+    <pathCost>35</pathCost>
+    <hasInteractionCell>true</hasInteractionCell>
+    <interactionCellOffset>(0,0,-2)</interactionCellOffset>
+    <surfaceType>Item</surfaceType>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <thingCategories><li>BuildingsMisc</li></thingCategories>
+    <inspectorTabs><li>ITab_Bills</li></inspectorTabs>
+    <building>
+      <spawnedConceptLearnOpportunity>BillsTab</spawnedConceptLearnOpportunity>
+      <canPlaceOverImpassablePlant>false</canPlaceOverImpassablePlant>
+      <ai_chillDestination>false</ai_chillDestination>
+      <buildingTags><li>Production</li></buildingTags>
+    </building>
+    <comps>
+      <li Class="CompProperties_Forbiddable" />
+      <li Class="CompProperties_ReportWorkSpeed">
+        <workSpeedStat>WorkTableWorkSpeedFactor</workSpeedStat>
+      </li>
+      <li Class="CompProperties_Glower">
+        <glowRadius>3.2</glowRadius>
+        <glowColor>(120,235,245,0)</glowColor>
+      </li>
+    </comps>
+    <placeWorkers>
+      <li>PlaceWorker_ReportWorkSpeedPenalties</li>
+      <li>PlaceWorker_PreventInteractionSpotOverlap</li>
+    </placeWorkers>
+  </ThingDef>
+
+  <ThingDef Name="YJZ_TalismanBase" ParentName="ResourceBase" Abstract="True">
+    <thingClass>ThingWithComps</thingClass>
+    <description>以灵力绘成、可供云间子佩用的阳符。</description>
+    <stackLimit>10</stackLimit>
+    <tradeability>All</tradeability>
+    <thingCategories><li>Manufactured</li></thingCategories>
+    <graphicData>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(0.72,0.72)</drawSize>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>100</MaxHitPoints>
+      <Mass>0.05</Mass>
+      <Flammability>0.35</Flammability>
+    </statBases>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Zhuoyu</defName><label>啄玉符</label><description>令器物精琢如玉的筑基阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Zhuoyu</texPath></graphicData><statBases><MarketValue>500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Shenjie</defName><label>神截符</label><description>截取天地神妙秘藏的筑基阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Shenjie</texPath></graphicData><statBases><MarketValue>500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Shenxing</defName><label>神行符</label><description>引轻灵之气入体的筑基阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Shenxing</texPath></graphicData><statBases><MarketValue>500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Jiqing</defName><label>寄情符</label><description>寄情于山水草木的筑基阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Jiqing</texPath></graphicData><statBases><MarketValue>500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Baicao</defName><label>百草符</label><description>蕴藏百草医理的筑基阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Baicao</texPath></graphicData><statBases><MarketValue>500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Xinjian</defName><label>心剑符</label><description>以心剑洞彻人心的筑基阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Xinjian</texPath></graphicData><statBases><MarketValue>500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Beidou</defName><label>北斗符</label><description>接引北斗星辉的紫府阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Beidou</texPath></graphicData><statBases><MarketValue>1500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Guihai</defName><label>归海符</label><description>令真元万脉归流的紫府阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Guihai</texPath></graphicData><statBases><MarketValue>1500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Shenlian</defName><label>神炼符</label><description>以神念锻器的紫府阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Shenlian</texPath></graphicData><statBases><MarketValue>1500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Huijian</defName><label>惠剑斩念符</label><description>斩却妄念低语的紫府阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Huijian</texPath></graphicData><statBases><MarketValue>1500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Bumei</defName><label>不昧真灵符</label><description>凝聚万世记忆的金丹阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Bumei</texPath></graphicData><statBases><MarketValue>3000</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Jiexin</defName><label>劫心符</label><description>淬炼本源肉身的金丹阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Jiexin</texPath></graphicData><statBases><MarketValue>3000</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Liuyang</defName><label>六阳真形符</label><description>凝练六阳真形的金丹阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Liuyang</texPath></graphicData><statBases><MarketValue>3000</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Tiandao</defName><label>天道符</label><description>既度天劫、洞彻天道的化神阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Tiandao</texPath></graphicData><statBases><MarketValue>5000</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Huanri</defName><label>换日符</label><description>偷天换日、寿元不流的化神阳符。</description><graphicData><texPath>Yunjianzi/Talisman/Huanri</texPath></graphicData><statBases><MarketValue>5000</MarketValue></statBases></ThingDef>
+</Defs>
