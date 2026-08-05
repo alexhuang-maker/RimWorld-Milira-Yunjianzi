@@ -231,6 +231,48 @@ namespace Yunjianzi
         }
     }
 
+    /// <summary>
+    /// 紫府神机的主激光。基础命中仍交给 Ancot 的 Beam，金丹节点只负责追加
+    /// 可见的小型折射光束，避免用无特效的直接扣血伪装“弹跳”。
+    /// </summary>
+    public sealed class Projectile_YunjianziShenjiLaser : AncotLibrary.Beam
+    {
+        protected override void Impact(Thing hitThing, bool blockedByShield = false)
+        {
+            Map map = Map;
+            Thing firingThing = launcher;
+            Pawn firingPawn = firingThing as Pawn;
+            Vector3 firstOrigin = hitThing != null ? hitThing.DrawPos : ExactPosition;
+            CompYunjianziShenji shenji = firingPawn == null ? null : firingPawn.TryGetComp<CompYunjianziShenji>();
+            bool canRicochet = !blockedByShield && hitThing != null && map != null && shenji != null &&
+                shenji.Cultivation != null && shenji.Cultivation.HasSkill(YunjianziSkills.ShenjiRicochetLaser);
+
+            base.Impact(hitThing, blockedByShield);
+            if (!canRicochet) return;
+
+            List<Thing> visited = new List<Thing> { hitThing };
+            Vector3 source = firstOrigin;
+            IntVec3 center = firstOrigin.ToIntVec3();
+            for (int hop = 0; hop < 3; hop++)
+            {
+                Thing next = map.listerThings.ThingsInGroup(ThingRequestGroup.AttackTarget)
+                    .Where(t => t != null && t.Spawned && !visited.Contains(t) && t.HostileTo(firingPawn) &&
+                        (!(t is Pawn) || !((Pawn)t).Dead) && t.Position.DistanceTo(center) <= 7f)
+                    .OrderBy(t => t.Position.DistanceToSquared(center))
+                    .FirstOrDefault();
+                if (next == null) break;
+
+                Projectile beam = ThingMaker.MakeThing(YJZDefOf.YJZ_Projectile_ShenjiChainLaser) as Projectile;
+                if (beam == null) break;
+                GenSpawn.Spawn(beam, center, map);
+                beam.Launch(firingThing, source, next, next, ProjectileHitFlags.IntendedTarget, false, equipment, equipmentDef);
+                visited.Add(next);
+                source = next.DrawPos;
+                center = next.Position;
+            }
+        }
+    }
+
     internal static class YunjianziShenjiApparelPolicy
     {
         // 固有 Hediff 已提供装甲。配件节点只开放工具层，禁止实体装甲再次叠加。

@@ -66,15 +66,37 @@
     <graphicData><texPath>Things/Item/Equipment/WeaponRanged/Minigun</texPath></graphicData>
   </ThingDef>
 
+  <!-- 紫府后的主射线与金丹折射射线共享米莉拉帝国的淡蓝光束材质。
+       主射线基础伤害为10，折射射线为3，严格等于30%。 -->
+  <ThingDef ParentName="MiliraBullet_Ray">
+    <defName>YJZ_Projectile_ShenjiLaser</defName>
+    <label>神机辉光</label>
+    <thingClass>Yunjianzi.Projectile_YunjianziShenjiLaser</thingClass>
+    <projectile>
+      <damageAmountBase>10</damageAmountBase>
+      <armorPenetrationBase>0.45</armorPenetrationBase>
+    </projectile>
+  </ThingDef>
+
+  <ThingDef ParentName="MiliraBullet_Ray">
+    <defName>YJZ_Projectile_ShenjiChainLaser</defName>
+    <label>神机折射辉光</label>
+    <projectile>
+      <damageAmountBase>3</damageAmountBase>
+      <armorPenetrationBase>0.30</armorPenetrationBase>
+      <beamStartOffset>0</beamStartOffset>
+    </projectile>
+  </ThingDef>
+
   <ThingDef ParentName="Gun_AssaultRifle" Name="YJZ_Weapon_Shenji_Gauss_Base">
     <defName>YJZ_Weapon_Shenji_Gauss</defName>
     <label>神机炮·辉光</label>
-    <description>紫府阶段的高斯神机炮，火力对齐米莉拉帝国高阶自动步枪。</description>
+    <description>紫府阶段展开的淡蓝脉冲激光炮，火力对齐米莉拉帝国高阶自动步枪。</description>
     <graphicData><texPath>MiliraImperium/Weapon/GaussAutorifle</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>1.4</drawSize></graphicData>
     <verbs>
       <li>
         <verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand>
-        <defaultProjectile>MiliraBullet_Autorifle</defaultProjectile><warmupTime>1.0</warmupTime>
+        <defaultProjectile>YJZ_Projectile_ShenjiLaser</defaultProjectile><warmupTime>1.0</warmupTime>
         <range>35.9</range><burstShotCount>6</burstShotCount><ticksBetweenBurstShots>4</ticksBetweenBurstShots>
         <soundCast>Shot_AssaultRifle</soundCast><muzzleFlashScale>9</muzzleFlashScale>
       </li>
@@ -84,11 +106,11 @@
   <ThingDef ParentName="YJZ_Weapon_Shenji_Gauss_Base">
     <defName>YJZ_Weapon_Shenji_Legendary</defName>
     <label>神机炮·传说</label>
-    <description>金丹阶段完全展开的神机炮，以传奇级帝国高斯步枪为基准。</description>
+    <description>金丹阶段完全展开的辉光神机炮，射速与持续火力达到传奇级帝国武器基准。</description>
     <verbs>
       <li>
         <verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand>
-        <defaultProjectile>MiliraBullet_Autorifle</defaultProjectile><warmupTime>0.65</warmupTime>
+        <defaultProjectile>YJZ_Projectile_ShenjiLaser</defaultProjectile><warmupTime>0.65</warmupTime>
         <range>39.9</range><burstShotCount>9</burstShotCount><ticksBetweenBurstShots>3</ticksBetweenBurstShots>
         <soundCast>Shot_AssaultRifle</soundCast><muzzleFlashScale>11</muzzleFlashScale>
       </li>

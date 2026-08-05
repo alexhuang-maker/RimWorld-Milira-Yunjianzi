@@ -893,6 +893,8 @@ namespace Yunjianzi
         public static ThingDef YJZ_Weapon_Shenji_Gatling;
         public static ThingDef YJZ_Weapon_Shenji_Gauss;
         public static ThingDef YJZ_Weapon_Shenji_Legendary;
+        public static ThingDef YJZ_Projectile_ShenjiLaser;
+        public static ThingDef YJZ_Projectile_ShenjiChainLaser;
         public static HediffDef YJZ_ShenjiArmor_Base;
         public static HediffDef YJZ_ShenjiArmor_Intermediate;
         public static HediffDef YJZ_ShenjiArmor_Final;

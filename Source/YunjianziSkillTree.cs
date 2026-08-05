@@ -49,6 +49,7 @@ namespace Yunjianzi
         public const string ShenjiRecallRepair = "shenji.recallrepair";
         public const string ShenjiDarkShield = "shenji.darkshield";
         public const string ShenjiLegendaryFirepower = "shenji.legendary";
+        public const string ShenjiRicochetLaser = "shenji.ricochetlaser";
         public const string ShenjiQuadControl = "shenji.quadcontrol";
 
         public static readonly List<YunjianziSkillNode> All = new List<YunjianziSkillNode>
@@ -92,12 +93,13 @@ namespace Yunjianzi
             N(ShenjiRocketJump, "火箭跃迁", "神机获得冷却一天的火箭跳跃；自动战斗会在近敌压迫时后撤跃迁。", 2, 2, 1, ShenjiSummon),
             N(ShenjiShield, "百灵护盾", "神机获得100点可恢复护盾。", 2, 2, 2, ShenjiSummon),
             N(ShenjiDualControl, "双机同调", "云间子可同时维持两台神机。", 3, 2, 0, ShenjiSummon),
-            N(ShenjiGauss, "神机炮·辉光", "火力强化到米莉拉帝国高阶高斯步枪级别。", 3, 2, 1, ShenjiGatling),
+            N(ShenjiGauss, "神机炮·辉光", "神机炮改用淡蓝色脉冲激光，火力达到米莉拉帝国高阶步枪级别。", 3, 2, 1, ShenjiGatling),
             N(ShenjiRocketDrone, "火箭浮游炮", "神机展开一具自动发射微型火箭的浮游炮。", 3, 2, 2, ShenjiSummon),
             N(ShenjiAccessories, "万机接口", "开放米莉拉通用配件接口；不接入民主之翼专属配件。", 3, 2, 3, ShenjiSummon),
             N(ShenjiRecallRepair, "败阵归元", "神机被击溃时传送回云间子身边并完全修复，冷却两天。", 4, 2, 0, ShenjiSummon),
             N(ShenjiDarkShield, "暗质护盾", "护盾升级为米莉拉帝国暗物质护盾腰带级防护。", 4, 2, 1, ShenjiShield),
             N(ShenjiLegendaryFirepower, "神机炮·传说", "神机炮达到传奇高斯步枪级火力，武器能量永不枯竭。", 4, 2, 2, ShenjiGauss),
+            N(ShenjiRicochetLaser, "流光折跃", "神机激光命中后向目标附近至多三个敌人连续跳射；每次跳射造成主射击30%的伤害。", 4, 2, 3, ShenjiGauss),
             N(ShenjiQuadControl, "四象神机", "云间子可同时维持四台终极神机。", 5, 2, 0, ShenjiDualControl)
         };
 
