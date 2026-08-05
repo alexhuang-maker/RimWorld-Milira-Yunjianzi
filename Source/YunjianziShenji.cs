@@ -64,7 +64,8 @@ namespace Yunjianzi
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
-            SynchronizeTier(true);
+            // 新生成体会在 BindTo 中按当前境界定型；读档只补齐缺失装备，绝不自动升级旧型号。
+            SynchronizeTier(!respawningAfterLoad);
         }
 
         public override void CompTick()
@@ -74,7 +75,6 @@ namespace Yunjianzi
             if (pawn == null || pawn.Dead) return;
             if (pawn.IsHashIntervalTick(60))
             {
-                SynchronizeTier(false);
                 if (pawn.needs != null && pawn.needs.energy != null) pawn.needs.energy.CurLevelPercentage = 1f;
                 if (Find.TickManager.TicksGame >= shieldBrokenUntil && ShieldMax > 0f)
                     shield = Mathf.Min(ShieldMax, shield + ShieldMax / 120f);
@@ -107,38 +107,30 @@ namespace Yunjianzi
             }
         }
 
-        private ThingDef DesiredArmor
-        {
-            get
-            {
-                int tier = ArmorTier;
-                if (tier >= 3) return YJZDefOf.YJZ_Apparel_ShenjiArmor_Final;
-                if (tier >= 2) return YJZDefOf.YJZ_Apparel_ShenjiArmor_Intermediate;
-                return YJZDefOf.YJZ_Apparel_ShenjiArmor_Base;
-            }
-        }
-
         private void SynchronizeTier(bool force)
         {
             Pawn pawn = Pawn;
             if (pawn == null || pawn.health == null) return;
-            int tier = ArmorTier;
+            int currentTier = ArmorTier;
+            int tier = force || lastArmorTier <= 0 ? currentTier : Mathf.Clamp(lastArmorTier, 1, 3);
             // 旧存档可能仍带有早期的固有装甲 Hediff；属性已迁移到可见的专属神机甲，必须清掉以免双算。
             List<Hediff> oldArmor = pawn.health.hediffSet.hediffs.Where(h => h.def == YJZDefOf.YJZ_ShenjiArmor_Base || h.def == YJZDefOf.YJZ_ShenjiArmor_Intermediate || h.def == YJZDefOf.YJZ_ShenjiArmor_Final).ToList();
             for (int i = 0; i < oldArmor.Count; i++) pawn.health.RemoveHediff(oldArmor[i]);
 
             if (pawn.apparel != null)
             {
-                ThingDef desiredArmor = DesiredArmor;
+                ThingDef desiredArmor = tier >= 3 ? YJZDefOf.YJZ_Apparel_ShenjiArmor_Final :
+                    tier >= 2 ? YJZDefOf.YJZ_Apparel_ShenjiArmor_Intermediate : YJZDefOf.YJZ_Apparel_ShenjiArmor_Base;
                 List<Apparel> obsoleteIntrinsicArmor = pawn.apparel.WornApparel
-                    .Where(a => YunjianziShenjiApparelPolicy.IsIntrinsicArmor(a.def) && a.def != desiredArmor).ToList();
+                    .Where(a => force && YunjianziShenjiApparelPolicy.IsIntrinsicArmor(a.def) && a.def != desiredArmor).ToList();
                 for (int i = 0; i < obsoleteIntrinsicArmor.Count; i++)
                 {
                     Apparel obsolete = obsoleteIntrinsicArmor[i];
                     pawn.apparel.Remove(obsolete);
                     obsolete.Destroy(DestroyMode.Vanish);
                 }
-                if (!pawn.apparel.WornApparel.Any(a => a.def == desiredArmor))
+                bool hasIntrinsicArmor = pawn.apparel.WornApparel.Any(a => YunjianziShenjiApparelPolicy.IsIntrinsicArmor(a.def));
+                if (!hasIntrinsicArmor)
                 {
                     Apparel armor = ThingMaker.MakeThing(desiredArmor) as Apparel;
                     if (armor != null)
@@ -148,9 +140,9 @@ namespace Yunjianzi
                         pawn.apparel.Wear(armor, false);
                     }
                 }
-                lastArmorTier = tier;
+                if (force || lastArmorTier <= 0) lastArmorTier = tier;
             }
-            if (pawn.equipment != null && (pawn.equipment.Primary == null || pawn.equipment.Primary.def != DesiredWeapon))
+            if (pawn.equipment != null && (pawn.equipment.Primary == null || (force && pawn.equipment.Primary.def != DesiredWeapon)))
             {
                 if (pawn.equipment.Primary != null) pawn.equipment.Remove(pawn.equipment.Primary);
                 ThingWithComps weapon = ThingMaker.MakeThing(DesiredWeapon) as ThingWithComps;
