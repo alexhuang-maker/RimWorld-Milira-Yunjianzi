@@ -147,6 +147,18 @@
       <li Class="AriandelLibrary.AL_AgeFreeze_Extension">
         <freezeBiologicalAge>true</freezeBiologicalAge>
       </li>
+      <!-- Special-Milira wing pipeline: the first extension replaces all
+           flight animations; the second replaces the static portrait wings. -->
+      <li Class="AriandelLibrary.Milira.AL_MiliraFlyAnimation_Extension">
+        <animNorth>YJZ_Milira_FlyNorth</animNorth>
+        <animEast>YJZ_Milira_FlyEast</animEast>
+        <animSouth>YJZ_Milira_FlySouth</animSouth>
+        <animWest>YJZ_Milira_FlyWest</animWest>
+      </li>
+      <li Class="AriandelLibrary.Milira.AL_WingGraphics_Extension">
+        <leftWingBasePath>Yunjianzi/Pawn/Wings/LeftWingNew</leftWingBasePath>
+        <rightWingBasePath>Yunjianzi/Pawn/Wings/RightWingNew</rightWingBasePath>
+      </li>
       <li Class="AriandelLibrary.Anomaly.AL_RitualRoleRestriction_Extension" MayRequire="Ludeon.RimWorld.Anomaly" />
       <li Class="AriandelLibrary.Anomaly.AL_ObeliskDuplicationBlocker_Extension" MayRequire="Ludeon.RimWorld.Anomaly" />
     </modExtensions>
