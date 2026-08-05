@@ -966,11 +966,11 @@ namespace Yunjianzi
         public static ThingDef YJZ_Effect_TalismanGreen;
         public static ThingDef YJZ_Effect_FireTornado;
         public static ThingDef YJZ_Effect_ThunderWind;
-        public static ThingDef YJZ_BeanSoldier_1;
-        public static ThingDef YJZ_BeanSoldier_2;
-        public static ThingDef YJZ_BeanSoldier_3;
-        public static ThingDef YJZ_BeanSoldier_4;
-        public static ThingDef YJZ_BeanSoldier_5;
+        public static PawnKindDef YJZ_BeanSoldier_1;
+        public static PawnKindDef YJZ_BeanSoldier_2;
+        public static PawnKindDef YJZ_BeanSoldier_3;
+        public static PawnKindDef YJZ_BeanSoldier_4;
+        public static PawnKindDef YJZ_BeanSoldier_5;
         static YJZDefOf() { DefOfHelper.EnsureInitializedInCtor(typeof(YJZDefOf)); }
     }
 

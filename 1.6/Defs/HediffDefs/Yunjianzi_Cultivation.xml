@@ -14,7 +14,7 @@
       <li>
         <minSeverity>1</minSeverity><label>云间灵脉（练气）</label><becomeVisible>true</becomeVisible>
         <painFactor>0.95</painFactor><totalBleedFactor>0.95</totalBleedFactor>
-        <statOffsets><MoveSpeed>0.15</MoveSpeed></statOffsets>
+        <statOffsets><MoveSpeed>0.15</MoveSpeed><MechBandwidth MayRequire="Ludeon.RimWorld.Biotech">6</MechBandwidth><MechControlGroups MayRequire="Ludeon.RimWorld.Biotech">1</MechControlGroups></statOffsets>
         <statFactors>
           <RestRateMultiplier>1.15</RestRateMultiplier>
           <InjuryHealingFactor>1.15</InjuryHealingFactor>
@@ -30,7 +30,7 @@
       <li>
         <minSeverity>2</minSeverity><label>云间灵脉（筑基）</label><becomeVisible>true</becomeVisible>
         <painFactor>0.85</painFactor><totalBleedFactor>0.85</totalBleedFactor>
-        <statOffsets><MoveSpeed>0.35</MoveSpeed></statOffsets>
+        <statOffsets><MoveSpeed>0.35</MoveSpeed><MechBandwidth MayRequire="Ludeon.RimWorld.Biotech">6</MechBandwidth><MechControlGroups MayRequire="Ludeon.RimWorld.Biotech">1</MechControlGroups></statOffsets>
         <statFactors>
           <RestRateMultiplier>1.30</RestRateMultiplier>
           <InjuryHealingFactor>1.40</InjuryHealingFactor>
@@ -48,7 +48,7 @@
       <li>
         <minSeverity>3</minSeverity><label>云间灵脉（紫府）</label><becomeVisible>true</becomeVisible>
         <painFactor>0.60</painFactor><totalBleedFactor>0.60</totalBleedFactor>
-        <statOffsets><MoveSpeed>1.25</MoveSpeed></statOffsets>
+        <statOffsets><MoveSpeed>1.25</MoveSpeed><MechBandwidth MayRequire="Ludeon.RimWorld.Biotech">12</MechBandwidth><MechControlGroups MayRequire="Ludeon.RimWorld.Biotech">1</MechControlGroups></statOffsets>
         <statFactors>
           <RestRateMultiplier>1.75</RestRateMultiplier>
           <InjuryHealingFactor>2.50</InjuryHealingFactor>
@@ -70,7 +70,7 @@
       <li>
         <minSeverity>4</minSeverity><label>云间灵脉（金丹）</label><becomeVisible>true</becomeVisible>
         <painFactor>0.25</painFactor><totalBleedFactor>0.25</totalBleedFactor>
-        <statOffsets><MoveSpeed>2.50</MoveSpeed></statOffsets>
+        <statOffsets><MoveSpeed>2.50</MoveSpeed><MechBandwidth MayRequire="Ludeon.RimWorld.Biotech">12</MechBandwidth><MechControlGroups MayRequire="Ludeon.RimWorld.Biotech">1</MechControlGroups></statOffsets>
         <statFactors>
           <RestRateMultiplier>2.50</RestRateMultiplier>
           <InjuryHealingFactor>5.00</InjuryHealingFactor>
@@ -92,7 +92,7 @@
       <li>
         <minSeverity>5</minSeverity><label>云间灵脉（化神）</label><becomeVisible>true</becomeVisible>
         <painFactor>0.05</painFactor><totalBleedFactor>0.05</totalBleedFactor>
-        <statOffsets><MoveSpeed>5.00</MoveSpeed></statOffsets>
+        <statOffsets><MoveSpeed>5.00</MoveSpeed><MechBandwidth MayRequire="Ludeon.RimWorld.Biotech">24</MechBandwidth><MechControlGroups MayRequire="Ludeon.RimWorld.Biotech">1</MechControlGroups></statOffsets>
         <statFactors>
           <RestRateMultiplier>5.00</RestRateMultiplier>
           <InjuryHealingFactor>12.00</InjuryHealingFactor>

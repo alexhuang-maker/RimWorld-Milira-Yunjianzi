@@ -51,31 +51,45 @@
     </graphicData>
   </ThingDef>
 
-  <ThingDef Name="YJZ_BeanSoldierBase" Abstract="True">
-    <category>Item</category>
-    <thingClass>Yunjianzi.ThingYangfuBeanSoldier</thingClass>
+  <!-- 符兵是真正的临时 Pawn，而非通过修改 Position 假装移动的建筑式 Thing。 -->
+  <ThingDef Name="YJZ_BeanSoldierRaceBase" ParentName="AnimalThingBase" Abstract="True">
+    <label>符兵</label>
+    <description>由灵力凝成、只为追敌自爆而存在的短命机巧符兵。</description>
     <tickerType>Normal</tickerType>
-    <selectable>true</selectable>
-    <altitudeLayer>Pawn</altitudeLayer>
-    <useHitPoints>true</useHitPoints>
-    <pathCost>12</pathCost>
-    <passability>PassThroughOnly</passability>
-    <drawGUIOverlay>true</drawGUIOverlay>
-    <graphicData>
-      <texPath>Yunjianzi/Effects/Yangfu/BeanSoldier</texPath>
-      <graphicClass>Graphic_Single</graphicClass>
-      <shaderType>CutoutComplex</shaderType>
-      <drawSize>(0.62,0.62)</drawSize>
-    </graphicData>
     <statBases>
       <MarketValue>0</MarketValue>
-      <Mass>8</Mass>
+      <MoveSpeed>6.4</MoveSpeed>
+      <Mass>12</Mass>
       <Flammability>0</Flammability>
+      <Wildness>0</Wildness>
     </statBases>
+    <race>
+      <body>QuadrupedAnimalWithPawsAndTail</body>
+      <baseBodySize>0.28</baseBodySize>
+      <baseHungerRate>0</baseHungerRate>
+      <foodType>None</foodType>
+      <trainability>None</trainability>
+      <lifeExpectancy>1</lifeExpectancy>
+      <lifeStageAges><li><def>AnimalAdult</def><minAge>0</minAge></li></lifeStageAges>
+    </race>
+    <comps><li Class="Yunjianzi.CompProperties_YangfuBeanSoldier" /></comps>
   </ThingDef>
-  <ThingDef ParentName="YJZ_BeanSoldierBase"><defName>YJZ_BeanSoldier_1</defName><label>练气符兵</label><statBases><MaxHitPoints>100</MaxHitPoints></statBases></ThingDef>
-  <ThingDef ParentName="YJZ_BeanSoldierBase"><defName>YJZ_BeanSoldier_2</defName><label>筑基符兵</label><statBases><MaxHitPoints>250</MaxHitPoints></statBases></ThingDef>
-  <ThingDef ParentName="YJZ_BeanSoldierBase"><defName>YJZ_BeanSoldier_3</defName><label>紫府符兵</label><statBases><MaxHitPoints>450</MaxHitPoints></statBases></ThingDef>
-  <ThingDef ParentName="YJZ_BeanSoldierBase"><defName>YJZ_BeanSoldier_4</defName><label>金丹符兵</label><statBases><MaxHitPoints>700</MaxHitPoints></statBases></ThingDef>
-  <ThingDef ParentName="YJZ_BeanSoldierBase"><defName>YJZ_BeanSoldier_5</defName><label>化神符兵</label><statBases><MaxHitPoints>1000</MaxHitPoints></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierRaceBase"><defName>YJZ_BeanSoldierRace_1</defName><label>练气符兵</label><race><baseHealthScale>3.3</baseHealthScale></race></ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierRaceBase"><defName>YJZ_BeanSoldierRace_2</defName><label>筑基符兵</label><race><baseHealthScale>8.3</baseHealthScale></race></ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierRaceBase"><defName>YJZ_BeanSoldierRace_3</defName><label>紫府符兵</label><race><baseHealthScale>15</baseHealthScale></race></ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierRaceBase"><defName>YJZ_BeanSoldierRace_4</defName><label>金丹符兵</label><race><baseHealthScale>23.3</baseHealthScale></race></ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierRaceBase"><defName>YJZ_BeanSoldierRace_5</defName><label>化神符兵</label><race><baseHealthScale>33.3</baseHealthScale></race></ThingDef>
+
+  <PawnKindDef Name="YJZ_BeanSoldierKindBase" ParentName="AnimalKindBase" Abstract="True">
+    <label>符兵</label><combatPower>1</combatPower><ecoSystemWeight>0</ecoSystemWeight>
+    <lifeStages><li><bodyGraphicData>
+      <texPath>Yunjianzi/Effects/Yangfu/BeanSoldier</texPath>
+      <graphicClass>Graphic_Multi</graphicClass><shaderType>CutoutComplex</shaderType><drawSize>0.72</drawSize>
+    </bodyGraphicData></li></lifeStages>
+  </PawnKindDef>
+  <PawnKindDef ParentName="YJZ_BeanSoldierKindBase"><defName>YJZ_BeanSoldier_1</defName><label>练气符兵</label><race>YJZ_BeanSoldierRace_1</race></PawnKindDef>
+  <PawnKindDef ParentName="YJZ_BeanSoldierKindBase"><defName>YJZ_BeanSoldier_2</defName><label>筑基符兵</label><race>YJZ_BeanSoldierRace_2</race></PawnKindDef>
+  <PawnKindDef ParentName="YJZ_BeanSoldierKindBase"><defName>YJZ_BeanSoldier_3</defName><label>紫府符兵</label><race>YJZ_BeanSoldierRace_3</race></PawnKindDef>
+  <PawnKindDef ParentName="YJZ_BeanSoldierKindBase"><defName>YJZ_BeanSoldier_4</defName><label>金丹符兵</label><race>YJZ_BeanSoldierRace_4</race></PawnKindDef>
+  <PawnKindDef ParentName="YJZ_BeanSoldierKindBase"><defName>YJZ_BeanSoldier_5</defName><label>化神符兵</label><race>YJZ_BeanSoldierRace_5</race></PawnKindDef>
 </Defs>

@@ -4,6 +4,7 @@ using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 
 namespace Yunjianzi
 {
@@ -266,15 +267,18 @@ namespace Yunjianzi
             if ((Find.TickManager.TicksGame + thingIDNumber) % 30 == 0) DamageAndBurn();
             if ((Find.TickManager.TicksGame + thingIDNumber) % 5 == 0)
             {
-                FleckMaker.ThrowFireGlow(new Vector3(realPosition.x, 0f, realPosition.y), Map, Mathf.Lerp(1.6f, .55f, ageTicks / (float)durationTicks));
-                FleckMaker.ThrowSmoke(new Vector3(realPosition.x, 0f, realPosition.y), Map, .7f);
+                float visualScale = new[] { 0f, 1.25f, 1.55f, 1.9f, 2.35f, 2.8f }[rank];
+                FleckMaker.ThrowFireGlow(new Vector3(realPosition.x, 0f, realPosition.y), Map,
+                    Mathf.Lerp(visualScale, visualScale * .32f, ageTicks / (float)durationTicks));
+                FleckMaker.ThrowSmoke(new Vector3(realPosition.x, 0f, realPosition.y), Map, .45f + rank * .16f);
             }
         }
 
         private void DamageAndBurn()
         {
             if (caster == null) return;
-            foreach (Thing thing in GenRadial.RadialDistinctThingsAround(Position, Map, 2.4f, true)
+            float radius = new[] { 0f, 2.4f, 3.0f, 3.7f, 4.5f, 5.4f }[rank];
+            foreach (Thing thing in GenRadial.RadialDistinctThingsAround(Position, Map, radius, true)
                 .Where(t => t != this && t.Spawned && t.HostileTo(caster)).ToList())
             {
                 thing.TakeDamage(new DamageInfo(DamageDefOf.Flame, 5f + rank * 2.5f, .24f, -1f, caster));
@@ -288,10 +292,21 @@ namespace Yunjianzi
         protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             float life = Mathf.Clamp01(ageTicks / (float)Mathf.Max(1, durationTicks));
-            float size = Mathf.Lerp(2.15f, .62f, life);
+            float[] startSizes = { 0f, 3.0f, 4.0f, 5.2f, 6.6f, 8.2f };
+            float[] endSizes = { 0f, .9f, 1.2f, 1.5f, 1.8f, 2.2f };
+            float size = Mathf.Lerp(startSizes[rank], endSizes[rank], life);
             Vector3 loc = new Vector3(realPosition.x, AltitudeLayer.Weather.AltitudeFor(), realPosition.y);
             Matrix4x4 matrix = Matrix4x4.TRS(loc, Quaternion.Euler(0f, ageTicks * 5.5f, 0f), new Vector3(size, 1f, size));
             Graphics.DrawMesh(MeshPool.plane10, matrix, Graphic.MatSingle, 0);
+            // 紫府以上叠加反向旋转的内层风壁；化神的视觉尺度接近大型灵能火龙卷，
+            // 但实际伤害半径单独受控，避免仅因特效放大而失衡。
+            if (rank >= 3)
+            {
+                float inner = size * (rank >= 5 ? .72f : .62f);
+                Vector3 innerLoc = loc + new Vector3(0f, .006f, 0f);
+                Matrix4x4 innerMatrix = Matrix4x4.TRS(innerLoc, Quaternion.Euler(0f, -ageTicks * 7.2f, 0f), new Vector3(inner, 1f, inner));
+                Graphics.DrawMesh(MeshPool.plane10, innerMatrix, Graphic.MatSingle, 0);
+            }
         }
 
         public override void ExposeData()
@@ -411,8 +426,12 @@ namespace Yunjianzi
         }
     }
 
-    [StaticConstructorOnStartup]
-    public sealed class ThingYangfuBeanSoldier : ThingWithComps
+    public sealed class CompProperties_YangfuBeanSoldier : CompProperties
+    {
+        public CompProperties_YangfuBeanSoldier() { compClass = typeof(CompYangfuBeanSoldier); }
+    }
+
+    public sealed class CompYangfuBeanSoldier : ThingComp
     {
         private Pawn caster;
         private int rank = 1;
@@ -420,61 +439,76 @@ namespace Yunjianzi
         private Thing target;
         private bool detonated;
 
+        private Pawn Pawn { get { return parent as Pawn; } }
+
         public void Initialize(Pawn source, int castRank)
         {
             caster = source;
             rank = Mathf.Clamp(castRank, 1, 5);
         }
 
-        protected override void Tick()
+        public override void CompTick()
         {
-            base.Tick();
+            base.CompTick();
+            Pawn pawn = Pawn;
+            if (pawn == null || pawn.Dead || !pawn.Spawned) return;
             ageTicks++;
-            if (caster == null || caster.Dead || ageTicks > 3600) { Destroy(DestroyMode.Vanish); return; }
-            if (target == null || !target.Spawned || !target.HostileTo(caster) || (Find.TickManager.TicksGame + thingIDNumber) % 60 == 0) FindTarget();
+            // RimWorld 一小时为 2500 tick；符兵严格存在两小时后消散。
+            if (caster == null || caster.Dead || ageTicks >= 5000)
+            {
+                detonated = true;
+                pawn.Destroy(DestroyMode.Vanish);
+                return;
+            }
+            if (target == null || !target.Spawned || !target.HostileTo(caster) || (Find.TickManager.TicksGame + pawn.thingIDNumber) % 60 == 0) FindTarget();
             if (target == null) return;
-            if (Position.DistanceTo(target.Position) <= 1.45f) { Detonate(); return; }
-            if ((Find.TickManager.TicksGame + thingIDNumber) % 5 == 0) MoveTowardTarget();
+            if (pawn.Position.DistanceTo(target.Position) <= 1.45f) { Detonate(); return; }
+            if ((Find.TickManager.TicksGame + pawn.thingIDNumber) % 30 == 0) MoveTowardTarget();
         }
 
         private void FindTarget()
         {
-            target = GenRadial.RadialDistinctThingsAround(Position, Map, 35f, true)
-                .Where(t => t != this && t.Spawned && t.HostileTo(caster) && (t is Pawn || t.def.category == ThingCategory.Building))
-                .OrderBy(t => t.Position.DistanceToSquared(Position)).FirstOrDefault();
+            Pawn pawn = Pawn;
+            if (pawn == null || !pawn.Spawned) { target = null; return; }
+            target = GenRadial.RadialDistinctThingsAround(pawn.Position, pawn.Map, 35f, true)
+                .Where(t => t != Pawn && t.Spawned && t.HostileTo(caster) && (t is Pawn || t.def.category == ThingCategory.Building))
+                .OrderBy(t => t.Position.DistanceToSquared(pawn.Position)).FirstOrDefault();
         }
 
         private void MoveTowardTarget()
         {
             if (target == null) return;
-            IntVec3 next = GenAdj.CardinalDirections
-                .Select(d => Position + d)
-                .Where(c => c.InBounds(Map) && c.Walkable(Map))
-                .OrderBy(c => c.DistanceToSquared(target.Position)).FirstOrDefault();
-            if (next.IsValid && next.DistanceToSquared(target.Position) < Position.DistanceToSquared(target.Position)) Position = next;
+            Pawn pawn = Pawn;
+            if (pawn == null || pawn.pather == null || target == null) return;
+            if (!pawn.pather.Moving || pawn.pather.Destination.Thing != target)
+                pawn.pather.StartPath(target, PathEndMode.Touch);
         }
 
         private void Detonate()
         {
-            if (detonated || !Spawned) return;
+            Pawn pawn = Pawn;
+            if (detonated || pawn == null || !pawn.Spawned) return;
             detonated = true;
-            Map map = Map;
-            IntVec3 cell = Position;
+            Map map = pawn.Map;
+            IntVec3 cell = pawn.Position;
             Pawn source = caster;
             int damage = Mathf.RoundToInt(50f * (1f + .5f * (rank - 1)));
-            base.Destroy(DestroyMode.Vanish);
+            pawn.Destroy(DestroyMode.Vanish);
             GenExplosion.DoExplosion(cell, map, 2.9f, DamageDefOf.Bomb, source, damage, .35f);
         }
 
-        public override void Destroy(DestroyMode mode = DestroyMode.Vanish)
+        public override void PostDestroy(DestroyMode mode, Map previousMap)
         {
-            if (Spawned && mode == DestroyMode.KillFinalize && !detonated) { Detonate(); return; }
-            base.Destroy(mode);
+            base.PostDestroy(mode, previousMap);
+            if (detonated || previousMap == null || mode != DestroyMode.KillFinalize) return;
+            detonated = true;
+            int damage = Mathf.RoundToInt(50f * (1f + .5f * (rank - 1)));
+            GenExplosion.DoExplosion(parent.Position, previousMap, 2.9f, DamageDefOf.Bomb, caster, damage, .35f);
         }
 
-        public override void ExposeData()
+        public override void PostExposeData()
         {
-            base.ExposeData();
+            base.PostExposeData();
             Scribe_References.Look(ref caster, "yjz_beanCaster");
             Scribe_References.Look(ref target, "yjz_beanTarget");
             Scribe_Values.Look(ref rank, "yjz_beanRank", 1);
@@ -490,15 +524,17 @@ namespace Yunjianzi
         public static void SpawnBeanSoldiers(Pawn caster, IntVec3 center, int rank)
         {
             if (caster == null || caster.Map == null) return;
-            ThingDef def = new[] { null, YJZDefOf.YJZ_BeanSoldier_1, YJZDefOf.YJZ_BeanSoldier_2,
+            PawnKindDef kind = new[] { null, YJZDefOf.YJZ_BeanSoldier_1, YJZDefOf.YJZ_BeanSoldier_2,
                 YJZDefOf.YJZ_BeanSoldier_3, YJZDefOf.YJZ_BeanSoldier_4, YJZDefOf.YJZ_BeanSoldier_5 }[rank];
             List<IntVec3> cells = GenRadial.RadialCellsAround(center, 5f, true)
                 .Where(c => c.InBounds(caster.Map) && c.Walkable(caster.Map)).InRandomOrder().ToList();
             for (int i = 0; i < Counts[rank] && cells.Count > 0; i++)
             {
                 IntVec3 cell = cells[i % cells.Count];
-                ThingYangfuBeanSoldier soldier = (ThingYangfuBeanSoldier)GenSpawn.Spawn(def, cell, caster.Map);
-                soldier.Initialize(caster, rank);
+                Pawn soldier = PawnGenerator.GeneratePawn(kind, caster.Faction ?? Faction.OfPlayer);
+                GenSpawn.Spawn(soldier, cell, caster.Map);
+                CompYangfuBeanSoldier comp = soldier.TryGetComp<CompYangfuBeanSoldier>();
+                if (comp != null) comp.Initialize(caster, rank);
                 FleckMaker.ThrowMicroSparks(cell.ToVector3Shifted(), caster.Map);
             }
         }

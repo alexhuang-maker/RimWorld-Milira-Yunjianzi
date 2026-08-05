@@ -3,6 +3,7 @@ Source/bin/
 Tools/roslyn-*/
 Tools/*.nupkg
 Source/obj/
+1.6/Assemblies/*.pdb
 
 # Portable local Roslyn compiler used for reproducible RimWorld DLL builds
 Tools/Microsoft.Net.Compilers.Toolset.*/

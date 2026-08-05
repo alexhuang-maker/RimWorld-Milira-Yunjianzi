@@ -25,6 +25,7 @@ namespace Yunjianzi
         private int lastArmorTier;
         private int boundTick;
         private bool nativeControlBound;
+        private bool nativeControlAttempted;
 
         public Pawn Pawn { get { return parent as Pawn; } }
         public Pawn Owner
@@ -53,13 +54,14 @@ namespace Yunjianzi
             }
         }
 
-        public void BindTo(Pawn owner)
+        public bool BindTo(Pawn owner)
         {
             ownerThingId = owner == null ? -1 : owner.thingIDNumber;
             boundTick = Find.TickManager == null ? 0 : Find.TickManager.TicksGame;
             shield = ShieldMax;
             SynchronizeTier(true);
-            EnsureNativeControlRelation();
+            nativeControlAttempted = false;
+            return EnsureNativeControlRelation();
         }
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
@@ -69,7 +71,11 @@ namespace Yunjianzi
             SynchronizeTier(!respawningAfterLoad);
             // 旧版把“监督关系存在”误当成“已经进入控制组”。读档时重新核对一次，
             // 成功后 nativeControlBound 会再次锁定，不会成为持续轮询负担。
-            if (respawningAfterLoad) nativeControlBound = false;
+            if (respawningAfterLoad)
+            {
+                nativeControlBound = false;
+                nativeControlAttempted = false;
+            }
             EnsureNativeControlRelation();
         }
 
@@ -80,8 +86,6 @@ namespace Yunjianzi
             if (pawn == null || pawn.Dead) return;
             if (pawn.IsHashIntervalTick(60))
             {
-                // 旧存档仅执行到成功为止；建立后不再轮询控制关系。
-                if (!nativeControlBound) EnsureNativeControlRelation();
                 if (pawn.needs != null && pawn.needs.energy != null) pawn.needs.energy.CurLevelPercentage = 1f;
                 if (Find.TickManager.TicksGame >= shieldBrokenUntil && ShieldMax > 0f)
                     shield = Mathf.Min(ShieldMax, shield + ShieldMax / 120f);
@@ -89,25 +93,52 @@ namespace Yunjianzi
             }
         }
 
-        private void EnsureNativeControlRelation()
+        private bool EnsureNativeControlRelation()
         {
-            if (nativeControlBound || !ModsConfig.BiotechActive) return;
+            if (nativeControlBound) return true;
+            if (nativeControlAttempted || !ModsConfig.BiotechActive) return false;
+            nativeControlAttempted = true;
             Pawn pawn = Pawn;
             Pawn owner = Owner;
-            if (pawn == null || owner == null || pawn.relations == null) return;
-            // 旧存档里的云间子可能早于该兼容逻辑生成，补建一次 tracker。
-            if (owner.mechanitor == null) owner.mechanitor = new Pawn_MechanitorTracker(owner);
-            if (!pawn.relations.DirectRelationExists(PawnRelationDefOf.Overseer, owner))
-                pawn.relations.AddDirectRelation(PawnRelationDefOf.Overseer, owner);
-            if (pawn.relations.DirectRelationExists(PawnRelationDefOf.Overseer, owner))
+            if (pawn == null || owner == null || pawn.relations == null) return false;
+
+            bool addedRelation = false;
+            try
             {
+                if (owner.mechanitor == null)
+                {
+                    owner.mechanitor = new Pawn_MechanitorTracker(owner);
+                    owner.mechanitor.Notify_PawnSpawned(false);
+                }
+
+                // 控制组数量由 MechControlGroups 属性决定。先让 tracker 按云间灵脉提供的
+                // 宽带/控制组容量建立真实原版控制组，再添加监督者关系与分组。
+                MethodInfo refreshGroups = AccessTools.Method(typeof(Pawn_MechanitorTracker), "Notify_ControlGroupAmountMayChanged");
+                if (refreshGroups == null)
+                    throw new MissingMethodException("Pawn_MechanitorTracker.Notify_ControlGroupAmountMayChanged");
+                refreshGroups.Invoke(owner.mechanitor, null);
+                if (owner.mechanitor.TotalAvailableControlGroups <= 0)
+                    throw new InvalidOperationException("云间子没有可用的机械控制组。请确认云间灵脉的 MechControlGroups 属性已加载。");
+
+                if (!pawn.relations.DirectRelationExists(PawnRelationDefOf.Overseer, owner))
+                {
+                    pawn.relations.AddDirectRelation(PawnRelationDefOf.Overseer, owner);
+                    addedRelation = true;
+                }
+
+                owner.mechanitor.AssignPawnControlGroup(pawn, MechWorkModeDefOf.Work);
                 MechanitorControlGroup group = MechanitorUtility.GetMechControlGroup(pawn);
-                // AssignPawnControlGroup 本身负责创建缺失的控制组。旧逻辑只在 group
-                // 非空时调用，导致刚生成的神机永远只有监督关系、没有控制组。
-                if (group == null || group.WorkMode != MechWorkModeDefOf.Work)
-                    owner.mechanitor.AssignPawnControlGroup(pawn, MechWorkModeDefOf.Work);
-                group = MechanitorUtility.GetMechControlGroup(pawn);
                 nativeControlBound = group != null;
+                if (!nativeControlBound)
+                    throw new InvalidOperationException("原版控制组未接受神机米莉安。绑定已回滚。");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (addedRelation && pawn.relations.DirectRelationExists(PawnRelationDefOf.Overseer, owner))
+                    pawn.relations.RemoveDirectRelation(PawnRelationDefOf.Overseer, owner);
+                Log.ErrorOnce("[Yunjianzi] 神机控制关系初始化失败：" + ex, pawn.thingIDNumber ^ 0x59A31);
+                return false;
             }
         }
 
@@ -278,6 +309,7 @@ namespace Yunjianzi
             Scribe_Values.Look(ref lastArmorTier, "yjz_shenjiArmorTier", 0);
             Scribe_Values.Look(ref boundTick, "yjz_shenjiBoundTick", 0);
             Scribe_Values.Look(ref nativeControlBound, "yjz_shenjiNativeControlBound", false);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit) nativeControlAttempted = false;
         }
     }
 
@@ -417,7 +449,14 @@ namespace Yunjianzi
             if (!cell.IsValid) cell = Pawn.Position;
             GenSpawn.Spawn(shenji, cell, Pawn.Map);
             CompYunjianziShenji comp = shenji.TryGetComp<CompYunjianziShenji>();
-            if (comp != null) comp.BindTo(Pawn);
+            if (comp == null || !comp.BindTo(Pawn))
+            {
+                if (shenji.Spawned) shenji.Destroy(DestroyMode.Vanish);
+                Energy += 10f;
+                Messages.Message("神机控制组初始化失败，本次召唤已取消并返还灵力。请查看日志中的首条 [Yunjianzi] 错误。",
+                    Pawn, MessageTypeDefOf.RejectInput, false);
+                return;
+            }
             // 使用原版机械师/米莉安共用的监督关系，建立征召、控制组与工作模式。
             // 神机 BandwidthCost 为 0，不会挤占普通机械体的带宽。
             FleckMaker.Static(cell, Pawn.Map, FleckDefOf.PsycastSkipOuterRingExit, 1.5f);
@@ -432,10 +471,10 @@ namespace Yunjianzi
     [HarmonyPatch(typeof(MechanitorUtility), nameof(MechanitorUtility.ShouldBeMechanitor))]
     internal static class Patch_MechanitorUtility_YunjianziController
     {
-        private static void Postfix(Pawn p, ref bool __result)
+        private static void Postfix(Pawn pawn, ref bool __result)
         {
-            if (__result || p == null) return;
-            CompYunjianziCultivation cultivation = p.TryGetComp<CompYunjianziCultivation>();
+            if (__result || pawn == null) return;
+            CompYunjianziCultivation cultivation = pawn.TryGetComp<CompYunjianziCultivation>();
             if (cultivation != null && cultivation.IsYunjianzi) __result = true;
         }
     }
@@ -452,27 +491,6 @@ namespace Yunjianzi
             // 神机诀本身就是控制授权，不要求云间子额外安装机械连接芯片或带宽器官；
             // 但该授权严格限制在与她本人绑定的神机上。
             __result = shenji != null && shenji.IsBoundTo(pawn);
-        }
-    }
-
-    /// <summary>
-    /// 米莉拉“配置”页的若干列默认假定装备由它自己的换装流程建立。
-    /// 神机使用固定的内置装甲与武器，强行塞进该页会让原版列访问不存在的
-    /// 配置状态并抛出空引用。只从配置页排除神机；米莉安工作页仍会正常列出。
-    /// </summary>
-    [HarmonyPatch]
-    internal static class Patch_MilianConfig_ExcludeIntrinsicShenji
-    {
-        private static MethodBase TargetMethod()
-        {
-            Type type = AccessTools.TypeByName("Milira.MainTabWindow_MilianConfig");
-            return type == null ? null : AccessTools.PropertyGetter(type, "Pawns");
-        }
-
-        private static void Postfix(ref IEnumerable<Pawn> __result)
-        {
-            if (__result != null)
-                __result = __result.Where(p => p == null || p.TryGetComp<CompYunjianziShenji>() == null);
         }
     }
 

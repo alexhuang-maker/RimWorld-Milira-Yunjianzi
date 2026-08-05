@@ -35,7 +35,8 @@
     <passability>PassThroughOnly</passability>
     <pathCost>35</pathCost>
     <hasInteractionCell>true</hasInteractionCell>
-    <interactionCellOffset>(0,0,-1)</interactionCellOffset>
+    <!-- 纸张位于台面南侧；操作员应站在纸前，而不是绕到背后的玉珠旁。 -->
+    <interactionCellOffset>(0,0,1)</interactionCellOffset>
     <surfaceType>Item</surfaceType>
     <minifiedDef>MinifiedThing</minifiedDef>
     <thingCategories><li>BuildingsMisc</li></thingCategories>
