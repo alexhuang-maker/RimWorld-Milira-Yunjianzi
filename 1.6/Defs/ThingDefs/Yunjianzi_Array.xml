@@ -28,7 +28,7 @@
     <thingClass>Yunjianzi.ThingYunjianziSwordRain</thingClass>
     <category>Ethereal</category>
     <tickerType>Normal</tickerType>
-    <drawerType>RealtimeOnly</drawerType>
+    <drawerType>None</drawerType>
     <altitudeLayer>Projectile</altitudeLayer>
     <selectable>false</selectable>
     <useHitPoints>false</useHitPoints>

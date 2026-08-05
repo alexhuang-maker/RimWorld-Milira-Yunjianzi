@@ -18,6 +18,8 @@ namespace Yunjianzi
         public static readonly Texture2D Meditate = ContentFinder<Texture2D>.Get("Yunjianzi/Buildings/Meditation/MeditationCushion");
         public static readonly Texture2D SwordRain =
             ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/SwordRain", false) ?? BlinkStrike;
+        public static readonly Texture2D ArrayTeleport =
+            ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/ArrayTeleport", false) ?? ImmortalArray;
         public static readonly Texture2D CultivationTree =
             ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/CultivationTree", false) ?? SummonZhuxie;
         public static readonly Texture2D DevX = MakeDevX();

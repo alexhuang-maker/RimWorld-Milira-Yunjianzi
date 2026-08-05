@@ -385,6 +385,11 @@ namespace Yunjianzi
             startTick = Find.TickManager.TicksGame;
         }
 
+        // This Thing is only a timed gameplay driver. All visible content is
+        // emitted as Flecks, so drawing the driver itself would show RimWorld's
+        // magenta missing-texture square at the impact center.
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false) { }
+
         protected override void Tick()
         {
             base.Tick();
@@ -845,7 +850,7 @@ namespace Yunjianzi
                 {
                     defaultLabel = "仙阵诀·紫电阵遁",
                     defaultDesc = "无论当前身在阵内或阵外，都可闪现到任一琉璃阵眼覆盖范围内的可站立位置。冷却20秒。紫府起，落点会击退附近敌人；境界越高，范围与距离越大。",
-                    icon = YunjianziAbilityTextures.ImmortalArray,
+                    icon = YunjianziAbilityTextures.ArrayTeleport,
                     action = BeginArrayBlink
                 };
                 int remaining = arrayBlinkReadyTick - Find.TickManager.TicksGame;
