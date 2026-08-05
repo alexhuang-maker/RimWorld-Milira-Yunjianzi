@@ -2,6 +2,11 @@
 Source/bin/
 Source/obj/
 
+# Portable local Roslyn compiler used for reproducible RimWorld DLL builds
+Tools/Microsoft.Net.Compilers.Toolset.*/
+Tools/Microsoft.Net.Compilers.Toolset.*.nupkg
+Tools/Microsoft.Net.Compilers.Toolset.*.zip
+
 # IDE-local files
 *.user
 *.suo

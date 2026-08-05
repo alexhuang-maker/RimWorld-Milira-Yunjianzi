@@ -54,58 +54,58 @@ namespace Yunjianzi
 
         public static readonly List<YunjianziSkillNode> All = new List<YunjianziSkillNode>
         {
-            N(SummonZhuxie, "唤起诛邪", "研读宝卷后先天掌握。消耗10灵力召回世界中唯一的诛邪。", 1, 0, 0),
+            N(SummonZhuxie, "唤起诛邪", "研读宝卷后先天掌握。消耗10灵力召回世界中唯一的诛邪。", 1, 0, 3),
             N(ArrayCore, "琉璃阵眼", "解锁仙阵诀：布置持续60秒的固定琉璃阵眼。", 1, 1, 0),
-            N(ArrayRecovery, "阵中回元", "阵内友方缓慢恢复非永久伤势。", 1, 1, 1, ArrayCore),
-            N(ArrayTeleport, "阵遁", "解锁紫电阵遁，可从阵外或阵内传送至阵法覆盖范围。", 1, 1, 2, ArrayCore),
+            N(ArrayRecovery, "阵中回元", "阵内友方缓慢恢复非永久伤势。", 1, 1, 0, ArrayCore),
+            N(ArrayTeleport, "阵遁", "解锁紫电阵遁，可从阵外或阵内传送至阵法覆盖范围。", 1, 1, 3, ArrayCore),
 
             N(SwordEnchantment, "诛邪附灵", "诛邪命中短暂眩晕生物、麻痹机械；目标随后获得控制免疫，不能形成永控。", 2, 0, 0, SummonZhuxie),
             N(SwordWard, "御剑护体", "解锁诛邪的灵力格挡条，脱离伤害后缓慢恢复。", 2, 0, 1, SummonZhuxie),
-            N(ArrayLightning, "引雷入阵", "仙阵每10秒落下两道雷霆，尽量锁定不同敌人。", 2, 1, 0, ArrayCore),
-            N(ArrayEdgeSlow, "迟滞阵纹", "敌人触碰固定阵或随身阵边界时减速10秒；同一敌人短时间内不会再次触发。", 2, 1, 1, ArrayCore),
+            N(ArrayLightning, "引雷入阵", "仙阵每10秒落下两道雷霆，尽量锁定不同敌人。", 2, 1, 1, ArrayCore),
+            N(ArrayEdgeSlow, "迟滞阵纹", "敌人触碰固定阵或随身阵边界时减速10秒；同一敌人短时间内不会再次触发。", 2, 1, 2, ArrayCore),
 
-            N(SwordShadowsI, "剑影·双仪", "解锁两把剑影，在敌阵间持续穿梭攻击。", 3, 0, 0, SummonZhuxie),
-            N(BlinkStrike, "瞬斩", "消耗20灵力闪现至敌人身后强力斩击，冷却5秒；可右键开启自动施放。", 3, 0, 1, SummonZhuxie),
-            N(SwordRain, "天剑雨", "消耗80灵力，在迫击炮爆炸范围内降下两轮纯伤害剑雨。", 3, 0, 2, SummonZhuxie),
-            N(LightningEnchantment, "雷纹附魔", "诛邪命中与瞬斩命中附加落雷。需要先掌握诛邪附灵。", 3, 0, 3, SwordEnchantment),
-            N(MovingArray, "随身阵", "布阵时额外生成一个丝滑跟随云间子的阵法领域。", 3, 1, 0, ArrayCore),
-            N(ArrayTeleportShock, "震雷遁", "阵遁落点一格范围内产生击退；境界越高，范围与距离越大。", 3, 1, 1, ArrayTeleport),
+            N(SwordShadowsI, "剑影·双仪", "解锁两把剑影，在敌阵间持续穿梭攻击。", 3, 0, 2, SummonZhuxie),
+            N(BlinkStrike, "瞬斩", "消耗20灵力闪现至敌人身后强力斩击，冷却5秒；可右键开启自动施放。", 3, 0, 3, SummonZhuxie),
+            N(SwordRain, "天剑雨", "消耗80灵力，在迫击炮爆炸范围内降下两轮纯伤害剑雨。", 3, 0, 4, SummonZhuxie),
+            N(LightningEnchantment, "雷纹附魔", "诛邪命中与瞬斩命中附加落雷。需要先掌握诛邪附灵。", 3, 0, 0, SwordEnchantment),
+            N(MovingArray, "随身阵", "布阵时额外生成一个丝滑跟随云间子的阵法领域。", 3, 1, 4, ArrayCore),
+            N(ArrayTeleportShock, "震雷遁", "阵遁落点一格范围内产生击退；境界越高，范围与距离越大。", 3, 1, 3, ArrayTeleport),
 
-            N(SwordShadowsII, "剑影·四象", "剑影数量由两把提升至四把。", 4, 0, 0, SwordShadowsI),
-            N(BlinkChain, "诛邪连斩", "瞬斩击杀目标（包括附带落雷）后，自动寻找下一目标继续释放。", 4, 0, 1, BlinkStrike),
-            N(SwordHealing, "剑息疗伤", "诛邪命中会修复自身伤口并降低流血。", 4, 0, 2, LightningEnchantment),
-            N(DeathLock, "诛邪护主", "手持诛邪濒危时锁血20秒；具有较长的再次触发间隔。", 4, 0, 3, SummonZhuxie),
+            N(SwordShadowsII, "剑影·四象", "剑影数量由两把提升至四把。", 4, 0, 2, SwordShadowsI),
+            N(BlinkChain, "诛邪连斩", "瞬斩击杀目标（包括附带落雷）后，自动寻找下一目标继续释放。", 4, 0, 3, BlinkStrike),
+            N(SwordHealing, "剑息疗伤", "诛邪命中会修复自身伤口并降低流血。", 4, 0, 0, LightningEnchantment),
+            N(DeathLock, "诛邪护主", "手持诛邪濒危时锁血20秒；具有较长的再次触发间隔。", 4, 0, 5, SummonZhuxie),
             N(SwordRainGolden, "天剑雨·藏锋", "天剑雨冷却缩短5秒，可储存两次充能，并扩大覆盖范围。", 4, 0, 4, SwordRain),
-            N(AllyArrayShield, "众生灵盾", "阵内友方与友方机械获得弱版灵力护盾。", 4, 1, 0, ArrayCore),
-            N(ArrayBarrier, "金丹界壁", "仙阵改为每秒消耗5灵力持续维持，并阻挡阵外射入的抛射物。", 4, 1, 1, AllyArrayShield),
+            N(AllyArrayShield, "众生灵盾", "阵内友方与友方机械获得弱版灵力护盾。", 4, 1, 5, ArrayCore),
+            N(ArrayBarrier, "金丹界壁", "仙阵改为每秒消耗5灵力持续维持，并阻挡阵外射入的抛射物。", 4, 1, 6, AllyArrayShield),
             N(ArrayEdgeStun, "镇魂阵纹", "迟滞阵纹强化：触碰阵法边界的敌人先被眩晕3秒，随后继续承受10秒减速。", 4, 1, 2, ArrayEdgeSlow),
 
-            N(SwordShadowsIII, "剑影·八荒", "剑影数量由四把提升至八把。", 5, 0, 0, SwordShadowsII),
-            N(ArmorIgnore, "破妄剑意", "诛邪、瞬斩与剑影攻击无视护甲。", 5, 0, 1, SummonZhuxie),
-            N(ShadowAffixes, "万剑同契", "剑影继承已学习的眩晕/麻痹与落雷附魔；每把剑影的落雷独立使用五倍冷却。", 5, 0, 2, SwordShadowsI, SwordEnchantment),
-            N(SwordRainSpirit, "天剑雨·化神", "天剑雨冷却再次缩短5秒，并在原有两轮后追加两轮攻击。", 5, 0, 3, SwordRainGolden),
-            N(ArrayReflect, "返照界壁", "界壁不再仅仅阻挡，而会把敌方抛射物反射回去。", 5, 1, 0, ArrayBarrier),
+            N(SwordShadowsIII, "剑影·八荒", "剑影数量由四把提升至八把。", 5, 0, 2, SwordShadowsII),
+            N(ArmorIgnore, "破妄剑意", "诛邪、瞬斩与剑影攻击无视护甲。", 5, 0, 6, SummonZhuxie),
+            N(ShadowAffixes, "万剑同契", "剑影继承已学习的眩晕/麻痹与落雷附魔；每把剑影的落雷独立使用五倍冷却。", 5, 0, 1, SwordShadowsI, SwordEnchantment),
+            N(SwordRainSpirit, "天剑雨·化神", "天剑雨冷却再次缩短5秒，并在原有两轮后追加两轮攻击。", 5, 0, 4, SwordRainGolden),
+            N(ArrayReflect, "返照界壁", "界壁不再仅仅阻挡，而会把敌方抛射物反射回去。", 5, 1, 6, ArrayBarrier),
             N(ArrayStorm, "万钧雷域", "仙阵落雷频率提升至5秒，并强化雷击。", 5, 1, 1, ArrayLightning),
-            N(ArrayTeleportMastery, "化神阵遁", "阵遁的击退范围与距离提升至化神层次。", 5, 1, 2, ArrayTeleportShock),
+            N(ArrayTeleportMastery, "化神阵遁", "阵遁的击退范围与距离提升至化神层次。", 5, 1, 3, ArrayTeleportShock),
 
-            N(ShenjiSummon, "唤神机", "消耗10灵力召唤一台不占机械带宽、与云间子绑定的专属火力支援米莉安。", 1, 2, 0),
+            N(ShenjiSummon, "唤神机", "消耗10灵力召唤一台不占机械带宽、与云间子绑定的专属火力支援米莉安。", 1, 2, 4),
             N(ShenjiGatling, "神机炮·连星", "神机炮强化到原版速射机枪级火力。", 2, 2, 0, ShenjiSummon),
-            N(ShenjiRocketJump, "火箭跃迁", "神机获得冷却一天的火箭跳跃；自动战斗会在近敌压迫时后撤跃迁。", 2, 2, 1, ShenjiSummon),
-            N(ShenjiShield, "百灵护盾", "神机获得100点可恢复护盾。", 2, 2, 2, ShenjiSummon),
-            N(ShenjiDualControl, "双机同调", "云间子可同时维持两台神机。", 3, 2, 0, ShenjiSummon),
-            N(ShenjiGauss, "神机炮·辉光", "神机炮改用淡蓝色脉冲激光，火力达到米莉拉帝国高阶步枪级别。", 3, 2, 1, ShenjiGatling),
-            N(ShenjiRocketDrone, "火箭浮游炮", "神机展开一具自动发射微型火箭的浮游炮。", 3, 2, 2, ShenjiSummon),
-            N(ShenjiAccessories, "万机接口", "开放米莉拉通用配件接口；不接入民主之翼专属配件。", 3, 2, 3, ShenjiSummon),
-            N(ShenjiRecallRepair, "败阵归元", "神机被击溃时传送回云间子身边并完全修复，冷却两天。", 4, 2, 0, ShenjiSummon),
-            N(ShenjiDarkShield, "暗质护盾", "护盾升级为米莉拉帝国暗物质护盾腰带级防护。", 4, 2, 1, ShenjiShield),
-            N(ShenjiLegendaryFirepower, "神机炮·传说", "神机炮达到传奇高斯步枪级火力，武器能量永不枯竭。", 4, 2, 2, ShenjiGauss),
-            N(ShenjiRicochetLaser, "流光折跃", "神机激光命中后向目标附近至多三个敌人连续跳射；每次跳射造成主射击30%的伤害。", 4, 2, 3, ShenjiGauss),
-            N(ShenjiQuadControl, "四象神机", "云间子可同时维持四台终极神机。", 5, 2, 0, ShenjiDualControl)
+            N(ShenjiRocketJump, "火箭跃迁", "神机获得冷却一天的火箭跳跃；自动战斗会在近敌压迫时后撤跃迁。", 2, 2, 2, ShenjiSummon),
+            N(ShenjiShield, "百灵护盾", "神机获得100点可恢复护盾。", 2, 2, 3, ShenjiSummon),
+            N(ShenjiDualControl, "双机同调", "云间子可同时维持两台神机。", 3, 2, 7, ShenjiSummon),
+            N(ShenjiGauss, "神机炮·辉光", "神机炮改用淡蓝色脉冲激光，火力达到米莉拉帝国高阶步枪级别。", 3, 2, 0, ShenjiGatling),
+            N(ShenjiRocketDrone, "火箭浮游炮", "神机展开一具自动发射微型火箭的浮游炮。", 3, 2, 4, ShenjiSummon),
+            N(ShenjiAccessories, "万机接口", "开放米莉拉通用配件接口；不接入民主之翼专属配件。", 3, 2, 5, ShenjiSummon),
+            N(ShenjiRecallRepair, "败阵归元", "神机被击溃时传送回云间子身边并完全修复，冷却两天。", 4, 2, 6, ShenjiSummon),
+            N(ShenjiDarkShield, "暗质护盾", "护盾升级为米莉拉帝国暗物质护盾腰带级防护。", 4, 2, 3, ShenjiShield),
+            N(ShenjiLegendaryFirepower, "神机炮·传说", "神机炮达到传奇高斯步枪级火力，武器能量永不枯竭。", 4, 2, 0, ShenjiGauss),
+            N(ShenjiRicochetLaser, "流光折跃", "神机激光命中后向目标附近至多三个敌人连续跳射；每次跳射造成主射击30%的伤害。", 4, 2, 1, ShenjiGauss),
+            N(ShenjiQuadControl, "四象神机", "云间子可同时维持四台终极神机。", 5, 2, 7, ShenjiDualControl)
         };
 
-        private static YunjianziSkillNode N(string id, string label, string description, int realm, int branch, int column, params string[] prerequisites)
+        private static YunjianziSkillNode N(string id, string label, string description, int realm, int branch, int lane, params string[] prerequisites)
         {
-            return new YunjianziSkillNode(id, label, description, realm, branch, column, prerequisites);
+            return new YunjianziSkillNode(id, label, description, realm, branch, lane, prerequisites);
         }
 
         public static YunjianziSkillNode Get(string id)
@@ -121,17 +121,17 @@ namespace Yunjianzi
         public readonly string Description;
         public readonly int Realm;
         public readonly int Branch;
-        public readonly int Column;
+        public readonly int Lane;
         public readonly string[] Prerequisites;
 
-        public YunjianziSkillNode(string id, string label, string description, int realm, int branch, int column, string[] prerequisites)
+        public YunjianziSkillNode(string id, string label, string description, int realm, int branch, int lane, string[] prerequisites)
         {
             Id = id;
             Label = label;
             Description = description;
             Realm = realm;
             Branch = branch;
-            Column = column;
+            Lane = lane;
             Prerequisites = prerequisites ?? new string[0];
         }
     }
@@ -298,6 +298,27 @@ namespace Yunjianzi
         private static readonly Color LineLocked = new Color(.34f, .39f, .40f, .70f);
         private readonly CompYunjianziCultivation comp;
         private readonly Dictionary<string, Rect> nodeRects = new Dictionary<string, Rect>();
+        private int selectedBranch;
+
+        private static readonly string[] BranchTitles = { "御剑诀", "仙阵诀", "神机诀" };
+        private static readonly string[] BranchSubtitles =
+        {
+            "诛邪为根基；附灵、剑影、瞬斩、天剑雨等专精沿固定纵向轨道进阶。",
+            "琉璃阵眼为根基；回元、雷域、阵纹、阵遁、随身阵与界壁彼此分栏。",
+            "唤神机为根基；火力、机动、护盾、浮游炮、接口、归元与控制分别成长。"
+        };
+        private static readonly string[] BranchRootIds =
+        {
+            YunjianziSkills.SummonZhuxie,
+            YunjianziSkills.ArrayCore,
+            YunjianziSkills.ShenjiSummon
+        };
+        private static readonly string[][] BranchLaneLabels =
+        {
+            new[] { "附灵", "护体·同契", "剑影", "瞬斩", "天剑雨", "护主", "破甲" },
+            new[] { "回元", "雷域", "阵纹", "阵遁", "随身阵", "灵盾", "界壁" },
+            new[] { "主火力", "折射", "机动", "护盾", "浮游炮", "接口", "败阵归元", "控制" }
+        };
 
         public Window_YunjianziCultivationTree(CompYunjianziCultivation cultivation)
         {
@@ -326,65 +347,112 @@ namespace Yunjianzi
             }
             Widgets.DrawLineHorizontal(18f, 55f, inRect.width - 36f);
 
-            Rect swordPanel = new Rect(18f, 70f, 440f, 665f);
-            Rect arrayPanel = new Rect(472f, 70f, 440f, 665f);
-            Rect shenjiPanel = new Rect(926f, 70f, 440f, 665f);
-            DrawBranchPanel(swordPanel, 0, "御剑诀", "先天已掌握：唤起诛邪");
-            DrawBranchPanel(arrayPanel, 1, "仙阵诀", "从琉璃阵眼起步，逐层拆分阵法特效");
-            DrawBranchPanel(shenjiPanel, 2, "神机诀", "专属米莉安、火力支援与境界同调");
-            DrawPrerequisiteLines();
-            DrawBranchNodes(swordPanel, 0);
-            DrawBranchNodes(arrayPanel, 1);
-            DrawBranchNodes(shenjiPanel, 2);
+            DrawTechniqueTabs(new Rect(18f, 66f, inRect.width - 36f, 38f));
+            DrawTechniquePanel(new Rect(18f, 112f, inRect.width - 36f, 620f), selectedBranch);
 
             Rect future = new Rect(18f, 744f, inRect.width - 36f, 24f);
             GUI.color = new Color(.62f, .72f, .74f);
             Text.Anchor = TextAnchor.MiddleCenter;
-            Widgets.Label(future, "阳符诀 · 后续开放");
+            Widgets.Label(future, "纵向专精轨道 · 青色为已掌握，金色为可参悟    |    阳符诀 · 后续开放");
             Text.Anchor = TextAnchor.UpperLeft;
             GUI.color = Color.white;
         }
 
-        private void DrawBranchPanel(Rect panel, int branch, string title, string subtitle)
+        private void DrawTechniqueTabs(Rect tabsRect)
+        {
+            float gap = 8f;
+            float width = (tabsRect.width - gap * 2f) / 3f;
+            Text.Anchor = TextAnchor.MiddleCenter;
+            Text.Font = GameFont.Small;
+            for (int branch = 0; branch < 3; branch++)
+            {
+                Rect tab = new Rect(tabsRect.x + branch * (width + gap), tabsRect.y, width, tabsRect.height);
+                bool selected = branch == selectedBranch;
+                Widgets.DrawBoxSolid(tab, selected ? new Color(.12f, .48f, .52f, .98f) : new Color(.08f, .18f, .21f, .98f));
+                Widgets.DrawBox(tab, selected ? 2 : 1);
+                GUI.color = selected ? Color.white : new Color(.70f, .78f, .79f);
+                Widgets.Label(tab, BranchTitles[branch]);
+                GUI.color = Color.white;
+                if (Widgets.ButtonInvisible(tab)) selectedBranch = branch;
+            }
+            Text.Anchor = TextAnchor.UpperLeft;
+        }
+
+        private void DrawTechniquePanel(Rect panel, int branch)
         {
             Widgets.DrawMenuSection(panel);
-            Text.Font = GameFont.Medium;
-            Text.Anchor = TextAnchor.MiddleCenter;
-            Widgets.Label(new Rect(panel.x + 10f, panel.y + 8f, panel.width - 20f, 30f), title);
             Text.Font = GameFont.Tiny;
-            GUI.color = new Color(.65f, .80f, .82f);
-            Widgets.Label(new Rect(panel.x + 10f, panel.y + 39f, panel.width - 20f, 22f), subtitle);
+            Text.Anchor = TextAnchor.MiddleCenter;
+            GUI.color = new Color(.66f, .83f, .84f);
+            Widgets.Label(new Rect(panel.x + 16f, panel.y + 5f, panel.width - 32f, 22f), BranchSubtitles[branch]);
             GUI.color = Color.white;
+
+            CacheNodeRects(panel, branch);
+            DrawRealmBands(panel, branch);
+            DrawPrerequisiteLines(branch);
+            DrawBranchNodes(branch);
             Text.Anchor = TextAnchor.UpperLeft;
+            Text.Font = GameFont.Small;
+        }
+
+        private void DrawRealmBands(Rect panel, int branch)
+        {
+            string[] lanes = BranchLaneLabels[branch];
+            float contentX = panel.x + 86f;
+            float contentWidth = panel.width - 108f;
+            float laneStep = contentWidth / lanes.Length;
+
+            Text.Font = GameFont.Tiny;
+            Text.Anchor = TextAnchor.MiddleCenter;
+            GUI.color = new Color(.54f, .76f, .78f);
+            for (int lane = 0; lane < lanes.Length; lane++)
+                Widgets.Label(new Rect(contentX + lane * laneStep, panel.y + 28f, laneStep, 22f), lanes[lane]);
+            GUI.color = Color.white;
+
+            float rowStart = panel.y + 146f;
             for (int realm = 1; realm <= 5; realm++)
             {
-                float y = panel.y + 75f + (realm - 1) * 115f;
+                float y = rowStart + (realm - 1) * 88f;
+                Color band = realm % 2 == 0
+                    ? new Color(.055f, .13f, .15f, .72f)
+                    : new Color(.045f, .105f, .125f, .72f);
+                Widgets.DrawBoxSolid(new Rect(panel.x + 8f, y - 8f, panel.width - 16f, 68f), band);
                 GUI.color = realm <= comp.Realm ? new Color(.48f, .86f, .86f) : new Color(.42f, .46f, .47f);
-                Widgets.Label(new Rect(panel.x + 12f, y + 22f, 48f, 28f), CompYunjianziCultivation.RealmName(realm));
+                Widgets.Label(new Rect(panel.x + 14f, y + 10f, 62f, 32f), CompYunjianziCultivation.RealmName(realm));
                 GUI.color = Color.white;
-                Widgets.DrawLineHorizontal(panel.x + 60f, y + 55f, panel.width - 72f);
+                Widgets.DrawLineHorizontal(contentX, y + 59f, contentWidth);
             }
+            Text.Anchor = TextAnchor.UpperLeft;
         }
 
         private void CacheNodeRects(Rect panel, int branch)
         {
-            List<YunjianziSkillNode> nodes = YunjianziSkills.All.Where(n => n.Branch == branch).ToList();
+            nodeRects.Clear();
+            string rootId = BranchRootIds[branch];
+            nodeRects[rootId] = new Rect(panel.center.x - 86f, panel.y + 60f, 172f, 52f);
+
+            string[] lanes = BranchLaneLabels[branch];
+            float contentX = panel.x + 86f;
+            float contentWidth = panel.width - 108f;
+            float laneStep = contentWidth / lanes.Length;
+            float nodeWidth = Mathf.Min(148f, laneStep - 14f);
+            float rowStart = panel.y + 146f;
+            List<YunjianziSkillNode> nodes = YunjianziSkills.All
+                .Where(n => n.Branch == branch && n.Id != rootId).ToList();
             for (int i = 0; i < nodes.Count; i++)
             {
                 YunjianziSkillNode node = nodes[i];
-                float x = panel.x + 55f + node.Column * 76f;
-                float y = panel.y + 77f + (node.Realm - 1) * 115f;
-                nodeRects[node.Id] = new Rect(x, y, 72f, 54f);
+                int lane = Mathf.Clamp(node.Lane, 0, lanes.Length - 1);
+                float centerX = contentX + laneStep * (lane + .5f);
+                float y = rowStart + (node.Realm - 1) * 88f;
+                nodeRects[node.Id] = new Rect(centerX - nodeWidth * .5f, y, nodeWidth, 52f);
             }
         }
 
-        private void DrawPrerequisiteLines()
+        private void DrawPrerequisiteLines(int branch)
         {
-            nodeRects.Clear();
-            CacheNodeRects(new Rect(18f, 70f, 440f, 665f), 0);
-            CacheNodeRects(new Rect(472f, 70f, 440f, 665f), 1);
-            CacheNodeRects(new Rect(926f, 70f, 440f, 665f), 2);
-            foreach (YunjianziSkillNode node in YunjianziSkills.All)
+            string rootId = BranchRootIds[branch];
+            foreach (YunjianziSkillNode node in YunjianziSkills.All.Where(n => n.Branch == branch))
             {
                 Rect child;
                 if (!nodeRects.TryGetValue(node.Id, out child)) continue;
@@ -393,12 +461,46 @@ namespace Yunjianzi
                     Rect parent;
                     if (!nodeRects.TryGetValue(node.Prerequisites[i], out parent)) continue;
                     bool lit = comp.HasSkill(node.Prerequisites[i]) && (comp.HasSkill(node.Id) || comp.SkillLockReason(node) == null);
-                    Widgets.DrawLine(new Vector2(parent.center.x, parent.yMax), new Vector2(child.center.x, child.y), lit ? LineLearned : LineLocked, 2f);
+                    DrawConnector(parent, child, lit ? LineLearned : LineLocked, node.Prerequisites[i] == rootId);
                 }
             }
         }
 
-        private void DrawBranchNodes(Rect panel, int branch)
+        private static void DrawConnector(Rect parent, Rect child, Color color, bool fromRoot)
+        {
+            Vector2 start = new Vector2(parent.center.x, parent.yMax);
+            Vector2 end = new Vector2(child.center.x, child.y);
+            if (Mathf.Abs(parent.center.y - child.center.y) < 1f)
+            {
+                Vector2 sideStart = parent.center.x < child.center.x
+                    ? new Vector2(parent.xMax, parent.center.y)
+                    : new Vector2(parent.x, parent.center.y);
+                Vector2 sideEnd = parent.center.x < child.center.x
+                    ? new Vector2(child.x, child.center.y)
+                    : new Vector2(child.xMax, child.center.y);
+                Widgets.DrawLine(sideStart, sideEnd, color, 2f);
+                return;
+            }
+            if (fromRoot)
+            {
+                float busY = parent.yMax + 16f;
+                Widgets.DrawLine(start, new Vector2(start.x, busY), color, 2f);
+                Widgets.DrawLine(new Vector2(start.x, busY), new Vector2(end.x, busY), color, 2f);
+                Widgets.DrawLine(new Vector2(end.x, busY), end, color, 2f);
+            }
+            else if (Mathf.Abs(start.x - end.x) < 1f)
+            {
+                Widgets.DrawLine(start, end, color, 2f);
+            }
+            else
+            {
+                // Only genuine cross-specialisation prerequisites use a
+                // diagonal; the wide single-technique page keeps these rare.
+                Widgets.DrawLine(start, end, color, 2f);
+            }
+        }
+
+        private void DrawBranchNodes(int branch)
         {
             foreach (YunjianziSkillNode node in YunjianziSkills.All.Where(n => n.Branch == branch))
             {
