@@ -5,13 +5,13 @@
     <label>云间画符台</label>
     <description>以白玉、日棱晶与米莉拉精密构件制成的画符台。云间子参悟某种符咒后，对应绘制配方才会显现。</description>
     <thingClass>Building_WorkTable</thingClass>
-    <size>(2,3)</size>
+    <size>(3,2)</size>
     <rotatable>true</rotatable>
     <graphicData>
       <texPath>Yunjianzi/Building/TalismanTable</texPath>
       <graphicClass>Graphic_Multi</graphicClass>
       <shaderType>CutoutComplex</shaderType>
-      <drawSize>(2,3)</drawSize>
+      <drawSize>(3,2)</drawSize>
     </graphicData>
     <altitudeLayer>Building</altitudeLayer>
     <statBases>
@@ -35,7 +35,7 @@
     <passability>PassThroughOnly</passability>
     <pathCost>35</pathCost>
     <hasInteractionCell>true</hasInteractionCell>
-    <interactionCellOffset>(0,0,-2)</interactionCellOffset>
+    <interactionCellOffset>(0,0,-1)</interactionCellOffset>
     <surfaceType>Item</surfaceType>
     <minifiedDef>MinifiedThing</minifiedDef>
     <thingCategories><li>BuildingsMisc</li></thingCategories>
