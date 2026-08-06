@@ -9,6 +9,7 @@
     <tradeability>None</tradeability>
     <graphicData>
       <texPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Base</texPath>
+      <shaderType>Cutout</shaderType>
     </graphicData>
     <statBases>
       <MaxHitPoints>320</MaxHitPoints>
@@ -19,6 +20,7 @@
       <StuffEffectMultiplierArmor>0</StuffEffectMultiplierArmor>
     </statBases>
     <apparel>
+      <useWornGraphicMask>false</useWornGraphicMask>
       <developmentalStageFilter>Child, Adult</developmentalStageFilter>
       <bodyPartGroups><li>Neck</li><li>Torso</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups>
       <wornGraphicPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Base</wornGraphicPath>
@@ -34,6 +36,7 @@
     <tradeability>None</tradeability>
     <graphicData>
       <texPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Intermediate</texPath>
+      <shaderType>Cutout</shaderType>
     </graphicData>
     <statBases>
       <MaxHitPoints>720</MaxHitPoints>
@@ -44,6 +47,7 @@
       <StuffEffectMultiplierArmor>0</StuffEffectMultiplierArmor>
     </statBases>
     <apparel>
+      <useWornGraphicMask>false</useWornGraphicMask>
       <developmentalStageFilter>Child, Adult</developmentalStageFilter>
       <bodyPartGroups><li>Neck</li><li>Torso</li><li>Shoulders</li><li>Arms</li><li>Hands</li><li>Legs</li><li>Feet</li></bodyPartGroups>
       <wornGraphicPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Intermediate</wornGraphicPath>
@@ -59,6 +63,7 @@
     <tradeability>None</tradeability>
     <graphicData>
       <texPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Final</texPath>
+      <shaderType>Cutout</shaderType>
     </graphicData>
     <statBases>
       <MaxHitPoints>1400</MaxHitPoints>
@@ -69,6 +74,7 @@
       <StuffEffectMultiplierArmor>0</StuffEffectMultiplierArmor>
     </statBases>
     <apparel>
+      <useWornGraphicMask>false</useWornGraphicMask>
       <developmentalStageFilter>Child, Adult</developmentalStageFilter>
       <bodyPartGroups><li>Neck</li><li>Torso</li><li>Shoulders</li><li>Arms</li><li>Hands</li><li>Legs</li><li>Feet</li></bodyPartGroups>
       <wornGraphicPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Final</wornGraphicPath>
@@ -86,6 +92,7 @@
     <tradeability>None</tradeability>
     <graphicData>
       <texPath>Yunjianzi/Apparel/Shenji/ShenjiVisor</texPath>
+      <shaderType>Cutout</shaderType>
     </graphicData>
     <statBases>
       <MaxHitPoints>9999</MaxHitPoints>
@@ -96,6 +103,7 @@
       <StuffEffectMultiplierArmor>0</StuffEffectMultiplierArmor>
     </statBases>
     <apparel>
+      <useWornGraphicMask>false</useWornGraphicMask>
       <developmentalStageFilter>Child, Adult</developmentalStageFilter>
       <bodyPartGroups><li>FullHead</li></bodyPartGroups>
       <wornGraphicPath>Yunjianzi/Apparel/Shenji/ShenjiVisor</wornGraphicPath>

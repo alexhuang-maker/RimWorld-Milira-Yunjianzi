@@ -64,14 +64,24 @@
     <defName>YJZ_Weapon_Shenji_Assault</defName>
     <label>神机炮·初式</label>
     <description>练气阶段的神机炮，性能与制式突击步枪相近。</description>
-    <graphicData><texPath>Things/Item/Equipment/WeaponRanged/AssaultRifle</texPath></graphicData>
+    <graphicData>
+      <texPath>Yunjianzi/Weapons/ShenjiCannon_Assault</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>Cutout</shaderType>
+      <drawSize>1.08</drawSize>
+    </graphicData>
   </ThingDef>
 
   <ThingDef ParentName="Gun_Minigun">
     <defName>YJZ_Weapon_Shenji_Gatling</defName>
     <label>神机炮·连星</label>
     <description>筑基阶段展开的速射神机炮。</description>
-    <graphicData><texPath>Things/Item/Equipment/WeaponRanged/Minigun</texPath></graphicData>
+    <graphicData>
+      <texPath>Yunjianzi/Weapons/ShenjiCannon_Gatling</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>Cutout</shaderType>
+      <drawSize>1.22</drawSize>
+    </graphicData>
   </ThingDef>
 
   <!-- 紫府后的主射线与金丹折射射线共享米莉拉帝国的淡蓝光束材质。
@@ -100,7 +110,12 @@
     <defName>YJZ_Weapon_Shenji_Gauss</defName>
     <label>神机炮·辉光</label>
     <description>紫府阶段展开的淡蓝脉冲激光炮，火力对齐米莉拉帝国高阶自动步枪。</description>
-    <graphicData><texPath>MiliraImperium/Weapon/GaussAutorifle</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>1.4</drawSize></graphicData>
+    <graphicData>
+      <texPath>Yunjianzi/Weapons/ShenjiCannon_Gauss</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>Cutout</shaderType>
+      <drawSize>1.38</drawSize>
+    </graphicData>
     <verbs>
       <li>
         <verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand>
@@ -115,6 +130,12 @@
     <defName>YJZ_Weapon_Shenji_Legendary</defName>
     <label>神机炮·传说</label>
     <description>金丹阶段完全展开的辉光神机炮，射速与持续火力达到传奇级帝国武器基准。</description>
+    <graphicData>
+      <texPath>Yunjianzi/Weapons/ShenjiCannon_Legendary</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>Cutout</shaderType>
+      <drawSize>1.52</drawSize>
+    </graphicData>
     <verbs>
       <li>
         <verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand>
