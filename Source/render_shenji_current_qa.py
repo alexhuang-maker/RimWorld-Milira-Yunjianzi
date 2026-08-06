@@ -6,7 +6,7 @@ directional anchor regressions can be checked before launching RimWorld.
 """
 
 from pathlib import Path
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageOps
 
 
 MOD = Path(__file__).resolve().parents[1]
@@ -31,34 +31,38 @@ def checker(size: tuple[int, int]) -> Image.Image:
 
 
 def pawn(tier: str, direction: str) -> Image.Image:
+    source_direction = "east" if direction == "west" else direction
     paths = [
-        REF / "Milian" / "Pawn" / "Body" / f"Naked_Female_{direction}.png",
-        SHENJI / "Apparel" / "Shenji" / f"ShenjiArmor_{tier}_Female_{direction}.png",
-        REF / "Milian" / "Pawn" / "Head" / f"MilianHeadN1_{direction}.png",
-        SHENJI / "Pawn" / "Shenji" / f"ShenjiHairBack_{direction}.png",
-        SHENJI / "Pawn" / "Shenji" / f"ShenjiHairFront_{direction}.png",
-        SHENJI / "Apparel" / "Shenji" / f"ShenjiVisor_Female_{direction}.png",
+        REF / "Milian" / "Pawn" / "Body" / f"Naked_Female_{source_direction}.png",
+        SHENJI / "Apparel" / "Shenji" / f"ShenjiArmor_{tier}_Female_{source_direction}.png",
+        REF / "Milian" / "Pawn" / "Head" / f"MilianHeadN1_{source_direction}.png",
+        SHENJI / "Pawn" / "Shenji" / f"ShenjiHairBack_{source_direction}.png",
+        SHENJI / "Pawn" / "Shenji" / f"ShenjiHairFront_{source_direction}.png",
+        SHENJI / "Apparel" / "Shenji" / f"ShenjiVisor_Female_{source_direction}.png",
     ]
     result = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
     for path in paths:
         result = Image.alpha_composite(result, load(path))
-    return result
+    return ImageOps.mirror(result) if direction == "west" else result
 
 
 def main() -> None:
     tiers = ("Base", "Intermediate", "Final")
-    directions = ("south", "east", "north")
-    tile = 340
-    sheet = checker((tile * 3, tile * 3 + 44))
+    directions = ("south", "east", "west", "north")
+    tile = 300
+    sheet = checker((tile * 4, tile * 3 + 44))
     draw = ImageDraw.Draw(sheet)
     for row, tier in enumerate(tiers):
         for column, direction in enumerate(directions):
-            image = pawn(tier, direction).crop((105, 115, 407, 512))
-            image.thumbnail((300, 310), Image.Resampling.LANCZOS)
-            x = column * tile + (tile - image.width) // 2
+            # Preserve the full 512 canvas so the cyan x=256 guide measures the
+            # actual RimWorld anchor instead of recentering each visible bbox.
+            image = pawn(tier, direction).resize((280, 280), Image.Resampling.LANCZOS)
+            x = column * tile + 10
             y = row * tile + 4
             sheet.alpha_composite(image, (x, y))
-            draw.text((column * tile + 10, row * tile + 316), f"{tier} / {direction}", fill=(210, 244, 242, 255))
+            guide_x = x + 140
+            draw.line((guide_x, y, guide_x, y + 280), fill=(40, 220, 220, 105), width=1)
+            draw.text((column * tile + 10, row * tile + 282), f"{tier} / {direction}", fill=(210, 244, 242, 255))
     draw.text((14, tile * 3 + 14), "Current shipped layers: body -> realm armour -> head -> hair -> independent visor", fill=(132, 225, 225, 255))
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     sheet.save(OUTPUT)
