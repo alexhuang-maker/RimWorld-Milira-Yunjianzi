@@ -106,7 +106,9 @@ for column, name in enumerate(SOURCES):
         draw.text((x + 12, y + 12), f"{name} / {direction}", fill=(210, 245, 248, 255))
 preview.save(QA_OUTPUT / "BedroomFurnitureRotationQA.png", optimize=True)
 
-# Approximate the North-facing in-game wall attachment at 256 px per cell.
+# Approximate the North-facing native Placeworker_AttachedToWall placement at
+# 256 px per cell. The visible shelf must remain inside the wall cell rather
+# than hanging down into the room's floor cell.
 wall_qa = Image.new("RGBA", (768, 768), (66, 71, 74, 255))
 wall_draw = ImageDraw.Draw(wall_qa)
 for gx in range(0, 769, 256):
@@ -117,12 +119,12 @@ wall_draw.rectangle((256, 0, 511, 255), fill=(37, 46, 50, 255), outline=(8, 10, 
 wall_draw.rectangle((268, 12, 499, 243), fill=(91, 101, 105, 255), outline=(154, 166, 168, 255), width=5)
 wall_draw.line((384, 0, 384, 256), fill=(91, 226, 235, 255), width=2)
 bookcase = Image.open(OUTPUT / "WallBookcase_north.png").convert("RGBA")
-bookcase.thumbnail((302, 302), Image.Resampling.LANCZOS)
+bookcase.thumbnail((276, 276), Image.Resampling.LANCZOS)
 base_x = 384 - bookcase.width // 2
 base_y = 384 - bookcase.height // 2
-offset_y = round(-0.78 * 256)
+offset_y = round(-1.05 * 256)
 wall_qa.alpha_composite(bookcase, (base_x, base_y + offset_y))
-wall_draw.text((18, 724), "North wall / drawOffsetNorth 0.78 / BuildingOnTop", fill=(210, 245, 248, 255))
+wall_draw.text((18, 724), "Native wall attachment / offset 1.05 / no floor overlap", fill=(210, 245, 248, 255))
 wall_qa.save(QA_OUTPUT / "WallBookcasePlacementQA.png", optimize=True)
 
 print(f"Prepared six bedroom furniture assets in {OUTPUT}")

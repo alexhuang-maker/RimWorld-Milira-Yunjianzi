@@ -82,21 +82,4 @@ namespace Yunjianzi
         }
     }
 
-    public sealed class PlaceWorker_YunjianziWallAdjacent : PlaceWorker
-    {
-        public override AcceptanceReport AllowsPlacing(BuildableDef checkingDef, IntVec3 loc, Rot4 rot, Map map,
-            Thing thingToIgnore = null, Thing thing = null)
-        {
-            CellRect occupied = GenAdj.OccupiedRect(loc, rot, checkingDef.Size);
-            IntVec3 facing = rot.FacingCell;
-            foreach (IntVec3 cell in occupied.Cells)
-            {
-                IntVec3 wallCell = cell + facing;
-                if (!wallCell.InBounds(map)) continue;
-                Building edifice = wallCell.GetEdifice(map);
-                if (edifice != null && edifice.def.IsWall) return true;
-            }
-            return "悬书架背面必须正对并紧贴一面墙。";
-        }
-    }
 }
