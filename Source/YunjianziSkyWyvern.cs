@@ -12,9 +12,7 @@ namespace Yunjianzi
     {
         public int stage;
         public string groundTexPath;
-        public string groundAltTexPath;
-        public string flyingTexPath;
-        public string flyingAltTexPath;
+        public string walkingTexPath;
         public float drawSize = 3f;
 
         public CompProperties_YunjianziSkyWyvern()
@@ -24,9 +22,8 @@ namespace Yunjianzi
     }
 
     /// <summary>
-    /// The unique 神机诀 beast.  It uses one deterministic combat-state switch instead
-    /// of repeatedly spawning visual motes: hauling/rest uses the folded-wing atlas,
-    /// drafting or acquiring a hostile target uses the dedicated flying atlas.
+    /// The unique 神机诀 beast. It remains grounded and uses one coherent directional
+    /// form plus an eight-frame walking cycle; combat state affects abilities, not art.
     /// </summary>
     public sealed class CompYunjianziSkyWyvern : ThingComp
     {
@@ -41,15 +38,12 @@ namespace Yunjianzi
         private int nextBreathChargeTick;
         private bool nativeControlBound;
         private Graphic[] groundGraphics;
-        private Graphic[] groundAltGraphics;
-        private Graphic[] flyingGraphics;
-        private Graphic[] flyingAltGraphics;
-        private Graphic[][] flyingFrameGraphics;
+        private Graphic[][] walkingFrameGraphics;
 
         private CompProperties_YunjianziSkyWyvern Props => (CompProperties_YunjianziSkyWyvern)props;
         public Pawn Pawn => parent as Pawn;
         public int Stage => Props.stage;
-        public bool Flying => flying;
+        public bool Flying => false;
         public Pawn Owner
         {
             get
@@ -64,7 +58,7 @@ namespace Yunjianzi
             }
         }
         public bool IsBoundTo(Pawn owner) => owner != null && ownerThingId == owner.thingIDNumber;
-        public bool CanProjectShield => flying && shield > 0f && Find.TickManager.TicksGame >= shieldBrokenUntil;
+        public bool CanProjectShield => shield > 0f && Find.TickManager.TicksGame >= shieldBrokenUntil;
         private float ShieldMax => Stage >= 5 ? 25000f : Stage >= 4 ? 8000f : 2500f;
         private float ShieldRadius => Stage >= 5 ? 10f : Stage >= 4 ? 8.5f : 7f;
         private int BreathMax => Stage >= 5 ? 5 : Stage >= 4 ? 2 : 0;
@@ -98,10 +92,6 @@ namespace Yunjianzi
             Pawn pawn = Pawn;
             if (pawn == null || pawn.Dead || !pawn.Spawned) return;
 
-            if (pawn.IsHashIntervalTick(15))
-            {
-                UpdateFlightState();
-            }
             if (pawn.IsHashIntervalTick(60)) DrawMovementEffects();
             if (!pawn.IsHashIntervalTick(30)) return;
 
@@ -117,18 +107,14 @@ namespace Yunjianzi
             }
         }
 
-        private void UpdateFlightState()
+        private bool IsInCombat()
         {
             Pawn pawn = Pawn;
             int now = Find.TickManager.TicksGame;
             bool threatened = pawn.Drafted || pawn.mindState?.enemyTarget != null ||
                 pawn.Map.attackTargetsCache.GetPotentialTargetsFor(pawn).Any(t => t.Thing != null && t.Thing.Position.DistanceTo(pawn.Position) <= 25f);
             if (threatened) combatUntilTick = now + 600;
-            bool shouldFly = now < combatUntilTick;
-            if (shouldFly == flying) return;
-            flying = shouldFly;
-            pawn.Drawer?.renderer?.SetAllGraphicsDirty();
-            FleckMaker.Static(pawn.Position, pawn.Map, flying ? FleckDefOf.PsycastSkipFlashEntry : FleckDefOf.PsycastSkipOuterRingExit, 1.8f);
+            return now < combatUntilTick;
         }
 
         private void RechargeBreath()
@@ -147,17 +133,8 @@ namespace Yunjianzi
         {
             Pawn pawn = Pawn;
             if (pawn == null || !pawn.pather.Moving) return;
-            if (flying)
-            {
-                Vector3 wake = pawn.DrawPos - pawn.Rotation.FacingCell.ToVector3() * (.3f + Props.drawSize * .05f);
-                if (Rand.Chance(.28f))
-                    FleckMaker.Static(wake, pawn.Map, FleckDefOf.PsycastAreaEffect, .12f + Props.drawSize * .018f);
-            }
-            else
-            {
-                if (Rand.Chance(.4f))
-                    FleckMaker.ThrowDustPuff(pawn.Position, pawn.Map, .35f + Props.drawSize * .035f);
-            }
+            if (Rand.Chance(.3f))
+                FleckMaker.ThrowDustPuff(pawn.Position, pawn.Map, .3f + Props.drawSize * .03f);
         }
 
         private void ApplyAccelerationAura()
@@ -187,7 +164,7 @@ namespace Yunjianzi
         private void TryClawSweep()
         {
             int now = Find.TickManager.TicksGame;
-            if (!flying || now < clawReadyTick) return;
+            if (!IsInCombat() || now < clawReadyTick) return;
             Thing target = HostilesInRadius(Pawn.Position, 2.8f).OrderBy(t => t.Position.DistanceToSquared(Pawn.Position)).FirstOrDefault();
             if (target == null) return;
             clawReadyTick = now + (Stage >= 5 ? 75 : 105);
@@ -222,7 +199,7 @@ namespace Yunjianzi
         private void TryBackMissile()
         {
             int now = Find.TickManager.TicksGame;
-            if (!flying || now < missileReadyTick) return;
+            if (!IsInCombat() || now < missileReadyTick) return;
             Thing target = HostilesInRadius(Pawn.Position, 32f).OrderBy(t => t.Position.DistanceToSquared(Pawn.Position)).FirstOrDefault();
             if (target == null) return;
             missileReadyTick = now + 180;
@@ -330,22 +307,17 @@ namespace Yunjianzi
         public void DrawCustom(Vector3 drawLoc)
         {
             if (groundGraphics == null) groundGraphics = LoadDirectional(Props.groundTexPath);
-            if (groundAltGraphics == null) groundAltGraphics = LoadDirectional(string.IsNullOrEmpty(Props.groundAltTexPath) ? Props.groundTexPath : Props.groundAltTexPath);
-            if (flyingGraphics == null) flyingGraphics = LoadDirectional(Props.flyingTexPath);
-            if (flyingAltGraphics == null) flyingAltGraphics = LoadDirectional(string.IsNullOrEmpty(Props.flyingAltTexPath) ? Props.flyingTexPath : Props.flyingAltTexPath);
-            if (flyingFrameGraphics == null)
+            if (walkingFrameGraphics == null)
             {
-                flyingFrameGraphics = new Graphic[8][];
-                for (int i = 0; i < flyingFrameGraphics.Length; i++)
-                    flyingFrameGraphics[i] = LoadDirectional(Props.flyingTexPath + "Frame" + i);
+                walkingFrameGraphics = new Graphic[8][];
+                for (int i = 0; i < walkingFrameGraphics.Length; i++)
+                    walkingFrameGraphics[i] = LoadDirectional(Props.walkingTexPath + "Frame" + i);
             }
-            if (flying) drawLoc.z += .24f + Mathf.Sin(Find.TickManager.TicksGame * .08f) * .055f;
-            bool alternate = ((Find.TickManager.TicksGame / 12) & 1) != 0;
-            int flightFrame = (Find.TickManager.TicksGame % 48) / 6;
-            Graphic[] set = flying ? flyingFrameGraphics[flightFrame] :
-                (Pawn.pather.Moving && alternate ? groundAltGraphics : groundGraphics);
+            int walkFrame = (Find.TickManager.TicksGame % 64) / 8;
+            Graphic[] set = Pawn.pather.Moving ? walkingFrameGraphics[walkFrame] : groundGraphics;
+            if (Pawn.pather.Moving && (walkFrame == 1 || walkFrame == 5)) drawLoc.z += .018f;
             set[Pawn.Rotation.AsInt].Draw(drawLoc, Rot4.North, Pawn);
-            if (flying && shield > 0f)
+            if (shield > 0f && Find.TickManager.TicksGame >= shieldBrokenUntil)
                 GenDraw.DrawRadiusRing(Pawn.Position, ShieldRadius, new Color(.18f, .82f, 1f, .18f));
         }
 
@@ -405,6 +377,7 @@ namespace Yunjianzi
             Scribe_Values.Look(ref breathCharges, "yjz_wyvernBreathCharges", 0);
             Scribe_Values.Look(ref nextBreathChargeTick, "yjz_wyvernNextBreath", 0);
             Scribe_Values.Look(ref nativeControlBound, "yjz_wyvernNativeControl", false);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit) flying = false;
         }
     }
 

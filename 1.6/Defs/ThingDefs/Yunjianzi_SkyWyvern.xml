@@ -2,7 +2,7 @@
 <Defs>
   <ThingDef Name="YJZ_SkyWyvern_Base" ParentName="HeavyMechanoid" Abstract="True">
     <label>云间机飞龙</label>
-    <description>以米莉拉天空精灵技术铸成骨骼，以建木神枢镇压核心，再由神机诀赋予灵识的唯一机械天兽。平时收翼搬运，进入战斗后才展开专属飞行构型。</description>
+    <description>以米莉拉天空精灵技术铸成骨骼，以建木神枢镇压核心，再由神机诀赋予灵识的唯一机关灵兽。它舍弃了不稳定的飞行构型，以四足稳行、搬运重物，并在地面战斗中展开护盾、雷息与青雷利爪。</description>
     <thingClass>Pawn</thingClass>
     <statBases>
       <BandwidthCost>0</BandwidthCost>
@@ -42,7 +42,7 @@
     <race><baseBodySize>4</baseBodySize><baseHealthScale>6</baseHealthScale></race>
     <comps>
       <li Class="Yunjianzi.CompProperties_YunjianziSkyWyvern">
-        <stage>3</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/PurpleGround</groundTexPath><groundAltTexPath>Yunjianzi/Pawn/SkyWyvern/PurpleGroundAlt</groundAltTexPath><flyingTexPath>Yunjianzi/Pawn/SkyWyvern/PurpleFlying</flyingTexPath><flyingAltTexPath>Yunjianzi/Pawn/SkyWyvern/PurpleFlyingAlt</flyingAltTexPath><drawSize>2.7</drawSize>
+        <stage>3</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedGround</groundTexPath><walkingTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedWalk</walkingTexPath><drawSize>2.8</drawSize>
       </li>
     </comps>
   </ThingDef>
@@ -56,7 +56,7 @@
     <race><baseBodySize>6</baseBodySize><baseHealthScale>9</baseHealthScale></race>
     <comps>
       <li Class="Yunjianzi.CompProperties_YunjianziSkyWyvern">
-        <stage>4</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/GoldenGround</groundTexPath><groundAltTexPath>Yunjianzi/Pawn/SkyWyvern/GoldenGroundAlt</groundAltTexPath><flyingTexPath>Yunjianzi/Pawn/SkyWyvern/GoldenFlying</flyingTexPath><flyingAltTexPath>Yunjianzi/Pawn/SkyWyvern/GoldenFlyingAlt</flyingAltTexPath><drawSize>3.4</drawSize>
+        <stage>4</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedGround</groundTexPath><walkingTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedWalk</walkingTexPath><drawSize>3.4</drawSize>
       </li>
     </comps>
   </ThingDef>
@@ -70,7 +70,7 @@
     <race><baseBodySize>12</baseBodySize><baseHealthScale>18</baseHealthScale></race>
     <comps>
       <li Class="Yunjianzi.CompProperties_YunjianziSkyWyvern">
-        <stage>5</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/SpiritGround</groundTexPath><groundAltTexPath>Yunjianzi/Pawn/SkyWyvern/SpiritGroundAlt</groundAltTexPath><flyingTexPath>Yunjianzi/Pawn/SkyWyvern/SpiritFlying</flyingTexPath><flyingAltTexPath>Yunjianzi/Pawn/SkyWyvern/SpiritFlyingAlt</flyingAltTexPath><drawSize>4.6</drawSize>
+        <stage>5</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedGround</groundTexPath><walkingTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedWalk</walkingTexPath><drawSize>4.2</drawSize>
       </li>
     </comps>
   </ThingDef>
