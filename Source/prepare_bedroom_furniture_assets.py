@@ -21,7 +21,7 @@ SOURCES = {
 }
 
 
-def remove_magenta(source: Path) -> Image.Image:
+def remove_magenta(source: Path, crop_by_alpha: bool = False) -> Image.Image:
     image = Image.open(source).convert("RGBA")
     pixels = image.load()
     for y in range(image.height):
@@ -34,13 +34,23 @@ def remove_magenta(source: Path) -> Image.Image:
                 r = max(0, r - spill)
                 b = max(0, b - spill)
             pixels[x, y] = (r, g, b, alpha)
-    box = image.getbbox()
+    # RGB values survive in fully transparent pixels after spill removal.  An
+    # RGBA getbbox() therefore measures the old magenta canvas and can place a
+    # visibly off-centre object on the final game texture.  Crop by meaningful
+    # alpha instead, so the rendered object—not its invisible RGB—is centred.
+    alpha_mask = image.getchannel("A").point(lambda value: 255 if value > 64 else 0)
+    box = alpha_mask.getbbox() if crop_by_alpha else image.getbbox()
     return image.crop(box) if box else image
 
 
-def on_canvas(image: Image.Image, size: tuple[int, int], occupancy: float = .90) -> Image.Image:
+def on_canvas(image: Image.Image, size: tuple[int, int], occupancy: float = .90,
+              crop_by_alpha: bool = False) -> Image.Image:
     canvas = Image.new("RGBA", size)
     image = image.copy()
+    if crop_by_alpha:
+        alpha_box = image.getchannel("A").point(lambda value: 255 if value > 64 else 0).getbbox()
+        if alpha_box:
+            image = image.crop(alpha_box)
     image.thumbnail((int(size[0] * occupancy), int(size[1] * occupancy)), Image.Resampling.LANCZOS)
     canvas.alpha_composite(image, ((size[0] - image.width) // 2, (size[1] - image.height) // 2))
     return canvas
@@ -51,7 +61,7 @@ def save_single(name: str, image: Image.Image, occupancy: float = .90) -> None:
 
 
 def save_multi(name: str, south: Image.Image, occupancy: float = .90,
-               rotate_long_axis: bool = False) -> None:
+               rotate_long_axis: bool = False, crop_by_alpha: bool = False) -> None:
     # A generated pseudo-3D front must not be rotated by 180 degrees. Doing so
     # turns doors, chair backs and cornices physically upside down. One-cell
     # furniture stays upright in every rotation; long-axis furniture only gets
@@ -61,11 +71,12 @@ def save_multi(name: str, south: Image.Image, occupancy: float = .90,
         directions["east"] = south.rotate(90, expand=True, resample=Image.Resampling.BICUBIC)
         directions["west"] = south.rotate(270, expand=True, resample=Image.Resampling.BICUBIC)
     for direction, image in directions.items():
-        on_canvas(image, (512, 512), occupancy).save(OUTPUT / f"{name}_{direction}.png", optimize=True)
+        on_canvas(image, (512, 512), occupancy, crop_by_alpha).save(OUTPUT / f"{name}_{direction}.png", optimize=True)
 
 
 clean = {
-    name: remove_magenta(source if isinstance(source, Path) else GENERATED / source)
+    name: remove_magenta(source if isinstance(source, Path) else GENERATED / source,
+                         crop_by_alpha=name == "WallBookcase")
     for name, source in SOURCES.items()
 }
 save_multi("SereneBed", clean["SereneBed"], .96, rotate_long_axis=True)
@@ -73,7 +84,7 @@ save_single("Nightstand", clean["Nightstand"], .88)
 save_multi("Chair", clean["Chair"], .84)
 save_single("SmallTable", clean["SmallTable"], .88)
 save_multi("Wardrobe", clean["Wardrobe"], .88)
-save_multi("WallBookcase", clean["WallBookcase"], .88)
+save_multi("WallBookcase", clean["WallBookcase"], .88, crop_by_alpha=True)
 
 # Building_Bookcase draws separate top-altitude bookend layers.  Transparent
 # one-pixel sprites keep the vanilla renderer active without adding foreign art.
@@ -104,6 +115,7 @@ for gy in range(0, 769, 256):
     wall_draw.line((0, gy, 768, gy), fill=(110, 126, 132, 255), width=2)
 wall_draw.rectangle((256, 0, 511, 255), fill=(37, 46, 50, 255), outline=(8, 10, 12, 255), width=8)
 wall_draw.rectangle((268, 12, 499, 243), fill=(91, 101, 105, 255), outline=(154, 166, 168, 255), width=5)
+wall_draw.line((384, 0, 384, 256), fill=(91, 226, 235, 255), width=2)
 bookcase = Image.open(OUTPUT / "WallBookcase_north.png").convert("RGBA")
 bookcase.thumbnail((302, 302), Image.Resampling.LANCZOS)
 base_x = 384 - bookcase.width // 2
