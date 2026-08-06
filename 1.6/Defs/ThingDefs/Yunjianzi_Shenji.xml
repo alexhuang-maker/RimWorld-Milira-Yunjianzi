@@ -60,6 +60,19 @@
     <weaponMoney>0</weaponMoney>
     <apparelMoney>0</apparelMoney>
     <techHediffsMoney>0</techHediffsMoney>
+    <!-- The armor art is a complete body shell.  A dedicated transparent base
+         prevents Milian's nude body graphic from protruding around its hips,
+         chest and legs while preserving the native Milian render tree. -->
+    <lifeStages Inherit="False">
+      <li>
+        <bodyGraphicData>
+          <texPath>Yunjianzi/Pawn/Shenji/ShenjiTransparentBody</texPath>
+          <shaderType>Cutout</shaderType>
+          <graphicClass>Graphic_Multi</graphicClass>
+          <drawSize>1.5</drawSize>
+        </bodyGraphicData>
+      </li>
+    </lifeStages>
   </PawnKindDef>
 
   <ThingDef ParentName="Gun_AssaultRifle">
@@ -70,7 +83,7 @@
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Assault</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <shaderType>Cutout</shaderType>
-      <drawSize>1.08</drawSize>
+      <drawSize>1.10</drawSize>
     </graphicData>
   </ThingDef>
 
@@ -82,7 +95,7 @@
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Gatling</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <shaderType>Cutout</shaderType>
-      <drawSize>1.22</drawSize>
+      <drawSize>1.16</drawSize>
     </graphicData>
   </ThingDef>
 
@@ -116,7 +129,7 @@
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Gauss</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <shaderType>Cutout</shaderType>
-      <drawSize>1.38</drawSize>
+      <drawSize>1.22</drawSize>
     </graphicData>
     <verbs>
       <li>
@@ -136,7 +149,7 @@
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Legendary</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <shaderType>Cutout</shaderType>
-      <drawSize>1.52</drawSize>
+      <drawSize>1.28</drawSize>
     </graphicData>
     <verbs>
       <li>

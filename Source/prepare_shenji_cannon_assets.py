@@ -49,8 +49,11 @@ def normalize_weapon(cell: Image.Image) -> Image.Image:
     if not bbox:
         raise RuntimeError("A weapon cell is empty after chroma removal")
     sprite = cell.crop(bbox)
-    canvas = Image.new("RGBA", (512, 256), (0, 0, 0, 0))
-    max_w, max_h = 472, 164
+    # Graphic_Single is rendered on a square quad.  The previous 512x256 files
+    # were stretched vertically by RimWorld, making the cannon nearly as tall
+    # as the pawn.  Milira's native carried weapons use a 512x512 canvas.
+    canvas = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
+    max_w, max_h = 400, 138
     scale = min(max_w / sprite.width, max_h / sprite.height)
     size = (max(1, round(sprite.width * scale)), max(1, round(sprite.height * scale)))
     sprite = sprite.resize(size, Image.Resampling.LANCZOS)
@@ -74,10 +77,12 @@ def loadout_preview(weapon: Image.Image, armor_name: str, scale: float) -> Image
 
     armor_root = ROOT / "Content" / "Textures" / "Yunjianzi" / "Apparel" / "Shenji"
     armor = load_layer(armor_root / f"ShenjiArmor_{armor_name}_Female_east.png")
-    visor = load_layer(armor_root / "ShenjiVisor_Female_east.png")
-    pawn = preview(armor, visor, "east")
-    gun = weapon.crop(weapon.getbbox())
-    target_w = round(215 * scale)
+    pawn_root = ROOT / "Content" / "Textures" / "Yunjianzi" / "Pawn" / "Shenji"
+    front = load_layer(pawn_root / "ShenjiHairFront_east.png")
+    back = load_layer(pawn_root / "ShenjiHairBack_east.png")
+    pawn = preview(armor, front, back, "east")
+    gun = weapon.crop(alpha_bbox(weapon))
+    target_w = round(178 * scale)
     target_h = max(1, round(gun.height * target_w / gun.width))
     gun = gun.resize((target_w, target_h), Image.Resampling.LANCZOS)
     gun = gun.rotate(18, resample=Image.Resampling.BICUBIC, expand=True)

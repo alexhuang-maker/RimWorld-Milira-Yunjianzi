@@ -61,47 +61,41 @@ def place_on_game_canvas(sprite: Image.Image, max_width: int, target_height: int
     return canvas
 
 
-def fit_armor(sprite: Image.Image, stage: int, direction: str) -> Image.Image:
-    heights = {1: 270, 2: 295, 3: 315}
-    widths = {1: 242, 2: 298, 3: 326}
-    if direction == "east":
-        widths = {1: 198, 2: 222, 3: 242}
-    return place_on_game_canvas(sprite, widths[stage], heights[stage], 474)
+def place_exact_on_game_canvas(sprite: Image.Image, target_width: int, target_height: int, bottom: int, center_x: int = 256) -> Image.Image:
+    """Fit generated apparel to a measured Milian worn-graphic silhouette.
 
-
-def make_inner_suit(direction: str) -> Image.Image:
-    """Opaque fitted undersuit using the exact Milian body silhouette.
-
-    The plate art intentionally has open joints.  Without an undersuit those
-    openings reveal the nude race texture.  Deriving the mask from the actual
-    Milian body keeps full coverage in every direction without making the plate
-    silhouette artificially bulky.
+    The generated side cells contain much more transparent horizontal padding
+    than their south/north counterparts.  A single aspect-preserving max width
+    therefore produced a 96 px-wide side shell in game.  Worn graphics are
+    directional sprites, so each direction needs its own measured silhouette.
     """
-    body = load_layer(REF / "Milian" / "Pawn" / "Body" / f"Naked_Female_{direction}.png")
-    rgba = np.asarray(body, dtype=np.uint8)
-    alpha = rgba[..., 3]
-    luminance = (rgba[..., 0].astype(np.float32) * .25 +
-                 rgba[..., 1].astype(np.float32) * .60 +
-                 rgba[..., 2].astype(np.float32) * .15) / 255.0
-    # Preserve the body's line work, but map all exposed skin to a dark cyan
-    # flexible armor weave matching the generated white plates.
-    shade = np.clip(luminance, 0.0, 1.0)
-    out = np.zeros_like(rgba)
-    # Near-black source line art remains a dark seam; the original pale body
-    # becomes an ivory/cyan armored fabric.  This reads as clothing rather than
-    # reproducing the nude silhouette in a different dark colour.
-    out[..., 0] = (12 + shade * 218).astype(np.uint8)
-    out[..., 1] = (18 + shade * 224).astype(np.uint8)
-    out[..., 2] = (21 + shade * 228).astype(np.uint8)
-    out[..., 3] = alpha
-    return Image.fromarray(out, "RGBA")
+    sprite = sprite.resize((target_width, target_height), Image.Resampling.LANCZOS)
+    canvas = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
+    canvas.alpha_composite(sprite, (center_x - target_width // 2, bottom - target_height))
+    return canvas
+
+
+def fit_armor(sprite: Image.Image, stage: int, direction: str) -> Image.Image:
+    # Calibrated against Milian_GuardArmor's actual 512 px worn graphics.
+    # In particular the east shell must be broad enough to form a complete
+    # torso/hip silhouette, rather than a narrow plate pasted onto the body.
+    sizes = {
+        "south": {1: (218, 304), 2: (238, 310), 3: (254, 316)},
+        "east":  {1: (158, 304), 2: (172, 310), 3: (186, 316)},
+        "north": {1: (220, 304), 2: (240, 310), 3: (256, 316)},
+    }
+    width, height = sizes[direction][stage]
+    return place_exact_on_game_canvas(sprite, width, height, 472)
 
 
 def build_integrated_hair(direction: str, visor: Image.Image):
     """Bake the visor into Milira's animated front-hair layer."""
     front = load_layer(REF / "Milian" / "Pawn" / "Hair" / "Milian_HairN1" / f"MiliraHair4_{direction}.png")
     back = load_layer(REF / "Milira" / "Pawn" / "Hair" / "HairBackGround" / f"MiliraHairBG4_{direction}.png")
-    front = Image.alpha_composite(front, visor)
+    # The north view is the back of the head.  Drawing a front visor there
+    # produced a conspicuous rectangular helmet plate; only south/east need it.
+    if direction != "north":
+        front = Image.alpha_composite(front, visor)
     front.save(HAIR_OUT / f"ShenjiHairFront_{direction}.png")
     back.save(HAIR_OUT / f"ShenjiHairBack_{direction}.png")
     return front, back
@@ -124,7 +118,6 @@ def load_layer(path: Path) -> Image.Image:
 
 def preview(armor: Image.Image, front_hair: Image.Image, back_hair: Image.Image, direction: str) -> Image.Image:
     layers = (
-        load_layer(REF / "Milian" / "Pawn" / "Body" / f"Naked_Female_{direction}.png"),
         armor,
         load_layer(REF / "Milian" / "Pawn" / "Head" / f"MilianHeadN1_{direction}.png"),
         back_hair,
@@ -154,6 +147,13 @@ def main():
     armor_atlas = Image.open(ARMOR_ATLAS).convert("RGBA")
     visor_atlas = Image.open(VISOR_ATLAS).convert("RGBA")
 
+    # The generated armor is a complete body shell; suppress the inherited nude
+    # Milian body at PawnKind life-stage level instead of trying to paint over it.
+    transparent_body = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    for direction in DIRECTIONS:
+        transparent_body.save(HAIR_OUT / f"ShenjiTransparentBody_{direction}.png")
+    transparent_body.save(HAIR_OUT / "ShenjiTransparentBody.png")
+
     visors = {}
     hair = {}
     for col, direction in enumerate(DIRECTIONS):
@@ -168,8 +168,7 @@ def main():
     previews = {}
     for row, (stage, name) in enumerate(TIERS):
         for col, direction in enumerate(DIRECTIONS):
-            plates = fit_armor(extract_cell(armor_atlas, row, col, 3, 3), stage, direction)
-            armor = Image.alpha_composite(make_inner_suit(direction), plates)
+            armor = fit_armor(extract_cell(armor_atlas, row, col, 3, 3), stage, direction)
             armor.save(OUT / f"ShenjiArmor_{name}_Female_{direction}.png")
             previews[(stage, direction)] = preview(armor, hair[direction][0], hair[direction][1], direction)
         Image.open(OUT / f"ShenjiArmor_{name}_Female_south.png").save(OUT / f"ShenjiArmor_{name}.png")
@@ -177,13 +176,13 @@ def main():
     tile = 310
     qa = checker((tile * 3, tile * 3 + 62))
     draw = ImageDraw.Draw(qa)
-    labels = {1: "练气/筑基", 2: "紫府/金丹", 3: "化神"}
+    labels = {1: "BASE / QI", 2: "INTERMEDIATE / ZIFU", 3: "FINAL / HUASHEN"}
     for row, (stage, _) in enumerate(TIERS):
         for col, direction in enumerate(DIRECTIONS):
             crop = previews[(stage, direction)].crop((95, 125, 417, 510)).resize((251, 300), Image.Resampling.LANCZOS)
             qa.alpha_composite(crop, (col * tile + 29, row * tile + 2))
-            draw.text((col * tile + 10, row * tile + 284), f"{labels[stage]} · {direction}", fill=(219, 247, 245, 255))
-    draw.text((16, tile * 3 + 18), "游戏实际分层合成：米莉安身体 → 神机甲 → 固定短发/头部 → 独立遮眼战术目镜", fill=(129, 226, 225, 255))
+            draw.text((col * tile + 10, row * tile + 284), f"{labels[stage]} / {direction.upper()}", fill=(219, 247, 245, 255))
+    draw.text((16, tile * 3 + 18), "Actual layers: complete Shenji shell + Milian head + animated short hair/visor; north has no visor.", fill=(129, 226, 225, 255))
     qa.save(QA)
     print(QA)
 
