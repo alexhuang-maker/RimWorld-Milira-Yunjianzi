@@ -42,7 +42,7 @@
     <race><baseBodySize>4</baseBodySize><baseHealthScale>6</baseHealthScale></race>
     <comps>
       <li Class="Yunjianzi.CompProperties_YunjianziSkyWyvern">
-        <stage>3</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedGround</groundTexPath><walkingTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedWalk</walkingTexPath><drawSize>2.8</drawSize>
+        <stage>3</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedGround</groundTexPath><drawSize>2.8</drawSize>
       </li>
     </comps>
   </ThingDef>
@@ -56,7 +56,7 @@
     <race><baseBodySize>6</baseBodySize><baseHealthScale>9</baseHealthScale></race>
     <comps>
       <li Class="Yunjianzi.CompProperties_YunjianziSkyWyvern">
-        <stage>4</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedGround</groundTexPath><walkingTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedWalk</walkingTexPath><drawSize>3.4</drawSize>
+        <stage>4</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedGround</groundTexPath><drawSize>3.4</drawSize>
       </li>
     </comps>
   </ThingDef>
@@ -70,7 +70,7 @@
     <race><baseBodySize>12</baseBodySize><baseHealthScale>18</baseHealthScale></race>
     <comps>
       <li Class="Yunjianzi.CompProperties_YunjianziSkyWyvern">
-        <stage>5</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedGround</groundTexPath><walkingTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedWalk</walkingTexPath><drawSize>4.2</drawSize>
+        <stage>5</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedGround</groundTexPath><drawSize>4.2</drawSize>
       </li>
     </comps>
   </ThingDef>

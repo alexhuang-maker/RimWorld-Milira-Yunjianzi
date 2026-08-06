@@ -12,7 +12,6 @@ namespace Yunjianzi
     {
         public int stage;
         public string groundTexPath;
-        public string walkingTexPath;
         public float drawSize = 3f;
 
         public CompProperties_YunjianziSkyWyvern()
@@ -38,7 +37,6 @@ namespace Yunjianzi
         private int nextBreathChargeTick;
         private bool nativeControlBound;
         private Graphic[] groundGraphics;
-        private Graphic[][] walkingFrameGraphics;
 
         private CompProperties_YunjianziSkyWyvern Props => (CompProperties_YunjianziSkyWyvern)props;
         public Pawn Pawn => parent as Pawn;
@@ -307,16 +305,7 @@ namespace Yunjianzi
         public void DrawCustom(Vector3 drawLoc)
         {
             if (groundGraphics == null) groundGraphics = LoadDirectional(Props.groundTexPath);
-            if (walkingFrameGraphics == null)
-            {
-                walkingFrameGraphics = new Graphic[8][];
-                for (int i = 0; i < walkingFrameGraphics.Length; i++)
-                    walkingFrameGraphics[i] = LoadDirectional(Props.walkingTexPath + "Frame" + i);
-            }
-            int walkFrame = (Find.TickManager.TicksGame % 64) / 8;
-            Graphic[] set = Pawn.pather.Moving ? walkingFrameGraphics[walkFrame] : groundGraphics;
-            if (Pawn.pather.Moving && (walkFrame == 1 || walkFrame == 5)) drawLoc.z += .018f;
-            set[Pawn.Rotation.AsInt].Draw(drawLoc, Rot4.North, Pawn);
+            groundGraphics[Pawn.Rotation.AsInt].Draw(drawLoc, Rot4.North, Pawn);
             if (shield > 0f && Find.TickManager.TicksGame >= shieldBrokenUntil)
                 GenDraw.DrawRadiusRing(Pawn.Position, ShieldRadius, new Color(.18f, .82f, 1f, .18f));
         }
