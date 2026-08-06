@@ -83,7 +83,8 @@
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Assault</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <shaderType>Cutout</shaderType>
-      <drawSize>1.10</drawSize>
+      <!-- 枪身横向拉长，但不同比例放大厚度，保持普通人可肩射的步枪轮廓。 -->
+      <drawSize>(1.42,1.10)</drawSize>
     </graphicData>
   </ThingDef>
 
@@ -95,7 +96,7 @@
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Gatling</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <shaderType>Cutout</shaderType>
-      <drawSize>1.16</drawSize>
+      <drawSize>(1.52,1.12)</drawSize>
     </graphicData>
   </ThingDef>
 
@@ -129,7 +130,7 @@
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Gauss</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <shaderType>Cutout</shaderType>
-      <drawSize>1.22</drawSize>
+      <drawSize>(1.64,1.15)</drawSize>
     </graphicData>
     <verbs>
       <li>
@@ -149,7 +150,7 @@
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Legendary</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <shaderType>Cutout</shaderType>
-      <drawSize>1.28</drawSize>
+      <drawSize>(1.72,1.18)</drawSize>
     </graphicData>
     <verbs>
       <li>
