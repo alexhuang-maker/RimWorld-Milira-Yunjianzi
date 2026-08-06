@@ -3,7 +3,11 @@
   <ThingDef ParentName="Milira_MilianBase_Pawn">
     <defName>YJZ_Shenji_Race</defName>
     <label>神机米莉安</label>
-    <description>云间子以神机诀唤出的专属火力支援型米莉安。她不占用机械带宽，拥有自循环能源与随境界成长的专属神机甲。</description>
+    <description>“金石能载道，光电亦可书符。”
+
+道书《神机篇》记着上一代云间子与一位米莉安同行的旧事，也留下重塑其身的完整器图。现任云间子依图以米莉拉技术塑身、以符法贯通能源与灵识，却仍把选择与成长留给被唤醒者自己。
+
+效果：云间子的专属火力支援型米莉安，不占用机械带宽，拥有自循环能源；武器与固有装甲会随云间子的境界成长。</description>
     <statBases>
       <MoveSpeed>4.6</MoveSpeed>
       <MarketValue>2200</MarketValue>
@@ -78,7 +82,11 @@
   <ThingDef ParentName="Gun_AssaultRifle">
     <defName>YJZ_Weapon_Shenji_Assault</defName>
     <label>神机炮·初式</label>
-    <description>练气阶段的神机炮，性能与制式突击步枪相近。</description>
+    <description>“九层之台，起于累土。”——《道德经》
+
+道书第一幅炮图仍保留制式突击步枪结构，只在枪机内多出一圈与修炼者灵脉同频的青色符路。它不以奇迹取胜，却是此后一切火力变化的可靠根基。
+
+效果：练气阶段使用的可靠点射武器，性能接近制式突击步枪；会随境界自动替换。</description>
     <graphicData>
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Assault</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -91,7 +99,11 @@
   <ThingDef ParentName="Gun_Minigun">
     <defName>YJZ_Weapon_Shenji_Gatling</defName>
     <label>神机炮·连星</label>
-    <description>筑基阶段展开的速射神机炮。</description>
+    <description>“枢始得其环中，以应无穷。”——《庄子》
+
+道书第二幅炮图须待筑基方能展开：单一枪管围绕灵能中枢化作连星炮机。每一发都借下一发校正自身，密集弹流如群星循轨。
+
+效果：筑基阶段使用的速射武器，擅长以密集弹流压制敌人；会随境界自动替换。</description>
     <graphicData>
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Gatling</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -125,7 +137,11 @@
   <ThingDef ParentName="Gun_AssaultRifle" Name="YJZ_Weapon_Shenji_Gauss_Base">
     <defName>YJZ_Weapon_Shenji_Gauss</defName>
     <label>神机炮·辉光</label>
-    <description>紫府阶段展开的淡蓝脉冲激光炮，火力对齐米莉拉帝国高阶自动步枪。</description>
+    <description>“电以照幽，雷以震妄。”
+
+道书第三幅炮图须以紫府神识读取，使神机炮舍弃实体弹丸，将日棱晶约束的能量压成淡蓝辉光。这是上一代云间子对古人所谓“神光”的工程学解答。
+
+效果：紫府阶段使用的远程脉冲激光炮，能够快速连射并有效穿透护甲。</description>
     <graphicData>
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Gauss</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -145,7 +161,11 @@
   <ThingDef ParentName="YJZ_Weapon_Shenji_Gauss_Base">
     <defName>YJZ_Weapon_Shenji_Legendary</defName>
     <label>神机炮·传说</label>
-    <description>金丹阶段完全展开的辉光神机炮，射速与持续火力达到传奇级帝国武器基准。</description>
+    <description>“大方无隅，大器晚成。”——《道德经》
+
+道书最后一幅炮图只写“以金丹为炉，以神机为器”。至此炮身所有折叠结构完全展开，主辉光贯穿目标，余能由阵列重新导向，在敌阵之间递次折射。
+
+效果：金丹及更高境界使用的最终辉光炮，射程远、连射迅疾，并能使光束向其他敌人折射。</description>
     <graphicData>
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Legendary</texPath>
       <graphicClass>Graphic_Single</graphicClass>

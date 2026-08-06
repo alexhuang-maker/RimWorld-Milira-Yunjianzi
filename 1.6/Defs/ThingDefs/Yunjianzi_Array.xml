@@ -24,7 +24,11 @@
   <ThingDef>
     <defName>YJZ_Thing_SwordRain</defName>
     <label>天剑雨</label>
-    <description>云间子在紫府境后以灵力凝成的两轮白玉剑雨。</description>
+    <description>“一气分而为阴阳，判而为天地。”
+
+道书《剑阵篇》记载，紫府之后可将一念剑意分作满天白玉剑影。第一轮逼敌露隙，第二轮循着前一轮留下的灵机落下；看似万剑纷飞，实则皆出于一锋。
+
+效果：由仙阵召出的两轮范围剑雨，结束后自行消散。</description>
     <thingClass>Yunjianzi.ThingYunjianziSwordRain</thingClass>
     <category>Ethereal</category>
     <tickerType>Normal</tickerType>
@@ -39,7 +43,11 @@
 
   <ThingDef ParentName="BuildingBase" Name="YJZ_ArrayCoreBase" Abstract="True">
     <label>琉璃阵眼</label>
-    <description>云间子以灵力凝成的琉璃玉珠，是仙阵的阵眼与防御枢机。其灵压会吸引附近敌人的注意；摧毁阵眼即可令对应仙阵消散。</description>
+    <description>“八剑定八方，一念镇中央。”
+
+道书阵图特意让琉璃玉珠显形，使无形阵法留下一处可守、也可被敌人攻破的枢机。它并非仙阵最华丽之处，却承受着每一条阵纹回流的压力。
+
+效果：仙阵的实体阵眼，会吸引附近敌人；阵眼被摧毁时，对应仙阵立即消散，其坚固程度随境界成长。</description>
     <thingClass>Yunjianzi.ThingYunjianziArrayCore</thingClass>
     <category>Building</category>
     <tickerType>Normal</tickerType>

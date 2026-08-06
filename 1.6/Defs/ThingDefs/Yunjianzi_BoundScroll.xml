@@ -3,7 +3,11 @@
   <ThingDef ParentName="ResourceBase">
     <defName>YJZ_Item_BoundImmortalScroll</defName>
     <label>云间子的遗仙宝卷</label>
-    <description>随云间子一同现世的白玉宝卷，其上封存着遗仙传承最初的一缕灵机。宝卷与云间子的神魂印记绑定，研读十秒后便会化作灵光，使她获得最初的十点灵力上限。</description>
+    <description>“千里之行，始于足下。”——《道德经》
+
+这正是上一代云间子留下的那本道书。卷中万法并非一开始便可阅读，只有第一页的灵机向继承者敞开；初次研读之后，书中文字沉入神魂，其余篇章则要随境界逐页参悟。
+
+效果：仅云间子能够研读。初次研读后，道书与她的神魂相合，为修行奠定最初的灵力根基。</description>
     <thingClass>ThingWithComps</thingClass>
     <category>Item</category>
     <stackLimit>1</stackLimit>

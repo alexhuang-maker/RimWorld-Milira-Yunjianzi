@@ -27,7 +27,11 @@
   <ThingDef ParentName="YJZ_DecorationBase">
     <defName>YJZ_Decoration_EverlightLamp</defName>
     <label>云月长明灯</label>
-    <description>以辉钢塑成白玉般的云月灯架，灵珠将柔和的青光洒在修行场所。它兼具米莉拉精密构造与古老法器的含蓄美感。</description>
+    <description>“云破月来花弄影。”——张先《天仙子》
+
+道书《起居篇》绘有一盏为夜读而作的旧灯：辉钢塑出白玉之色，灵珠代替灯芯守住淡青月光。上一代写道，每有归人推门，最先看见的总是这点没有熄灭的光。
+
+效果：无需电力或燃料的长明灯，能够照明并美化周围环境。</description>
     <graphicData>
       <texPath>Yunjianzi/Buildings/Decoration/EverlightLamp</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -54,7 +58,11 @@
   <ThingDef ParentName="YJZ_DecorationBase">
     <defName>YJZ_Decoration_CloudCenser</defName>
     <label>云纹灵香炉</label>
-    <description>一座辉钢打造的八角灵香炉。云纹与青色灵路沿炉身交错，悬于炉盖上方的玉珠使周围气息显得安宁而庄重。</description>
+    <description>“归根曰静，是谓复命。”——《道德经》
+
+道书香炉图上，八方云纹与青色灵路把香气约束得不浓不散。上一代云间子没有注明所祀神名，只留下一句：人在劳作与争斗之后，仍应给心留一炷香的时间。
+
+效果：纯装饰性的无燃料灵香炉，用于美化修行与生活场所。</description>
     <graphicData>
       <texPath>Yunjianzi/Buildings/Decoration/CloudCenser</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -73,7 +81,11 @@
   <ThingDef ParentName="YJZ_DecorationBase">
     <defName>YJZ_Decoration_FloatingJadeDisplay</defName>
     <label>浮玉陈设台</label>
-    <description>辉钢基座托起一枚悬浮灵珠，四枚剑形饰件与倾斜玉环缓慢维持其姿态。它没有战斗用途，只为道场增添清贵而神秘的气氛。</description>
+    <description>“有之以为利，无之以为用。”——《道德经》
+
+道书阵理旁绘着这座陈设：四枚小剑不曾开锋，只维持灵珠与缺玉环间的空隙。上一代用它解释阵法，真正承托万物的，有时正是肉眼看见的那一处“无”。
+
+效果：发出淡青微光并显著美化周围环境；没有战斗或修炼用途。</description>
     <graphicData>
       <texPath>Yunjianzi/Buildings/Decoration/FloatingJadeDisplay</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -99,7 +111,11 @@
   <ThingDef ParentName="YJZ_DecorationBase">
     <defName>YJZ_Decoration_CloudScreen</defName>
     <label>云间灵玉屏</label>
-    <description>以辉钢构成的双扇屏风。深青半透屏面刻有流云与灵路，既可划分修炼场所，也是一件端庄的室内陈设。</description>
+    <description>“白云回望合，青霭入看无。”——王维《终南山》
+
+道书中的双扇屏图以流云作界，从一侧看彼此闭合，从另一侧看却隐入半透深青。它隔开的不是两间世界，只是上一代云间子留给修炼者的一处清静方寸。
+
+效果：可旋转的室内屏风，能够划分空间并美化房间；可以穿行，但会稍微阻碍通行。</description>
     <size>(2,1)</size>
     <rotatable>true</rotatable>
     <passability>PassThroughOnly</passability>

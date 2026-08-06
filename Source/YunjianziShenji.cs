@@ -495,9 +495,10 @@ namespace Yunjianzi
             CompYunjianziCultivation cultivation = pawn == null ? null : pawn.TryGetComp<CompYunjianziCultivation>();
             if (cultivation == null || !cultivation.IsYunjianzi) return;
             CompYunjianziShenji shenji = mech == null ? null : mech.TryGetComp<CompYunjianziShenji>();
+            CompYunjianziSkyWyvern wyvern = mech == null ? null : mech.TryGetComp<CompYunjianziSkyWyvern>();
             // 神机诀本身就是控制授权，不要求云间子额外安装机械连接芯片或带宽器官；
             // 但该授权严格限制在与她本人绑定的神机上。
-            __result = shenji != null && shenji.IsBoundTo(pawn);
+            __result = (shenji != null && shenji.IsBoundTo(pawn)) || (wyvern != null && wyvern.IsBoundTo(pawn));
         }
     }
 

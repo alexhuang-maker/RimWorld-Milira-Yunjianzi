@@ -3,9 +3,11 @@
   <ThingDef ParentName="BedBase">
     <defName>YJZ_Bedroom_SereneBed</defName>
     <label>云梦安神榻</label>
-    <description>以辉钢和灵玉回路制成的云间子风格单人床。床头灵珠会在睡眠时梳理灵脉，使云间子的灵力恢复速度提升至自然恢复的1.1倍，并阻止“睡眠被打扰”的负面记忆。它不会屏蔽火灾、伤病、袭击等真实危险。
+    <description>“神静而心和，心和而形全。”——《庄子》
 
-所有文化均可建造。</description>
+道书《起居篇》记着上一代云间子的一场旧梦：她行过云上市，只记得一张安静得听不见风声的榻。现任云间子依图复其形，以床头灵珠梳理睡梦中的灵脉。
+
+效果：高规格单人床，能够改善休息、疗养与手术条件。云间子在此睡眠时会缓慢恢复灵力，并不受琐碎声响打扰；真实危险仍会将她唤醒。</description>
     <graphicData>
       <texPath>Yunjianzi/Buildings/Bedroom/SereneBed</texPath>
       <graphicClass>Graphic_Multi</graphicClass>
@@ -43,7 +45,11 @@
   <ThingDef ParentName="FurnitureBase">
     <defName>YJZ_Bedroom_Nightstand</defName>
     <label>灵珠床头柜</label>
-    <description>一只八角辉钢床头柜。柜面灵珠散发宁静微光，可使紧邻床头的床铺更加舒适。每张床最多受一只床头柜影响。</description>
+    <description>“虚室生白，吉祥止止。”——《庄子》
+
+道书起居图中，八角柜面只置一珠，不陈杂物。微光恰好照见夜里伸手可及之处，也把床榻周围纷乱的灵路收束得更安稳。
+
+效果：作为床头设施，小幅提高相邻床铺的舒适度；每张床只能连接一只。</description>
     <thingClass>Building</thingClass><designationCategory>Ideology</designationCategory>
     <graphicData>
       <texPath>Yunjianzi/Buildings/Bedroom/Nightstand</texPath><graphicClass>Graphic_Single</graphicClass>
@@ -63,7 +69,11 @@
   <ThingDef ParentName="FurnitureBase">
     <defName>YJZ_Bedroom_Chair</defName>
     <label>云月玉椅</label>
-    <description>以辉钢构成月弧靠背的单人椅，深青坐垫承托身体，适合在小桌旁用餐、研读或静坐。</description>
+    <description>“坐忘者，堕肢体，黜聪明，离形去知。”——《庄子》
+
+道书一角画着上一代云间子读经时常坐的小椅：月弧靠背托住肩颈，深青坐垫只留一人方寸。现任云间子依样制成，偶尔读至无字处，也会就此闭目片刻。
+
+效果：可供一人用餐、研读或休憩的舒适座椅。</description>
     <thingClass>Building</thingClass><designationCategory>Ideology</designationCategory>
     <graphicData><texPath>Yunjianzi/Buildings/Bedroom/Chair</texPath><graphicClass>Graphic_Multi</graphicClass><shaderType>CutoutComplex</shaderType><drawSize>(1.05,1.05)</drawSize></graphicData>
     <size>(1,1)</size><altitudeLayer>Building</altitudeLayer><passability>PassThroughOnly</passability><pathCost>30</pathCost><fillPercent>0.35</fillPercent>
@@ -76,7 +86,11 @@
   <ThingDef ParentName="FurnitureBase">
     <defName>YJZ_Bedroom_SmallTable</defName>
     <label>灵玉小方桌</label>
-    <description>占地一格的辉钢小桌。桌面嵌有一枚温润灵玉，可供一人用餐、阅读或处理手边事务。</description>
+    <description>“治大国若烹小鲜。”——《道德经》
+
+道书生活札记中反复出现这张小桌，恰容一餐、一卷与一盏清茶。上一代云间子没有写它有何玄妙，只说真正决定日子如何过下去的，往往是这些细小而不可轻忽的事。
+
+效果：紧凑的餐桌兼聚会点，可供相邻角色用餐、阅读与社交。</description>
     <thingClass>Building</thingClass><designationCategory>Ideology</designationCategory>
     <graphicData><texPath>Yunjianzi/Buildings/Bedroom/SmallTable</texPath><graphicClass>Graphic_Single</graphicClass><shaderType>CutoutComplex</shaderType><drawSize>(1.08,1.08)</drawSize></graphicData>
     <size>(1,1)</size><altitudeLayer>Building</altitudeLayer><passability>PassThroughOnly</passability><pathCost>42</pathCost><fillPercent>0.4</fillPercent>
@@ -90,7 +104,11 @@
   <ThingDef ParentName="FurnitureBase">
     <defName>YJZ_Bedroom_Wardrobe</defName>
     <label>云纹衣柜</label>
-    <description>仅占一格的紧凑辉钢衣柜。封闭的深青柜门与恒净灵路能够妥善收纳道袍，并小幅提高附近床铺的舒适度。</description>
+    <description>“知足不辱，知止不殆。”——《道德经》
+
+道书起居图中的衣柜没有洞天，只够收好一袭道袍与几件行装。恒净灵路驱去尘气，也让卧榻周围少些杂乱；上一代在旁题道，长生路远，真正需要带走的东西并不多。
+
+效果：作为卧室设施，小幅提高附近床铺的舒适度；每张床只能连接一座。</description>
     <thingClass>Building</thingClass><designationCategory>Ideology</designationCategory>
     <graphicData><texPath>Yunjianzi/Buildings/Bedroom/Wardrobe</texPath><graphicClass>Graphic_Multi</graphicClass><shaderType>CutoutComplex</shaderType><drawSize>(1.15,1.15)</drawSize></graphicData>
     <size>(1,1)</size><altitudeLayer>Building</altitudeLayer><passability>PassThroughOnly</passability><pathCost>45</pathCost><fillPercent>0.55</fillPercent>
@@ -104,7 +122,11 @@
   <ThingDef ParentName="BookcaseBase">
     <defName>YJZ_Bedroom_WallBookcase</defName>
     <label>五卷悬书阁</label>
-    <description>贴墙安置的辉钢悬书架，仅能储存五本书。书籍不会在其中腐坏，并会像普通书架一样提高同室研究工作的效率与书架美观度。</description>
+    <description>“为学日益，为道日损。”——《道德经》
+
+道书所绘悬阁只容五卷，故每留一书都须有所取舍。现任云间子依图让旧纸与新式辉钢一同守住知识；书愈少，反而愈知道自己仍缺哪一卷。
+
+效果：贴墙安置的小型书架，只能存放少量书籍；能够保护藏书，并辅助同室研究。</description>
     <designationCategory>Ideology</designationCategory>
     <graphicData>
       <texPath>Yunjianzi/Buildings/Bedroom/WallBookcase</texPath><graphicClass>Graphic_Multi</graphicClass><shaderType>CutoutComplex</shaderType>

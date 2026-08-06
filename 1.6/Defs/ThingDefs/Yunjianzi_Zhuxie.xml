@@ -3,7 +3,11 @@
   <ThingDef ParentName="BaseMeleeWeapon_Sharp">
     <defName>YJZ_Weapon_Zhuxie</defName>
     <label>诛邪</label>
-    <description>云间子以灵脉温养的独一仙剑。剑本体不会随境界更换；实际威力、穿甲、剑影与附魔由持剑者的修行境界动态决定。</description>
+    <description>“胜人者有力，自胜者强。”——《道德经》
+
+诛邪的剑图藏在道书封底。上一代云间子留下的不是一柄已经无敌的神兵，而是一道未曾替继承者作答的剑胚：所谓诛邪，先诛世间之敌，还是先斩心中妄念？此后剑不更名，也不另铸，只随继承者一同成长。
+
+效果：云间子的唯一仙剑，威力、穿透、剑影与附魔都会随修行境界成长。</description>
     <thingClass>ThingWithComps</thingClass>
     <rotatable>true</rotatable>
     <!-- Zhuxie is unique and summoned, never crafted or smelted. Clear the

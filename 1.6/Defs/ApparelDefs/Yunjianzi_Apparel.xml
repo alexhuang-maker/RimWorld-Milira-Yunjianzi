@@ -3,7 +3,11 @@
   <ThingDef ParentName="Milira_OnSkinBase">
     <defName>YJZ_Apparel_YunjianRobe</defName>
     <label>云间道袍</label>
-    <description>云间子的专属道袍。珠白色外袍覆盖着以青玉色灵路书写的符纹，深青内层则负责约束米莉拉能源与修行灵气。</description>
+    <description>“被褐怀玉。”——《道德经》
+
+道书卷首绘着上一代云间子的旧衣：珠白外袍仍守道衣之形，青玉灵路却与异世能源回路一同呼吸。现任云间子依图裁成此袍，也由此明白，继承古法不必舍弃自己的故乡。
+
+效果：云间子的专属常驻道袍，不会损坏，并能保护全身、抵御伤害与严酷温度。</description>
     <techLevel>Ultra</techLevel>
     <smeltable>false</smeltable>
     <burnableByRecipe>false</burnableByRecipe>

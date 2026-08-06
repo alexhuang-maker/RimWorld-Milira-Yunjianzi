@@ -33,7 +33,11 @@
   <ThingDef ParentName="YJZ_MeditationBuildingBase">
     <defName>YJZ_Building_MeditationCushion</defName>
     <label>云纹蒲团</label>
-    <description>以柔软织物缝制的云纹蒲团。云间子可以坐在蒲团上调息，使灵力总恢复速度提高到自然恢复的约三倍。其结构也为未来的境界突破仪式预留了基础接口。</description>
+    <description>“致虚极，守静笃。”——《道德经》
+
+道书《坐忘篇》开篇只绘着一只寻常蒲团。它没有封存灵药，只让双膝有处安放；上一代云间子写道，大道若真在远方，也须从坐稳眼前这一刻开始。
+
+效果：云间子可在此打坐并快速恢复灵力，是最基础的修行座位。</description>
     <stuffCategories><li>Fabric</li></stuffCategories>
     <costStuffCount>45</costStuffCount>
     <graphicData>
@@ -62,7 +66,11 @@
   <ThingDef ParentName="YJZ_MeditationBuildingBase">
     <defName>YJZ_Building_WhiteJadePlatform</defName>
     <label>白玉修行台</label>
-    <description>以翡翠、辉钢与日棱晶筑成的高规格修行台。中央坐位汇聚并梳理周围灵流，使云间子的灵力总恢复速度提高到自然恢复的约六倍。稳定的九宫结构将作为未来高境界突破的主要仪台。</description>
+    <description>“三十辐共一毂，当其无，有车之用。”——《道德经》
+
+道书《坐忘篇》的九宫台图直到后继者根基稳固才会显现。台上最重要的并非翡翠、辉钢或日棱晶，而是中央空位；修炼者坐入其中，便以自身作阵眼。
+
+效果：云间子可在此极快恢复灵力，并用它举行高境界突破；同时能够照明并显著美化道场。</description>
     <size>(3,3)</size>
     <graphicData>
       <texPath>Yunjianzi/Buildings/Meditation/WhiteJadePlatform</texPath>

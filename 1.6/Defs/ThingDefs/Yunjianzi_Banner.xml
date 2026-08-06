@@ -3,7 +3,11 @@
   <ThingDef ParentName="MechBuildingBase">
     <defName>YJZ_Building_YunjianziBanner</defName>
     <label>云间之影</label>
-    <description>一个以白玉灵珠为核心的自供能投影单元，持续在上空维持云间子的私人旌旗。旗心以诛邪、灵珠和云纹为徽，淡青色阵纹则沿着投影缓慢流转。</description>
+    <description>“云无心以出岫。”——陶渊明《归去来兮辞》
+
+道书夹页绘有一面无风自展的旧旌，旗心正是诛邪、云纹与残缺玉环。现任云间子以白玉灵珠复现其影；它不宣示领地，只证明上一代曾在某个陌生世界停云，而这一代又在此续上道统。
+
+效果：无需供能的云间子传承旗帜，能够照明并显著美化周围环境。</description>
     <size>(1,1)</size>
     <rotatable>false</rotatable>
     <tickerType>Normal</tickerType>

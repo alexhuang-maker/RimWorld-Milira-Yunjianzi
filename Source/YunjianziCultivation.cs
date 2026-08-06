@@ -25,6 +25,8 @@ namespace Yunjianzi
         public static readonly Texture2D SummonShenji =
             ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/SummonShenji", false) ??
             ContentFinder<Texture2D>.Get("Milian/Mechanoid_uiIcon/PawnI", false) ?? SummonZhuxie;
+        public static readonly Texture2D SummonSkyWyvern =
+            ContentFinder<Texture2D>.Get("Yunjianzi/UI/Abilities/SummonSkyWyvern", false) ?? SummonShenji;
         public static readonly Texture2D TalismanSlot =
             ContentFinder<Texture2D>.Get("Yunjianzi/UI/TalismanSlot", false) ?? CultivationTree;
         public static readonly Texture2D FireTornado =
@@ -277,6 +279,8 @@ namespace Yunjianzi
                     foreach (Gizmo arrayGizmo in GetArrayGizmos()) yield return arrayGizmo;
                 if (HasSkill(YunjianziSkills.ShenjiSummon))
                     foreach (Gizmo shenjiGizmo in GetShenjiGizmos()) yield return shenjiGizmo;
+                if (HasSkill(YunjianziSkills.ShenjiWyvern))
+                    foreach (Gizmo wyvernGizmo in GetSkyWyvernGizmos()) yield return wyvernGizmo;
                 if (HasSkill(YunjianziSkills.YangfuPrimer))
                     foreach (Gizmo combatTalismanGizmo in GetYangfuCombatGizmos()) yield return combatTalismanGizmo;
                 if (HasSkill(YunjianziSkills.YangfuPrimer))
@@ -953,6 +957,10 @@ namespace Yunjianzi
         public static FleckDef YJZ_Fleck_ArrayWarpA;
         public static FleckDef YJZ_Fleck_ArrayWarpB;
         public static PawnKindDef YJZ_Shenji;
+        public static PawnKindDef YJZ_SkyWyvern_Purple;
+        public static PawnKindDef YJZ_SkyWyvern_Golden;
+        public static PawnKindDef YJZ_SkyWyvern_Spirit;
+        public static HediffDef YJZ_SkyWyvernAcceleration;
         public static ThingDef YJZ_Weapon_Shenji_Assault;
         public static ThingDef YJZ_Weapon_Shenji_Gatling;
         public static ThingDef YJZ_Weapon_Shenji_Gauss;

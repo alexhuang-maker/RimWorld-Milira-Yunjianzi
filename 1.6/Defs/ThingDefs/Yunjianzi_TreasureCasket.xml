@@ -3,7 +3,11 @@
   <ThingDef ParentName="StorageShelfBase">
     <defName>YJZ_TreasureCasket</defName>
     <label>建木镇宝匣</label>
-    <description>建木神树扎根于九宫白玉基座，以贯穿匣体的根脉、玉环与灵路镇压内部反复折叠的空间。树下的百宝匣能够安全收纳至多一千件物品；储存物不会腐坏，也不会影响周围美观。\n\n容量按整座建筑内物品的实际数量计算，而非堆栈数量或单格容量。不能储存建筑、植物、石块、大型尸体与废料包。所有文化均可建造。</description>
+    <description>“建木在都广，众帝所自上下。”——《淮南子·地形训》
+
+道书《洞天篇》以建木贯通天地之说画成镇宝匣图。上一代未得神树，只以辉钢塑枝、白玉作根，让九宫灵路折叠树下方寸；现任云间子循图再造，使一座殖民地的家当各安其位。
+
+效果：能够在折叠空间中收纳海量普通物品，并使其中物品免于腐坏。无法收纳建筑、植物、石块、大型尸体与废料包。</description>
     <thingClass>Yunjianzi.Building_TreasureCasket</thingClass>
     <designationCategory>Ideology</designationCategory>
     <graphicData>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef Name="YJZ_SkyWyvern_Base" ParentName="HeavyMechanoid" Abstract="True">
+    <label>云间机飞龙</label>
+    <description>以米莉拉天空精灵技术铸成骨骼，以建木神枢镇压核心，再由神机诀赋予灵识的唯一机械天兽。平时收翼搬运，进入战斗后才展开专属飞行构型。</description>
+    <thingClass>Pawn</thingClass>
+    <statBases>
+      <BandwidthCost>0</BandwidthCost>
+      <MechEnergyLossPerHP>0</MechEnergyLossPerHP>
+      <CarryingCapacity>3000</CarryingCapacity>
+      <ArmorRating_Sharp>1.5</ArmorRating_Sharp>
+      <ArmorRating_Blunt>1.0</ArmorRating_Blunt>
+      <ArmorRating_Heat>1.2</ArmorRating_Heat>
+    </statBases>
+    <race>
+      <body>Mech_Diabolus</body>
+      <intelligence>ToolUser</intelligence>
+      <thinkTreeMain>Mechanoid</thinkTreeMain>
+      <mechWeightClass>Heavy</mechWeightClass>
+      <mechEnabledWorkTypes>
+        <li>Hauling</li>
+      </mechEnabledWorkTypes>
+    </race>
+    <tools>
+      <li><label>青雷前爪</label><capacities><li>Scratch</li></capacities><power>30</power><cooldownTime>1.75</cooldownTime></li>
+      <li><label>白玉颚</label><capacities><li>Bite</li></capacities><power>24</power><cooldownTime>2.1</cooldownTime></li>
+    </tools>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_SkyWyvern_Base">
+    <defName>YJZ_SkyWyvern_Race_Purple</defName>
+    <label>云间机飞龙·紫府</label>
+    <statBases>
+      <MoveSpeed>4.14</MoveSpeed><MaxHitPoints>6000</MaxHitPoints><MarketValue>24000</MarketValue>
+    </statBases>
+    <race><baseBodySize>4</baseBodySize><baseHealthScale>6</baseHealthScale></race>
+    <comps>
+      <li Class="Yunjianzi.CompProperties_YunjianziSkyWyvern">
+        <stage>3</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/PurpleGround</groundTexPath><groundAltTexPath>Yunjianzi/Pawn/SkyWyvern/PurpleGroundAlt</groundAltTexPath><flyingTexPath>Yunjianzi/Pawn/SkyWyvern/PurpleFlying</flyingTexPath><flyingAltTexPath>Yunjianzi/Pawn/SkyWyvern/PurpleFlyingAlt</flyingAltTexPath><drawSize>3.2</drawSize>
+      </li>
+    </comps>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_SkyWyvern_Base">
+    <defName>YJZ_SkyWyvern_Race_Golden</defName>
+    <label>云间机飞龙·金丹</label>
+    <statBases>
+      <MoveSpeed>4.6</MoveSpeed><MaxHitPoints>30000</MaxHitPoints><MarketValue>65000</MarketValue>
+      <ArmorRating_Sharp>2.0</ArmorRating_Sharp><ArmorRating_Blunt>1.5</ArmorRating_Blunt><ArmorRating_Heat>1.8</ArmorRating_Heat>
+    </statBases>
+    <race><baseBodySize>6</baseBodySize><baseHealthScale>9</baseHealthScale></race>
+    <comps>
+      <li Class="Yunjianzi.CompProperties_YunjianziSkyWyvern">
+        <stage>4</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/GoldenGround</groundTexPath><groundAltTexPath>Yunjianzi/Pawn/SkyWyvern/GoldenGroundAlt</groundAltTexPath><flyingTexPath>Yunjianzi/Pawn/SkyWyvern/GoldenFlying</flyingTexPath><flyingAltTexPath>Yunjianzi/Pawn/SkyWyvern/GoldenFlyingAlt</flyingAltTexPath><drawSize>4.0</drawSize>
+      </li>
+    </comps>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_SkyWyvern_Base">
+    <defName>YJZ_SkyWyvern_Race_Spirit</defName>
+    <label>云间机飞龙·化神</label>
+    <statBases>
+      <MoveSpeed>5.98</MoveSpeed><MaxHitPoints>500000</MaxHitPoints><MarketValue>250000</MarketValue>
+      <ArmorRating_Sharp>2.8</ArmorRating_Sharp><ArmorRating_Blunt>2.2</ArmorRating_Blunt><ArmorRating_Heat>2.5</ArmorRating_Heat>
+    </statBases>
+    <race><baseBodySize>12</baseBodySize><baseHealthScale>18</baseHealthScale></race>
+    <comps>
+      <li Class="Yunjianzi.CompProperties_YunjianziSkyWyvern">
+        <stage>5</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/SpiritGround</groundTexPath><groundAltTexPath>Yunjianzi/Pawn/SkyWyvern/SpiritGroundAlt</groundAltTexPath><flyingTexPath>Yunjianzi/Pawn/SkyWyvern/SpiritFlying</flyingTexPath><flyingAltTexPath>Yunjianzi/Pawn/SkyWyvern/SpiritFlyingAlt</flyingAltTexPath><drawSize>5.6</drawSize>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <PawnKindDef Name="YJZ_SkyWyvernKind_Base" ParentName="HeavyMechanoidKind" Abstract="True">
+    <label>云间机飞龙</label><combatPower>1600</combatPower><weaponMoney>0</weaponMoney><apparelMoney>0</apparelMoney><techHediffsMoney>0</techHediffsMoney>
+    <lifeStages>
+      <li><bodyGraphicData><texPath>Yunjianzi/Pawn/Shenji/ShenjiTransparentBody</texPath><shaderType>Cutout</shaderType><graphicClass>Graphic_Multi</graphicClass><drawSize>1</drawSize></bodyGraphicData></li>
+    </lifeStages>
+  </PawnKindDef>
+  <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base"><defName>YJZ_SkyWyvern_Purple</defName><label>云间机飞龙·紫府</label><race>YJZ_SkyWyvern_Race_Purple</race><combatPower>1800</combatPower></PawnKindDef>
+  <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base"><defName>YJZ_SkyWyvern_Golden</defName><label>云间机飞龙·金丹</label><race>YJZ_SkyWyvern_Race_Golden</race><combatPower>4500</combatPower></PawnKindDef>
+  <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base"><defName>YJZ_SkyWyvern_Spirit</defName><label>云间机飞龙·化神</label><race>YJZ_SkyWyvern_Race_Spirit</race><combatPower>12000</combatPower></PawnKindDef>
+
+  <HediffDef>
+    <defName>YJZ_SkyWyvernAcceleration</defName>
+    <label>云间机加速场</label>
+    <description>云间机飞龙展开的稳定加速场，正在提升友军的移动与操作效率。</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <stages><li><statOffsets><MoveSpeed>0.6</MoveSpeed></statOffsets><capMods><li><capacity>Manipulation</capacity><offset>0.08</offset></li></capMods></li></stages>
+    <comps><li Class="HediffCompProperties_Disappears"><disappearsAfterTicks><min>120</min><max>120</max></disappearsAfterTicks></li></comps>
+  </HediffDef>
+</Defs>

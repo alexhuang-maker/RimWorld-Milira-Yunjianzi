@@ -5,7 +5,11 @@
   <ThingDef ParentName="Milian_MiddleBase">
     <defName>YJZ_Apparel_ShenjiArmor_Base</defName>
     <label>神机白玉甲·初式</label>
-    <description>练气与筑基阶段的专属神机甲。装甲属性全部由这件可见甲衣提供。</description>
+    <description>“有之以为利，无之以为用。”——《道德经》
+
+道书《神机篇》的第一幅甲图并非重甲，只以白玉式外壳护住核心与传动关节。甲片之间刻意留下空隙，让自循环能源与新生灵识都有伸展之处。
+
+效果：神机米莉安在练气、筑基阶段使用的固有装甲，提供基础防护并略微加快射击；不可交易，会随境界自动替换。</description>
     <tradeability>None</tradeability>
     <graphicData>
       <texPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Base</texPath>
@@ -32,7 +36,11 @@
   <ThingDef ParentName="Milian_MiddleBase">
     <defName>YJZ_Apparel_ShenjiArmor_Intermediate</defName>
     <label>神机白玉甲·紫府</label>
-    <description>紫府与金丹阶段的专属神机甲，以传奇日盘钢百夫长套装为防护基准。</description>
+    <description>“万物负阴而抱阳，冲气以为和。”——《道德经》
+
+道书第二幅甲图须待紫府开启方能读懂。图中日盘钢承受外击，白玉阵纹分散余势，淡青辉光则把过剩能量送回步伐与炮机，使甲衣如第二躯壳般运转。
+
+效果：神机米莉安在紫府、金丹阶段使用的固有装甲，提供强力防护，并提高移动与射击速度；不可交易。</description>
     <tradeability>None</tradeability>
     <graphicData>
       <texPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Intermediate</texPath>
@@ -59,7 +67,11 @@
   <ThingDef ParentName="Milian_MiddleBase">
     <defName>YJZ_Apparel_ShenjiArmor_Final</defName>
     <label>神机白玉甲·化神</label>
-    <description>化神阶段完全展开的终极神机甲，在传奇日盘钢百夫长套装基础上全面强化。</description>
+    <description>“大成若缺，其用不弊。”——《道德经》
+
+道书最后一幅甲图直到化神方才完整显现，图中玉环仍留一道缺口。那并非工艺未竟，而是上一代云间子有意为变化留下余地，不把神机米莉安封死成一件器物。
+
+效果：神机米莉安在化神阶段使用的最终固有装甲，提供极强防护，并全面提高移动、工作与射击效率；不可交易。</description>
     <tradeability>None</tradeability>
     <graphicData>
       <texPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Final</texPath>
@@ -88,7 +100,11 @@
   <ThingDef ParentName="Milian_OverheadBase">
     <defName>YJZ_Apparel_ShenjiVisor</defName>
     <label>神机战术目镜</label>
-    <description>神机固定装束的一部分，仅用于保持三向头部图层正确。</description>
+    <description>“五色令人目盲。”——《道德经》
+
+道书器图中的淡青镜片能滤去过量的光、热与灵能噪声，只留下目标轮廓和阵令。现任云间子依图将它与神机米莉安的发饰、视窗连为一体。
+
+效果：神机米莉安的固有目镜，用于目标识别与维持完整外观；不提供额外防护，不可交易。</description>
     <tradeability>None</tradeability>
     <graphicData>
       <texPath>Yunjianzi/Apparel/Shenji/ShenjiVisor</texPath>
