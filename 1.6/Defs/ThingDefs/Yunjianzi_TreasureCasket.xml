@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="StorageShelfBase">
+    <defName>YJZ_TreasureCasket</defName>
+    <label>建木镇宝匣</label>
+    <description>建木神树扎根于九宫白玉基座，以贯穿匣体的根脉、玉环与灵路镇压内部反复折叠的空间。树下的百宝匣能够安全收纳至多一千件物品；储存物不会腐坏，也不会影响周围美观。\n\n容量按整座建筑内物品的实际数量计算，而非堆栈数量或单格容量。不能储存建筑、植物、石块、大型尸体与废料包。所有文化均可建造。</description>
+    <thingClass>Yunjianzi.Building_TreasureCasket</thingClass>
+    <designationCategory>Ideology</designationCategory>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/Storage/TreasureCasket</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(3.65,3.65)</drawSize>
+      <drawOffset>(0,0,0.05)</drawOffset>
+    </graphicData>
+    <size>(3,3)</size>
+    <altitudeLayer>BuildingOnTop</altitudeLayer>
+    <rotatable>false</rotatable>
+    <passability>PassThroughOnly</passability>
+    <pathCost>80</pathCost>
+    <fillPercent>0.72</fillPercent>
+    <stuffCategories Inherit="False" />
+    <costList>
+      <Milira_SplendidSteel>300</Milira_SplendidSteel>
+    </costList>
+    <statBases>
+      <MaxHitPoints>2500</MaxHitPoints>
+      <Mass>120</Mass>
+      <WorkToBuild>9000</WorkToBuild>
+      <Beauty>140</Beauty>
+      <Flammability>0</Flammability>
+    </statBases>
+    <constructionSkillPrerequisite>10</constructionSkillPrerequisite>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <building>
+      <storageGroupTag>YJZ_TreasureCasket</storageGroupTag>
+      <maxItemsInCell>1000</maxItemsInCell>
+      <preventDeteriorationOnTop>true</preventDeteriorationOnTop>
+      <ignoreStoredThingsBeauty>true</ignoreStoredThingsBeauty>
+      <paintable>false</paintable>
+    </building>
+    <comps>
+      <li Class="CompProperties_Forbiddable" />
+    </comps>
+    <uiIconScale>0.68</uiIconScale>
+    <uiOrder>3976</uiOrder>
+  </ThingDef>
+</Defs>
