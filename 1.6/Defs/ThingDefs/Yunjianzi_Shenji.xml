@@ -23,8 +23,8 @@
       <li Class="Milira.CompProperties_MilianHairSwitch">
         <gizmoIconPath>Milira/UI/HairChange</gizmoIconPath>
         <frontHairPaths>
-          <!-- The visor is baked into this dedicated front-hair layer.  Milira's
-               hair renderer follows head animation; Overhead apparel does not. -->
+          <!-- Hair only. The tactical visor is independent Milian head apparel,
+               so hair, face protection and realm armour each have one owner. -->
           <li>Yunjianzi/Pawn/Shenji/ShenjiHairFront</li>
         </frontHairPaths>
         <behindHairPaths>

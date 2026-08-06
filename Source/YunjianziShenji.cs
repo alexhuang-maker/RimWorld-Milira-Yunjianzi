@@ -199,17 +199,21 @@ namespace Yunjianzi
                         pawn.apparel.Wear(armor, false);
                     }
                 }
-                // The tactical visor now lives in the dedicated front-hair texture,
-                // so it shares the Milira head transform and follows all head motion.
-                // Remove the old Overhead apparel from existing saves to avoid a
-                // duplicated, stationary visor.
-                List<Apparel> obsoleteVisors = pawn.apparel.WornApparel
-                    .Where(a => a.def == YJZDefOf.YJZ_Apparel_ShenjiVisor).ToList();
-                for (int i = 0; i < obsoleteVisors.Count; i++)
+                // Keep the visor as independent native Milian head apparel. Hair
+                // textures contain hair only, so there is no duplicate visor and
+                // the renderer can apply the correct head transform per direction.
+                bool hasVisor = pawn.apparel.WornApparel
+                    .Any(a => a.def == YJZDefOf.YJZ_Apparel_ShenjiVisor);
+                if (!hasVisor)
                 {
-                    Apparel visor = obsoleteVisors[i];
-                    pawn.apparel.Remove(visor);
-                    visor.Destroy(DestroyMode.Vanish);
+                    Apparel visor = ThingMaker.MakeThing(YJZDefOf.YJZ_Apparel_ShenjiVisor) as Apparel;
+                    if (visor != null)
+                    {
+                        CompQuality quality = visor.TryGetComp<CompQuality>();
+                        if (quality != null)
+                            quality.SetQuality(QualityCategory.Normal, ArtGenerationContext.Outsider);
+                        pawn.apparel.Wear(visor, false);
+                    }
                 }
                 if (force || lastArmorTier <= 0) lastArmorTier = tier;
             }
@@ -486,9 +490,10 @@ namespace Yunjianzi
         }
     }
 
-    // 专属 tracker 只服务于神机，不让云间子借此零带宽接管其他机械体。
+    // 专属神机与飞龙获得零带宽特许；普通机械体完全保留原版判定，
+    // 因而仍会消耗云间灵脉实际提供的剩余带宽与控制组。
     [HarmonyPatch(typeof(MechanitorUtility), nameof(MechanitorUtility.CanControlMech))]
-    internal static class Patch_MechanitorUtility_YunjianziOnlyControlsShenji
+    internal static class Patch_MechanitorUtility_YunjianziSpecialMechAuthorization
     {
         private static void Postfix(Pawn pawn, Pawn mech, ref AcceptanceReport __result)
         {
@@ -496,9 +501,11 @@ namespace Yunjianzi
             if (cultivation == null || !cultivation.IsYunjianzi) return;
             CompYunjianziShenji shenji = mech == null ? null : mech.TryGetComp<CompYunjianziShenji>();
             CompYunjianziSkyWyvern wyvern = mech == null ? null : mech.TryGetComp<CompYunjianziSkyWyvern>();
-            // 神机诀本身就是控制授权，不要求云间子额外安装机械连接芯片或带宽器官；
-            // 但该授权严格限制在与她本人绑定的神机上。
-            __result = (shenji != null && shenji.IsBoundTo(pawn)) || (wyvern != null && wyvern.IsBoundTo(pawn));
+            // Only override a rejection for a correctly bound special unit.
+            // Never replace the vanilla result for ordinary Milian/mechanoids.
+            if ((shenji != null && shenji.IsBoundTo(pawn)) ||
+                (wyvern != null && wyvern.IsBoundTo(pawn)))
+                __result = true;
         }
     }
 

@@ -17,6 +17,12 @@
       <intelligence>ToolUser</intelligence>
       <thinkTreeMain>Mechanoid</thinkTreeMain>
       <mechWeightClass>Heavy</mechWeightClass>
+      <!-- Define the sole age stage explicitly. Several active mods query
+           DevelopmentalStage while PawnGenerator is still constructing needs;
+           inheriting an empty/foreign stage list makes that query index -1. -->
+      <lifeStageAges Inherit="False">
+        <li><def>MechanoidFullyFormed</def><minAge>0</minAge></li>
+      </lifeStageAges>
       <mechEnabledWorkTypes>
         <li>Hauling</li>
       </mechEnabledWorkTypes>

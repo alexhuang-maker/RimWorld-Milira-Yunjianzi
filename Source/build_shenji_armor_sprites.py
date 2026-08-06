@@ -109,25 +109,35 @@ def side_overlay(stage):
 def back_overlay(stage):
     layer = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
     d = ImageDraw.Draw(layer)
+    if stage >= 3:
+        # Final tier reads unmistakably as a back: a restrained jade mantle sits
+        # behind the armour instead of repeating the front chest/core motif.
+        poly(d, [(184, 214), (216, 196), (256, 211), (296, 196), (328, 214),
+                 (341, 326), (317, 422), (279, 390), (256, 438), (233, 390),
+                 (195, 422), (171, 326)], JADE_SHADE, 7)
+        line(d, [(204, 229), (220, 337), (256, 401), (292, 337), (308, 229)], GOLD, 5)
     poly(d, [(216, 225), (296, 225), (309, 322), (282, 370), (230, 370), (203, 322)], DEEP)
-    poly(d, [(205, 248), (226, 259), (218, 342), (191, 365), (177, 341), (185, 271)], TEAL)
-    poly(d, [(307, 248), (286, 259), (294, 342), (321, 365), (335, 341), (327, 271)], TEAL)
+    # Rear skirt protection is white jade armour, not a cyan front tabard.
+    poly(d, [(205, 248), (226, 259), (218, 342), (191, 365), (177, 341), (185, 271)], JADE)
+    poly(d, [(307, 248), (286, 259), (294, 342), (321, 365), (335, 341), (327, 271)], JADE)
     poly(d, [(222, 352), (252, 355), (247, 444), (218, 461), (203, 441)], JADE)
     poly(d, [(290, 352), (260, 355), (265, 444), (294, 461), (309, 441)], JADE)
     poly(d, [(205, 211), (234, 198), (256, 216), (278, 198), (307, 211), (295, 259), (256, 276), (217, 259)])
-    d.polygon([(230, 224), (256, 211), (282, 224), (273, 284), (256, 301), (239, 284)], fill=TEAL, outline=INK, width=6)
-    gem(layer, (256, 238), 10 + stage * 2, stage)
+    # Rear service plate: spine, seams and fasteners; deliberately no luminous core.
+    d.polygon([(230, 224), (256, 211), (282, 224), (273, 284), (256, 301), (239, 284)], fill=JADE_SHADE, outline=INK, width=6)
+    line(d, [(256, 222), (256, 289)], CYAN, 4)
+    line(d, [(242, 235), (256, 246), (270, 235)], GOLD, 4)
+    line(d, [(242, 266), (256, 278), (270, 266)], GOLD, 4)
     poly(d, [(208, 302), (242, 284), (254, 309), (228, 366), (191, 386)])
     poly(d, [(304, 302), (270, 284), (258, 309), (284, 366), (321, 386)])
     if stage >= 2:
         poly(d, [(167, 214), (205, 190), (231, 205), (208, 234), (178, 246), (151, 230)])
         poly(d, [(345, 214), (307, 190), (281, 205), (304, 234), (334, 246), (361, 230)])
-        gem(layer, (190, 227), 8, stage)
-        gem(layer, (322, 227), 8, stage)
+        line(d, [(176, 225), (194, 216), (210, 223)], CYAN, 4)
+        line(d, [(336, 225), (318, 216), (302, 223)], CYAN, 4)
     if stage >= 3:
-        gem(layer, (256, 276), 21, stage)
-        poly(d, [(221, 328), (187, 350), (181, 414), (211, 397), (240, 355)])
-        poly(d, [(291, 328), (325, 350), (331, 414), (301, 397), (272, 355)])
+        poly(d, [(221, 328), (187, 350), (181, 414), (211, 397), (240, 355)], JADE)
+        poly(d, [(291, 328), (325, 350), (331, 414), (301, 397), (272, 355)], JADE)
         line(d, [(211, 350), (194, 375), (190, 402)], CYAN, 5)
         line(d, [(301, 350), (318, 375), (322, 402)], CYAN, 5)
     return layer
@@ -191,12 +201,13 @@ def build_visor(direction):
         d.polygon([(207, 273), (305, 273), (296, 286), (256, 294), (216, 286)], fill=TEAL, outline=INK, width=4)
         line(d, [(222, 280), (290, 280)], CYAN, 5)
     elif direction == "east":
-        poly(d, [(209, 247), (284, 252), (281, 286), (230, 300), (207, 283)], JADE, 7)
-        line(d, [(222, 282), (273, 276)], CYAN, 5)
+        # Match the native Milian east-facing head anchor (roughly x=247..314).
+        poly(d, [(240, 247), (313, 252), (309, 286), (260, 300), (238, 283)], JADE, 7)
+        line(d, [(252, 282), (300, 276)], CYAN, 5)
     else:
         # 背面只露出目镜两侧的固定节点。
         gem(layer, (199, 274), 6, 1)
-        gem(layer, (313, 274), 6, 1)
+        # Rear view intentionally has no visor plate or visor nodes.
     return layer
 
 

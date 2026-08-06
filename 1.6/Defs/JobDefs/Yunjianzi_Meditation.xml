@@ -5,7 +5,6 @@
     <driverClass>Yunjianzi.JobDriver_YunjianziEquipTalisman</driverClass>
     <reportString>正在佩用TargetA。</reportString>
     <playerInterruptible>true</playerInterruptible>
-    <checkOverrideOnExpire>true</checkOverrideOnExpire>
   </JobDef>
   <JobDef>
     <defName>YJZ_Meditate</defName>
