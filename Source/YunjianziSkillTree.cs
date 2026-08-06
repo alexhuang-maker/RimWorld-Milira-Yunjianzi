@@ -209,7 +209,6 @@ namespace Yunjianzi
 
     public sealed partial class CompYunjianziCultivation
     {
-        private static readonly float[] SkillCostFractions = { 0f, .10f, .20f, .40f, .70f, 1f };
         private List<string> learnedSkills = new List<string>();
 
         public bool HasSkill(string id)
@@ -230,7 +229,9 @@ namespace Yunjianzi
         internal int SkillCost(YunjianziSkillNode node)
         {
             int bought = LearnedSkillCountAtRealm(node.Realm);
-            float fraction = bought < SkillCostFractions.Length ? SkillCostFractions[bought] : 2f;
+            // Each realm has its own purchase counter: first pick is free, then
+            // 10%, 20%, 30%... of that realm's energy cap, capped at 200%.
+            float fraction = Mathf.Min(bought * .10f, 2f);
             return Mathf.RoundToInt(EnergyCapForRealm(node.Realm) * fraction);
         }
 
