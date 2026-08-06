@@ -194,7 +194,7 @@ namespace Yunjianzi
                 EnsureRealmAndAbilities();
                 UpdateSwordRainCharges();
                 UpdateSwordHeartClarity();
-                Energy += EnergyMax * 0.005f;
+                Energy += EnergyMax * 0.005f * TalismanEnergyRecoveryFactor;
                 if (Realm >= 5 && Pawn.needs != null)
                 {
                     if (Pawn.needs.food != null) Pawn.needs.food.CurLevelPercentage = 1f;
@@ -415,9 +415,9 @@ namespace Yunjianzi
         {
             get
             {
-                if (HasSkill(YunjianziSkills.SwordRainSpirit)) return 1200;
-                if (HasSkill(YunjianziSkills.SwordRainGolden)) return 1500;
-                return 1800;
+                int baseTicks = HasSkill(YunjianziSkills.SwordRainSpirit) ? 1200 :
+                    HasSkill(YunjianziSkills.SwordRainGolden) ? 1500 : 1800;
+                return Mathf.Max(60, Mathf.RoundToInt(baseTicks * TalismanCooldownFactor));
             }
         }
         private int SwordRainWaveCount { get { return HasSkill(YunjianziSkills.SwordRainSpirit) ? 4 : 2; } }
@@ -586,7 +586,7 @@ namespace Yunjianzi
             DamageInfo info = new DamageInfo(DamageDefOf.Cut, SwordDamage * 1.6f, SwordArmorPenetration, -1f, Pawn, null, null, DamageInfo.SourceCategory.ThingOrUnknown);
             target.TakeDamage(info);
             if (HasSkill(YunjianziSkills.LightningEnchantment) && !target.Destroyed) ApplyLightning(target, SwordDamage * .45f);
-            blinkReadyTick = Find.TickManager.TicksGame + 300;
+            blinkReadyTick = Find.TickManager.TicksGame + Mathf.RoundToInt(300f * TalismanCooldownFactor);
             YunjianziCombatEffects.ShowBlinkSlash(originDrawPos, targetDrawPos, Pawn.DrawPos, map);
             if (HasSkill(YunjianziSkills.BlinkChain) && (target.Destroyed || (target is Pawn && ((Pawn)target).Dead)) && Energy >= 20f)
             {
@@ -651,7 +651,8 @@ namespace Yunjianzi
                 if (HasSkill(YunjianziSkills.LightningEnchantment) && Find.TickManager.TicksGame >= shadowLightningReady[shadowIndex])
                 {
                     ApplyLightning(target, SwordDamage * .45f);
-                    shadowLightningReady[shadowIndex] = Find.TickManager.TicksGame + 600;
+                    shadowLightningReady[shadowIndex] = Find.TickManager.TicksGame +
+                        Mathf.RoundToInt(600f * TalismanCooldownFactor);
                 }
             }
         }

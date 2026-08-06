@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -117,6 +118,40 @@ namespace Yunjianzi
             { "YJZ_Talisman_Huanri", YunjianziSkills.TalismanHuanri }
         };
 
+        private static readonly Dictionary<string, string> TalismanEffectHediffs = new Dictionary<string, string>
+        {
+            { "YJZ_Talisman_Shenjie", "YJZ_TalismanEffect_Shenjie" },
+            { "YJZ_Talisman_Shenxing", "YJZ_TalismanEffect_Shenxing" },
+            { "YJZ_Talisman_Jiqing", "YJZ_TalismanEffect_Jiqing" },
+            { "YJZ_Talisman_Baicao", "YJZ_TalismanEffect_Baicao" },
+            { "YJZ_Talisman_Xinjian", "YJZ_TalismanEffect_Xinjian" },
+            { "YJZ_Talisman_Beidou", "YJZ_TalismanEffect_Beidou" },
+            { "YJZ_Talisman_Shenlian", "YJZ_TalismanEffect_Shenlian" },
+            { "YJZ_Talisman_Huijian", "YJZ_TalismanEffect_Huijian" },
+            { "YJZ_Talisman_Bumei", "YJZ_TalismanEffect_Bumei" },
+            { "YJZ_Talisman_Jiexin", "YJZ_TalismanEffect_Jiexin" },
+            { "YJZ_Talisman_Liuyang", "YJZ_TalismanEffect_Liuyang" }
+        };
+
+        private static readonly Dictionary<string, string> TalismanEffectDescriptions = new Dictionary<string, string>
+        {
+            { "YJZ_Talisman_Zhuoyu", "制作成品品质提高两个等级（最高传奇）。" },
+            { "YJZ_Talisman_Shenjie", "研究速度 +100%。" },
+            { "YJZ_Talisman_Shenxing", "移动速度 +2 格/秒。" },
+            { "YJZ_Talisman_Jiqing", "社交影响 +25%，精神崩溃阈值 -10%；所在环境越华丽，额外心情越高。" },
+            { "YJZ_Talisman_Baicao", "医疗质量与手术成功率 +50%，由云间子主刀时不会发生手术失败。" },
+            { "YJZ_Talisman_Xinjian", "贸易价格改善 +20%，社交影响 +10%。" },
+            { "YJZ_Talisman_Beidou", "远近攻击与瞄准冷却缩短25%，御剑特效冷却同步缩短。" },
+            { "YJZ_Talisman_Guihai", "灵力自然恢复速度提高至三倍。" },
+            { "YJZ_Talisman_Shenlian", "全局工作速度 +75%。" },
+            { "YJZ_Talisman_Huijian", "心灵敏感度降至零，精神崩溃阈值 -25%。" },
+            { "YJZ_Talisman_Bumei", "学习速度 +100%，免疫由心情引发的精神崩溃。" },
+            { "YJZ_Talisman_Jiexin", "移动、工作、命中、医疗与承伤能力全面强化。" },
+            { "YJZ_Talisman_Liuyang", "射击与格斗固定20级、艺术固定0级；精神崩溃阈值 +25%。" },
+            { "YJZ_Talisman_Tiandao", "所有未被背景禁用的技能固定为20级。" },
+            { "YJZ_Talisman_Huanri", "生理年龄停止增长。" }
+        };
+
         private ThingOwner<Thing> equippedTalismans;
         private List<string> activeTalismanDefs = new List<string>();
         private List<string> tiandaoOriginalSkillDefs = new List<string>();
@@ -185,7 +220,29 @@ namespace Yunjianzi
             if (Pawn == null || Pawn.skills == null) return;
             EnsureTalismanState();
             EnsureTiandaoLists();
-            bool active = activeTalismanDefs.Take(TalismanSlotCount).Contains("YJZ_Talisman_Tiandao");
+            HashSet<string> activeDefs = new HashSet<string>(activeTalismanDefs.Take(TalismanSlotCount)
+                .Where(defName => !defName.NullOrEmpty()));
+
+            foreach (KeyValuePair<string, string> pair in TalismanEffectHediffs)
+            {
+                HediffDef effectDef = DefDatabase<HediffDef>.GetNamedSilentFail(pair.Value);
+                if (effectDef == null || Pawn.health == null) continue;
+                Hediff existing = Pawn.health.hediffSet.GetFirstHediffOfDef(effectDef);
+                if (activeDefs.Contains(pair.Key))
+                {
+                    if (existing == null) Pawn.health.AddHediff(effectDef);
+                }
+                else if (existing != null)
+                {
+                    Pawn.health.RemoveHediff(existing);
+                }
+            }
+
+            MaintainJiqingMood(activeDefs.Contains("YJZ_Talisman_Jiqing"));
+
+            bool tiandaoActive = activeDefs.Contains("YJZ_Talisman_Tiandao");
+            bool liuyangActive = activeDefs.Contains("YJZ_Talisman_Liuyang");
+            bool active = tiandaoActive || liuyangActive;
 
             if (active)
             {
@@ -206,8 +263,24 @@ namespace Yunjianzi
                     tiandaoApplied = true;
                 }
 
-                foreach (SkillRecord record in Pawn.skills.skills)
-                    if (record != null && !record.TotallyDisabled) record.levelInt = 20;
+                // Rebuild from the saved baseline before composing simultaneous
+                // skill talismans, so slot ordering cannot change the result.
+                for (int i = 0; i < tiandaoOriginalSkillDefs.Count && i < tiandaoOriginalSkillLevels.Count; i++)
+                {
+                    SkillDef originalDef = DefDatabase<SkillDef>.GetNamedSilentFail(tiandaoOriginalSkillDefs[i]);
+                    if (originalDef == null) continue;
+                    SkillRecord originalRecord = Pawn.skills.GetSkill(originalDef);
+                    if (originalRecord != null) originalRecord.levelInt = tiandaoOriginalSkillLevels[i];
+                }
+                if (tiandaoActive)
+                    foreach (SkillRecord record in Pawn.skills.skills)
+                        if (record != null && !record.TotallyDisabled) record.levelInt = 20;
+                if (liuyangActive)
+                {
+                    Pawn.skills.GetSkill(SkillDefOf.Shooting).levelInt = 20;
+                    Pawn.skills.GetSkill(SkillDefOf.Melee).levelInt = 20;
+                    Pawn.skills.GetSkill(SkillDefOf.Artistic).levelInt = 0;
+                }
                 return;
             }
 
@@ -236,10 +309,40 @@ namespace Yunjianzi
             tiandaoOriginalSkillXpToday.Clear();
         }
 
+        private void MaintainJiqingMood(bool active)
+        {
+            if (Pawn.needs?.mood?.thoughts?.memories == null || !Pawn.IsHashIntervalTick(250)) return;
+            ThoughtDef thoughtDef = DefDatabase<ThoughtDef>.GetNamedSilentFail("YJZ_Thought_JiqingScenery");
+            if (thoughtDef == null) return;
+
+            Pawn.needs.mood.thoughts.memories.RemoveMemoriesOfDef(thoughtDef);
+            if (!active || !Pawn.Spawned) return;
+
+            Room room = Pawn.GetRoom();
+            float impressiveness = room?.GetStat(RoomStatDefOf.Impressiveness) ?? 0f;
+            int stage = impressiveness >= 120f ? 2 : impressiveness >= 60f ? 1 : 0;
+            Pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtMaker.MakeThought(thoughtDef, stage));
+        }
+
         public bool HasActiveTalisman(string defName)
         {
             EnsureTalismanState();
             return !defName.NullOrEmpty() && activeTalismanDefs.Take(TalismanSlotCount).Contains(defName);
+        }
+
+        internal float TalismanEnergyRecoveryFactor { get { return HasActiveTalisman("YJZ_Talisman_Guihai") ? 3f : 1f; } }
+        internal float TalismanCooldownFactor { get { return HasActiveTalisman("YJZ_Talisman_Beidou") ? .75f : 1f; } }
+
+        internal static bool PawnHasActiveTalisman(Pawn pawn, string defName)
+        {
+            CompYunjianziCultivation comp = pawn == null ? null : pawn.TryGetComp<CompYunjianziCultivation>();
+            return comp != null && comp.HasActiveTalisman(defName);
+        }
+
+        private static string EffectDescription(string defName)
+        {
+            string description;
+            return defName != null && TalismanEffectDescriptions.TryGetValue(defName, out description) ? description : string.Empty;
         }
 
         internal IEnumerable<Gizmo> GetTalismanGizmos()
@@ -258,7 +361,8 @@ namespace Yunjianzi
                     defaultLabel = active == null ? "阳符位·" + (slot + 1) : "阳符位·" + (slot + 1) + "「" + active.LabelCap + "」",
                     defaultDesc = active == null
                         ? "空置阳符位。右键选择已经参悟并持有的符咒。"
-                        : "当前生效：" + active.LabelCap + "。\n\n右键替换或卸下；被替换的实体符咒会返回云间子的物品栏。",
+                        : "当前生效：" + active.LabelCap + "。\n\n" + EffectDescription(active.def.defName) +
+                          "\n\n右键替换或卸下；被替换的实体符咒会返回云间子的物品栏。",
                     icon = slotIcon,
                     action = delegate { OpenTalismanMenu(capturedSlot); }
                 };
@@ -416,6 +520,49 @@ namespace Yunjianzi
                     pawn.jobs.EndCurrentJob(JobCondition.Incompletable);
             };
             yield return equip;
+        }
+    }
+
+    [HarmonyPatch(typeof(QualityUtility), nameof(QualityUtility.GenerateQualityCreatedByPawn),
+        new Type[] { typeof(Pawn), typeof(SkillDef), typeof(bool) })]
+    internal static class Patch_QualityUtility_YunjianziZhuoyu
+    {
+        private static void Postfix(Pawn pawn, ref QualityCategory __result)
+        {
+            if (CompYunjianziCultivation.PawnHasActiveTalisman(pawn, "YJZ_Talisman_Zhuoyu"))
+                __result = (QualityCategory)Mathf.Clamp((int)__result + 2,
+                    (int)QualityCategory.Awful, (int)QualityCategory.Legendary);
+        }
+    }
+
+    [HarmonyPatch(typeof(Recipe_Surgery), "CheckSurgeryFail")]
+    internal static class Patch_RecipeSurgery_YunjianziBaicao
+    {
+        private static bool Prefix(Pawn surgeon, ref bool __result)
+        {
+            if (!CompYunjianziCultivation.PawnHasActiveTalisman(surgeon, "YJZ_Talisman_Baicao")) return true;
+            __result = false;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(MentalStateHandler), nameof(MentalStateHandler.TryStartMentalState))]
+    internal static class Patch_MentalState_YunjianziBumei
+    {
+        private static bool Prefix(Pawn ___pawn, bool causedByMood, ref bool __result)
+        {
+            if (!causedByMood || !CompYunjianziCultivation.PawnHasActiveTalisman(___pawn, "YJZ_Talisman_Bumei")) return true;
+            __result = false;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(Pawn_AgeTracker), "TickBiologicalAge")]
+    internal static class Patch_PawnAge_YunjianziHuanri
+    {
+        private static bool Prefix(Pawn ___pawn)
+        {
+            return !CompYunjianziCultivation.PawnHasActiveTalisman(___pawn, "YJZ_Talisman_Huanri");
         }
     }
 }

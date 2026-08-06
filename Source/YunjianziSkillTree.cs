@@ -351,10 +351,13 @@ namespace Yunjianzi
 
     public sealed class Window_YunjianziCultivationTree : Window
     {
-        private static readonly Color Panel = new Color(.035f, .10f, .13f, .98f);
-        private static readonly Color Learned = new Color(.20f, .72f, .76f, .96f);
-        private static readonly Color Available = new Color(.76f, .65f, .32f, .98f);
-        private static readonly Color Locked = new Color(.19f, .24f, .26f, .98f);
+        private static readonly Color Panel = new Color(.025f, .075f, .09f, .99f);
+        private static readonly Color JadeDark = new Color(.055f, .16f, .17f, .98f);
+        private static readonly Color JadeLine = new Color(.50f, .78f, .76f, .82f);
+        private static readonly Color Ivory = new Color(.88f, .91f, .82f, 1f);
+        private static readonly Color Learned = new Color(.12f, .49f, .50f, .98f);
+        private static readonly Color Available = new Color(.57f, .45f, .20f, .98f);
+        private static readonly Color Locked = new Color(.12f, .18f, .19f, .98f);
         private static readonly Color LineLearned = new Color(.30f, .90f, .94f, .92f);
         private static readonly Color LineLocked = new Color(.34f, .39f, .40f, .70f);
         private readonly CompYunjianziCultivation comp;
@@ -398,18 +401,44 @@ namespace Yunjianzi
         public override void DoWindowContents(Rect inRect)
         {
             Widgets.DrawBoxSolid(inRect, Panel);
+            GUI.color = JadeLine;
+            Widgets.DrawBox(inRect.ContractedBy(2f), 2);
+            GUI.color = Color.white;
+
+            Rect header = new Rect(10f, 9f, inRect.width - 20f, 50f);
+            Widgets.DrawBoxSolid(header, JadeDark);
+            GUI.color = new Color(.63f, .86f, .82f, .42f);
+            Widgets.DrawLineHorizontal(header.x + 4f, header.yMax - 1f, header.width - 8f);
+            GUI.color = Color.white;
+            Widgets.DrawTextureFitted(new Rect(20f, 16f, 34f, 34f), YunjianziAbilityTextures.CultivationTree, 1f);
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(20f, 14f, 500f, 36f), "云间宝卷 · 修为参悟");
+            GUI.color = Ivory;
+            Widgets.Label(new Rect(66f, 15f, 430f, 34f), "云间宝卷 · 修为参悟");
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(520f, 19f, 520f, 26f), string.Format("境界：{0}    当前灵力：{1:0}/{2:0}", comp.RealmLabel, comp.Energy, comp.EnergyMax));
+            GUI.color = Color.white;
+            Rect realmBadge = new Rect(506f, 17f, 116f, 30f);
+            Widgets.DrawBoxSolid(realmBadge, new Color(.12f, .30f, .30f, .95f));
+            GUI.color = Ivory;
+            Text.Anchor = TextAnchor.MiddleCenter;
+            Widgets.Label(realmBadge, comp.RealmLabel);
+            Text.Anchor = TextAnchor.UpperLeft;
+            GUI.color = Color.white;
+            Rect energyBack = new Rect(642f, 23f, 330f, 18f);
+            Widgets.DrawBoxSolid(energyBack, new Color(.015f, .035f, .045f, 1f));
+            float energyPct = comp.Energy / Mathf.Max(1f, comp.EnergyMax);
+            Widgets.DrawBoxSolid(new Rect(energyBack.x + 2f, energyBack.y + 2f, (energyBack.width - 4f) * energyPct, energyBack.height - 4f),
+                new Color(.24f, .72f, .72f, 1f));
+            Text.Font = GameFont.Tiny;
+            Text.Anchor = TextAnchor.MiddleCenter;
+            Widgets.Label(energyBack, string.Format("灵力 {0:0}/{1:0}", comp.Energy, comp.EnergyMax));
+            Text.Anchor = TextAnchor.UpperLeft;
             if (Prefs.DevMode && DebugSettings.godMode)
             {
                 GUI.color = new Color(1f, .72f, .30f);
                 Text.Font = GameFont.Tiny;
-                Widgets.Label(new Rect(790f, 43f, 330f, 20f), "GOD MODE：左键免费解锁；右键移除节点");
+                Widgets.Label(new Rect(990f, 22f, 390f, 20f), "GOD MODE：左键免费解锁；右键移除节点");
                 GUI.color = Color.white;
             }
-            Widgets.DrawLineHorizontal(18f, 55f, inRect.width - 36f);
 
             DrawTechniqueTabs(new Rect(18f, 66f, inRect.width - 36f, 38f));
             DrawTechniquePanel(new Rect(18f, 112f, inRect.width - 36f, 620f), selectedBranch);
@@ -432,9 +461,10 @@ namespace Yunjianzi
             {
                 Rect tab = new Rect(tabsRect.x + branch * (width + gap), tabsRect.y, width, tabsRect.height);
                 bool selected = branch == selectedBranch;
-                Widgets.DrawBoxSolid(tab, selected ? new Color(.12f, .48f, .52f, .98f) : new Color(.08f, .18f, .21f, .98f));
+                Widgets.DrawBoxSolid(tab, selected ? new Color(.10f, .36f, .37f, .98f) : new Color(.055f, .135f, .15f, .98f));
+                GUI.color = selected ? JadeLine : new Color(.28f, .43f, .44f, .8f);
                 Widgets.DrawBox(tab, selected ? 2 : 1);
-                GUI.color = selected ? Color.white : new Color(.70f, .78f, .79f);
+                GUI.color = selected ? Ivory : new Color(.65f, .73f, .73f);
                 Widgets.Label(tab, BranchTitles[branch]);
                 GUI.color = Color.white;
                 if (Widgets.ButtonInvisible(tab)) selectedBranch = branch;
@@ -444,7 +474,10 @@ namespace Yunjianzi
 
         private void DrawTechniquePanel(Rect panel, int branch)
         {
-            Widgets.DrawMenuSection(panel);
+            Widgets.DrawBoxSolid(panel, new Color(.025f, .085f, .10f, .98f));
+            GUI.color = new Color(.36f, .62f, .62f, .72f);
+            Widgets.DrawBox(panel, 1);
+            GUI.color = Color.white;
             Text.Font = GameFont.Tiny;
             Text.Anchor = TextAnchor.MiddleCenter;
             GUI.color = new Color(.66f, .83f, .84f);
@@ -517,10 +550,10 @@ namespace Yunjianzi
             {
                 float y = rowStart + (realm - 1) * 88f;
                 Color band = realm % 2 == 0
-                    ? new Color(.055f, .13f, .15f, .72f)
-                    : new Color(.045f, .105f, .125f, .72f);
+                    ? new Color(.045f, .125f, .135f, .72f)
+                    : new Color(.035f, .095f, .108f, .72f);
                 Widgets.DrawBoxSolid(new Rect(panel.x + 8f, y - 8f, panel.width - 16f, 68f), band);
-                GUI.color = realm <= comp.Realm ? new Color(.48f, .86f, .86f) : new Color(.42f, .46f, .47f);
+                GUI.color = realm <= comp.Realm ? Ivory : new Color(.42f, .46f, .47f);
                 Widgets.Label(new Rect(panel.x + 14f, y + 10f, 62f, 32f), CompYunjianziCultivation.RealmName(realm));
                 GUI.color = Color.white;
                 Widgets.DrawLineHorizontal(contentX, y + 59f, contentWidth);
@@ -613,7 +646,9 @@ namespace Yunjianzi
                 bool debug = Prefs.DevMode && DebugSettings.godMode;
                 bool available = reason == null || (debug && node.Id != YunjianziSkills.SummonZhuxie);
                 Widgets.DrawBoxSolid(rect, learned ? Learned : available ? Available : Locked);
+                GUI.color = learned ? new Color(.64f, .92f, .88f) : available ? new Color(.89f, .78f, .46f) : new Color(.28f, .35f, .35f);
                 Widgets.DrawBox(rect, learned || available ? 2 : 1);
+                GUI.color = Color.white;
                 Text.Font = GameFont.Tiny;
                 Text.Anchor = TextAnchor.MiddleCenter;
                 GUI.color = learned || available ? Color.white : new Color(.62f, .65f, .66f);
