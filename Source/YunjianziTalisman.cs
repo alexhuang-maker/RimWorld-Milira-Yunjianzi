@@ -119,6 +119,11 @@ namespace Yunjianzi
 
         private ThingOwner<Thing> equippedTalismans;
         private List<string> activeTalismanDefs = new List<string>();
+        private List<string> tiandaoOriginalSkillDefs = new List<string>();
+        private List<int> tiandaoOriginalSkillLevels = new List<int>();
+        private List<float> tiandaoOriginalSkillXp = new List<float>();
+        private List<float> tiandaoOriginalSkillXpToday = new List<float>();
+        private bool tiandaoApplied;
 
         public int TalismanSlotCount { get { return Mathf.Clamp(Realm - 1, 0, 4); } }
 
@@ -148,7 +153,87 @@ namespace Yunjianzi
         {
             Scribe_Deep.Look(ref equippedTalismans, "yjz_equippedTalismans", this);
             Scribe_Collections.Look(ref activeTalismanDefs, "yjz_activeTalismanDefs", LookMode.Value);
-            if (Scribe.mode == LoadSaveMode.PostLoadInit) EnsureTalismanState();
+            Scribe_Collections.Look(ref tiandaoOriginalSkillDefs, "yjz_tiandaoSkillDefs", LookMode.Value);
+            Scribe_Collections.Look(ref tiandaoOriginalSkillLevels, "yjz_tiandaoSkillLevels", LookMode.Value);
+            Scribe_Collections.Look(ref tiandaoOriginalSkillXp, "yjz_tiandaoSkillXp", LookMode.Value);
+            Scribe_Collections.Look(ref tiandaoOriginalSkillXpToday, "yjz_tiandaoSkillXpToday", LookMode.Value);
+            Scribe_Values.Look(ref tiandaoApplied, "yjz_tiandaoApplied", false);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+            {
+                EnsureTalismanState();
+                EnsureTiandaoLists();
+                MaintainTalismanEffects();
+            }
+        }
+
+        private void EnsureTiandaoLists()
+        {
+            if (tiandaoOriginalSkillDefs == null) tiandaoOriginalSkillDefs = new List<string>();
+            if (tiandaoOriginalSkillLevels == null) tiandaoOriginalSkillLevels = new List<int>();
+            if (tiandaoOriginalSkillXp == null) tiandaoOriginalSkillXp = new List<float>();
+            if (tiandaoOriginalSkillXpToday == null) tiandaoOriginalSkillXpToday = new List<float>();
+        }
+
+        /// <summary>
+        /// Applies physical talisman effects without permanently rewriting the
+        /// pawn template.  Tiandao snapshots every usable skill before raising
+        /// it to 20 and restores both level and XP when the talisman leaves its
+        /// slot.  This also makes existing saves safe when the effect is added.
+        /// </summary>
+        internal void MaintainTalismanEffects()
+        {
+            if (Pawn == null || Pawn.skills == null) return;
+            EnsureTalismanState();
+            EnsureTiandaoLists();
+            bool active = activeTalismanDefs.Take(TalismanSlotCount).Contains("YJZ_Talisman_Tiandao");
+
+            if (active)
+            {
+                if (!tiandaoApplied)
+                {
+                    tiandaoOriginalSkillDefs.Clear();
+                    tiandaoOriginalSkillLevels.Clear();
+                    tiandaoOriginalSkillXp.Clear();
+                    tiandaoOriginalSkillXpToday.Clear();
+                    foreach (SkillRecord record in Pawn.skills.skills)
+                    {
+                        if (record == null || record.def == null || record.TotallyDisabled) continue;
+                        tiandaoOriginalSkillDefs.Add(record.def.defName);
+                        tiandaoOriginalSkillLevels.Add(record.levelInt);
+                        tiandaoOriginalSkillXp.Add(record.xpSinceLastLevel);
+                        tiandaoOriginalSkillXpToday.Add(record.xpSinceMidnight);
+                    }
+                    tiandaoApplied = true;
+                }
+
+                foreach (SkillRecord record in Pawn.skills.skills)
+                    if (record != null && !record.TotallyDisabled) record.levelInt = 20;
+                return;
+            }
+
+            if (!tiandaoApplied) return;
+            int count = new[]
+            {
+                tiandaoOriginalSkillDefs.Count,
+                tiandaoOriginalSkillLevels.Count,
+                tiandaoOriginalSkillXp.Count,
+                tiandaoOriginalSkillXpToday.Count
+            }.Min();
+            for (int i = 0; i < count; i++)
+            {
+                SkillDef def = DefDatabase<SkillDef>.GetNamedSilentFail(tiandaoOriginalSkillDefs[i]);
+                if (def == null) continue;
+                SkillRecord record = Pawn.skills.GetSkill(def);
+                if (record == null) continue;
+                record.levelInt = Mathf.Clamp(tiandaoOriginalSkillLevels[i], 0, 20);
+                record.xpSinceLastLevel = Mathf.Max(0f, tiandaoOriginalSkillXp[i]);
+                record.xpSinceMidnight = Mathf.Max(0f, tiandaoOriginalSkillXpToday[i]);
+            }
+            tiandaoApplied = false;
+            tiandaoOriginalSkillDefs.Clear();
+            tiandaoOriginalSkillLevels.Clear();
+            tiandaoOriginalSkillXp.Clear();
+            tiandaoOriginalSkillXpToday.Clear();
         }
 
         public bool HasActiveTalisman(string defName)
@@ -267,6 +352,7 @@ namespace Yunjianzi
                 return false;
             }
             activeTalismanDefs[slot] = one.def.defName;
+            MaintainTalismanEffects();
             Messages.Message("阳符位·" + (slot + 1) + "已装备「" + one.LabelCap + "」。", Pawn, MessageTypeDefOf.PositiveEvent, false);
             return true;
         }
@@ -285,6 +371,7 @@ namespace Yunjianzi
                     GenPlace.TryPlaceThing(active, Pawn.Position, Pawn.Map, ThingPlaceMode.Near);
                 }
             }
+            MaintainTalismanEffects();
             if (message) Messages.Message("阳符位·" + (slot + 1) + "已空置。", Pawn, MessageTypeDefOf.NeutralEvent, false);
         }
     }

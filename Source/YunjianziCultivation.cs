@@ -190,6 +190,7 @@ namespace Yunjianzi
             TickArraySystem();
             if (Pawn.IsHashIntervalTick(60))
             {
+                MaintainTalismanEffects();
                 EnsureRealmAndAbilities();
                 UpdateSwordRainCharges();
                 UpdateSwordHeartClarity();
