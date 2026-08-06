@@ -44,6 +44,7 @@ namespace Yunjianzi
         private Graphic[] groundAltGraphics;
         private Graphic[] flyingGraphics;
         private Graphic[] flyingAltGraphics;
+        private Graphic[][] flyingFrameGraphics;
 
         private CompProperties_YunjianziSkyWyvern Props => (CompProperties_YunjianziSkyWyvern)props;
         public Pawn Pawn => parent as Pawn;
@@ -100,8 +101,8 @@ namespace Yunjianzi
             if (pawn.IsHashIntervalTick(15))
             {
                 UpdateFlightState();
-                DrawMovementEffects();
             }
+            if (pawn.IsHashIntervalTick(60)) DrawMovementEffects();
             if (!pawn.IsHashIntervalTick(30)) return;
 
             if (Find.TickManager.TicksGame >= shieldBrokenUntil)
@@ -148,14 +149,14 @@ namespace Yunjianzi
             if (pawn == null || !pawn.pather.Moving) return;
             if (flying)
             {
-                Vector3 wake = pawn.DrawPos - pawn.Rotation.FacingCell.ToVector3() * (.35f + Props.drawSize * .08f);
-                FleckMaker.Static(wake, pawn.Map, FleckDefOf.PsycastAreaEffect, .22f + Props.drawSize * .035f);
-                if (Rand.Chance(.45f)) FleckMaker.ThrowLightningGlow(wake, pawn.Map, .35f + Stage * .06f);
+                Vector3 wake = pawn.DrawPos - pawn.Rotation.FacingCell.ToVector3() * (.3f + Props.drawSize * .05f);
+                if (Rand.Chance(.28f))
+                    FleckMaker.Static(wake, pawn.Map, FleckDefOf.PsycastAreaEffect, .12f + Props.drawSize * .018f);
             }
             else
             {
-                FleckMaker.ThrowDustPuff(pawn.Position, pawn.Map, .55f + Props.drawSize * .06f);
-                if (Rand.Chance(.35f)) FleckMaker.Static(pawn.Position, pawn.Map, FleckDefOf.PsycastAreaEffect, .16f);
+                if (Rand.Chance(.4f))
+                    FleckMaker.ThrowDustPuff(pawn.Position, pawn.Map, .35f + Props.drawSize * .035f);
             }
         }
 
@@ -332,9 +333,16 @@ namespace Yunjianzi
             if (groundAltGraphics == null) groundAltGraphics = LoadDirectional(string.IsNullOrEmpty(Props.groundAltTexPath) ? Props.groundTexPath : Props.groundAltTexPath);
             if (flyingGraphics == null) flyingGraphics = LoadDirectional(Props.flyingTexPath);
             if (flyingAltGraphics == null) flyingAltGraphics = LoadDirectional(string.IsNullOrEmpty(Props.flyingAltTexPath) ? Props.flyingTexPath : Props.flyingAltTexPath);
+            if (flyingFrameGraphics == null)
+            {
+                flyingFrameGraphics = new Graphic[8][];
+                for (int i = 0; i < flyingFrameGraphics.Length; i++)
+                    flyingFrameGraphics[i] = LoadDirectional(Props.flyingTexPath + "Frame" + i);
+            }
             if (flying) drawLoc.z += .24f + Mathf.Sin(Find.TickManager.TicksGame * .08f) * .055f;
-            bool alternate = ((Find.TickManager.TicksGame / (flying ? 8 : 12)) & 1) != 0;
-            Graphic[] set = flying ? (alternate ? flyingAltGraphics : flyingGraphics) :
+            bool alternate = ((Find.TickManager.TicksGame / 12) & 1) != 0;
+            int flightFrame = (Find.TickManager.TicksGame % 48) / 6;
+            Graphic[] set = flying ? flyingFrameGraphics[flightFrame] :
                 (Pawn.pather.Moving && alternate ? groundAltGraphics : groundGraphics);
             set[Pawn.Rotation.AsInt].Draw(drawLoc, Rot4.North, Pawn);
             if (flying && shield > 0f)

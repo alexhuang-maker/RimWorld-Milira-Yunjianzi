@@ -57,7 +57,17 @@ def main() -> None:
             source_path = SOURCE_ROOT / source_name / f"{source_name}_Female_{direction}.png"
             source = Image.open(source_path).convert("RGBA")
             armour = recolor(source, tier)
-            if armour.getchannel("A").getbbox() != source.getchannel("A").getbbox():
+            if tier == "Final":
+                # The final stage needs a readable back silhouette.  Milira's
+                # Bishop cloak already follows the exact Milian apparel anchor;
+                # flatten it behind Paladin armour so it cannot conflict as a
+                # second worn item or disappear under the hair renderer.
+                cloak_source = Image.open(
+                    SOURCE_ROOT / "BishopCloak" / f"BishopCloak_Female_{direction}.png"
+                ).convert("RGBA")
+                cloak = recolor(cloak_source, tier)
+                armour = Image.alpha_composite(cloak, armour)
+            elif armour.getchannel("A").getbbox() != source.getchannel("A").getbbox():
                 raise RuntimeError(f"{tier}/{direction}: native apparel anchor changed")
             destination = OUTPUT / f"ShenjiArmor_{tier}_Female_{direction}.png"
             armour.save(destination)

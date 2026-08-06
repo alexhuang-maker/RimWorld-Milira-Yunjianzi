@@ -64,19 +64,8 @@
     <weaponMoney>0</weaponMoney>
     <apparelMoney>0</apparelMoney>
     <techHediffsMoney>0</techHediffsMoney>
-    <!-- The armor art is a complete body shell.  A dedicated transparent base
-         prevents Milian's nude body graphic from protruding around its hips,
-         chest and legs while preserving the native Milian render tree. -->
-    <lifeStages Inherit="False">
-      <li>
-        <bodyGraphicData>
-          <texPath>Yunjianzi/Pawn/Shenji/ShenjiTransparentBody</texPath>
-          <shaderType>Cutout</shaderType>
-          <graphicClass>Graphic_Multi</graphicClass>
-          <drawSize>1.5</drawSize>
-        </bodyGraphicData>
-      </li>
-    </lifeStages>
+    <!-- Intrinsic armor is a true Milian apparel overlay. Keep the native
+         Milian body underneath so legs and joints remain visible. -->
   </PawnKindDef>
 
   <ThingDef ParentName="Gun_AssaultRifle">

@@ -65,6 +65,9 @@ def main() -> None:
             raise RuntimeError(f"{direction} anchor changed: source={source_bbox}, visor={visor_bbox}")
         destination = OUTPUT / f"ShenjiVisor_Female_{direction}.png"
         visor.save(destination)
+        # Milira's overhead renderer requests non-body-type directional names.
+        # Without these aliases north falls back to the generic south sprite.
+        visor.save(OUTPUT / f"ShenjiVisor_{direction}.png")
         built[direction] = visor
         print(destination)
     built["south"].save(OUTPUT / "ShenjiVisor.png")
