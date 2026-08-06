@@ -199,10 +199,17 @@ namespace Yunjianzi
                         pawn.apparel.Wear(armor, false);
                     }
                 }
-                if (!pawn.apparel.WornApparel.Any(a => a.def == YJZDefOf.YJZ_Apparel_ShenjiVisor))
+                // The tactical visor now lives in the dedicated front-hair texture,
+                // so it shares the Milira head transform and follows all head motion.
+                // Remove the old Overhead apparel from existing saves to avoid a
+                // duplicated, stationary visor.
+                List<Apparel> obsoleteVisors = pawn.apparel.WornApparel
+                    .Where(a => a.def == YJZDefOf.YJZ_Apparel_ShenjiVisor).ToList();
+                for (int i = 0; i < obsoleteVisors.Count; i++)
                 {
-                    Apparel visor = ThingMaker.MakeThing(YJZDefOf.YJZ_Apparel_ShenjiVisor) as Apparel;
-                    if (visor != null) pawn.apparel.Wear(visor, false);
+                    Apparel visor = obsoleteVisors[i];
+                    pawn.apparel.Remove(visor);
+                    visor.Destroy(DestroyMode.Vanish);
                 }
                 if (force || lastArmorTier <= 0) lastArmorTier = tier;
             }

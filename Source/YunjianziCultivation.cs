@@ -814,7 +814,10 @@ namespace Yunjianzi
 
             float energyFill = comp.Energy / Mathf.Max(1f, comp.EnergyMax);
             Texture2D energyTexture = energyFill <= .2f ? EnergyLowFill : EnergyFill;
-            Rect energyRect = new Rect(outer.x + 68f, outer.y + 26f, 168f, 17f);
+            // Keep the three information bands disjoint.  The old shield bar ended at
+            // y=60 while the larger realm emblems started around y=55, so the bar
+            // physically painted over the Zifu/Jindan/Huashen emblems.
+            Rect energyRect = new Rect(outer.x + 68f, outer.y + 24f, 168f, 16f);
             DrawBar(energyRect, energyFill, energyTexture,
                 string.Format("灵力 {0:0.#}/{1:0.#}  修为 {1:0.#}/{2:0}",
                     comp.Energy, comp.EnergyMax, comp.RealmEnergyCap));
@@ -824,14 +827,14 @@ namespace Yunjianzi
 
             if (comp.HasSkill(YunjianziSkills.SwordWard))
             {
-                Rect shieldRect = new Rect(outer.x + 68f, outer.y + 48f, 168f, 12f);
+                Rect shieldRect = new Rect(outer.x + 68f, outer.y + 43f, 168f, 9f);
                 DrawBar(shieldRect, comp.Shield / Mathf.Max(1f, comp.ShieldMax), ShieldFill,
                     string.Format("剑罡  {0:0.0} / {1:0}", comp.Shield, comp.ShieldMax));
                 TooltipHandler.TipRegion(shieldRect, "剑罡可抵挡伤害；20秒未受击后开始恢复。筑基境的剑罡约等于普通护盾腰带。");
             }
 
             DrawRealmEmblems(outer);
-            TooltipHandler.TipRegion(new Rect(outer.x + 126f, outer.y + 60f, 98f, 20f),
+            TooltipHandler.TipRegion(new Rect(outer.x + 126f, outer.y + 57f, 98f, 22f),
                 "修行境界：练气、筑基、紫府、金丹、化神。亮起的玉印表示当前境界。\n当前：" + comp.RealmLabel);
             Rect orbRect = new Rect(outer.x + 7f, outer.y + 8f, 56f, 57f);
             if (comp.HasOpenedBoundScroll)
@@ -868,7 +871,7 @@ namespace Yunjianzi
                 float size = sizes[i - 1];
                 if (i == comp.Realm)
                     size *= 1f + .035f * Mathf.Sin(Time.realtimeSinceStartup * 4f);
-                Rect marker = new Rect(centerX - size * .5f, outer.y + 63.5f - size * .5f, size, size);
+                Rect marker = new Rect(centerX - size * .5f, outer.y + 68f - size * .5f, size, size);
                 GUI.color = i == comp.Realm ? Color.white : (i < comp.Realm ? RealmPassed : RealmLocked);
                 GUI.DrawTexture(marker, RealmEmblems[i - 1], ScaleMode.ScaleToFit, true);
             }

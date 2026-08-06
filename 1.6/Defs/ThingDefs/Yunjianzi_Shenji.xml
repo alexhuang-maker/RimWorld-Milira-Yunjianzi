@@ -19,10 +19,12 @@
       <li Class="Milira.CompProperties_MilianHairSwitch">
         <gizmoIconPath>Milira/UI/HairChange</gizmoIconPath>
         <frontHairPaths>
-          <li>Milian/Pawn/Hair/Milian_HairN1/MiliraHair4</li>
+          <!-- The visor is baked into this dedicated front-hair layer.  Milira's
+               hair renderer follows head animation; Overhead apparel does not. -->
+          <li>Yunjianzi/Pawn/Shenji/ShenjiHairFront</li>
         </frontHairPaths>
         <behindHairPaths>
-          <li>Milira/Pawn/Hair/HairBackGround/MiliraHairBG4</li>
+          <li>Yunjianzi/Pawn/Shenji/ShenjiHairBack</li>
         </behindHairPaths>
       </li>
       <li Class="CompProperties_CanBeDormant" />

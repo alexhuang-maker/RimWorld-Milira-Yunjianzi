@@ -9,6 +9,7 @@ ART = MOD / "ArtSource" / "GeneratedAssets" / "Shenji"
 ARMOR_ATLAS = ART / "ShenjiArmor_Atlas_v3.png"
 VISOR_ATLAS = ART / "ShenjiVisor_Atlas_v2.png"
 OUT = MOD / "Content" / "Textures" / "Yunjianzi" / "Apparel" / "Shenji"
+HAIR_OUT = MOD / "Content" / "Textures" / "Yunjianzi" / "Pawn" / "Shenji"
 QA = MOD / "ArtSource" / "Shenji" / "ShenjiArmor_InGameLayers_QA_v2.png"
 REF = MOD.parent / "参考Mod" / "必需" / "Milira Race [3256974620]" / "Content" / "Textures"
 
@@ -64,8 +65,46 @@ def fit_armor(sprite: Image.Image, stage: int, direction: str) -> Image.Image:
     heights = {1: 270, 2: 295, 3: 315}
     widths = {1: 242, 2: 298, 3: 326}
     if direction == "east":
-        widths = {1: 178, 2: 210, 3: 232}
+        widths = {1: 198, 2: 222, 3: 242}
     return place_on_game_canvas(sprite, widths[stage], heights[stage], 474)
+
+
+def make_inner_suit(direction: str) -> Image.Image:
+    """Opaque fitted undersuit using the exact Milian body silhouette.
+
+    The plate art intentionally has open joints.  Without an undersuit those
+    openings reveal the nude race texture.  Deriving the mask from the actual
+    Milian body keeps full coverage in every direction without making the plate
+    silhouette artificially bulky.
+    """
+    body = load_layer(REF / "Milian" / "Pawn" / "Body" / f"Naked_Female_{direction}.png")
+    rgba = np.asarray(body, dtype=np.uint8)
+    alpha = rgba[..., 3]
+    luminance = (rgba[..., 0].astype(np.float32) * .25 +
+                 rgba[..., 1].astype(np.float32) * .60 +
+                 rgba[..., 2].astype(np.float32) * .15) / 255.0
+    # Preserve the body's line work, but map all exposed skin to a dark cyan
+    # flexible armor weave matching the generated white plates.
+    shade = np.clip(luminance, 0.0, 1.0)
+    out = np.zeros_like(rgba)
+    # Near-black source line art remains a dark seam; the original pale body
+    # becomes an ivory/cyan armored fabric.  This reads as clothing rather than
+    # reproducing the nude silhouette in a different dark colour.
+    out[..., 0] = (12 + shade * 218).astype(np.uint8)
+    out[..., 1] = (18 + shade * 224).astype(np.uint8)
+    out[..., 2] = (21 + shade * 228).astype(np.uint8)
+    out[..., 3] = alpha
+    return Image.fromarray(out, "RGBA")
+
+
+def build_integrated_hair(direction: str, visor: Image.Image):
+    """Bake the visor into Milira's animated front-hair layer."""
+    front = load_layer(REF / "Milian" / "Pawn" / "Hair" / "Milian_HairN1" / f"MiliraHair4_{direction}.png")
+    back = load_layer(REF / "Milira" / "Pawn" / "Hair" / "HairBackGround" / f"MiliraHairBG4_{direction}.png")
+    front = Image.alpha_composite(front, visor)
+    front.save(HAIR_OUT / f"ShenjiHairFront_{direction}.png")
+    back.save(HAIR_OUT / f"ShenjiHairBack_{direction}.png")
+    return front, back
 
 
 def fit_visor(sprite: Image.Image, direction: str) -> Image.Image:
@@ -83,14 +122,13 @@ def load_layer(path: Path) -> Image.Image:
     return image if image.size == (512, 512) else image.resize((512, 512), Image.Resampling.LANCZOS)
 
 
-def preview(armor: Image.Image, visor: Image.Image, direction: str) -> Image.Image:
+def preview(armor: Image.Image, front_hair: Image.Image, back_hair: Image.Image, direction: str) -> Image.Image:
     layers = (
         load_layer(REF / "Milian" / "Pawn" / "Body" / f"Naked_Female_{direction}.png"),
         armor,
         load_layer(REF / "Milian" / "Pawn" / "Head" / f"MilianHeadN1_{direction}.png"),
-        load_layer(REF / "Milira" / "Pawn" / "Hair" / "HairBackGround" / f"MiliraHairBG4_{direction}.png"),
-        load_layer(REF / "Milian" / "Pawn" / "Hair" / "Milian_HairN1" / f"MiliraHair4_{direction}.png"),
-        visor,
+        back_hair,
+        front_hair,
     )
     result = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
     for layer in layers:
@@ -111,23 +149,29 @@ def checker(size):
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
+    HAIR_OUT.mkdir(parents=True, exist_ok=True)
     QA.parent.mkdir(parents=True, exist_ok=True)
     armor_atlas = Image.open(ARMOR_ATLAS).convert("RGBA")
     visor_atlas = Image.open(VISOR_ATLAS).convert("RGBA")
 
     visors = {}
+    hair = {}
     for col, direction in enumerate(DIRECTIONS):
         visor = fit_visor(extract_cell(visor_atlas, 0, col, 1, 3), direction)
         visor.save(OUT / f"ShenjiVisor_Female_{direction}.png")
         visors[direction] = visor
+        hair[direction] = build_integrated_hair(direction, visor)
     visors["south"].save(OUT / "ShenjiVisor.png")
+    hair["south"][0].save(HAIR_OUT / "ShenjiHairFront.png")
+    hair["south"][1].save(HAIR_OUT / "ShenjiHairBack.png")
 
     previews = {}
     for row, (stage, name) in enumerate(TIERS):
         for col, direction in enumerate(DIRECTIONS):
-            armor = fit_armor(extract_cell(armor_atlas, row, col, 3, 3), stage, direction)
+            plates = fit_armor(extract_cell(armor_atlas, row, col, 3, 3), stage, direction)
+            armor = Image.alpha_composite(make_inner_suit(direction), plates)
             armor.save(OUT / f"ShenjiArmor_{name}_Female_{direction}.png")
-            previews[(stage, direction)] = preview(armor, visors[direction], direction)
+            previews[(stage, direction)] = preview(armor, hair[direction][0], hair[direction][1], direction)
         Image.open(OUT / f"ShenjiArmor_{name}_Female_south.png").save(OUT / f"ShenjiArmor_{name}.png")
 
     tile = 310
