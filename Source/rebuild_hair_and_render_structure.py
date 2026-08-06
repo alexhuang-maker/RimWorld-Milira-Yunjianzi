@@ -7,7 +7,7 @@ into a four-direction QA sheet.  It never edits the source layer sheet.
 
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 
 MOD_ROOT = Path(__file__).resolve().parents[1]
@@ -65,13 +65,68 @@ def side_redraw_canvas() -> Image.Image:
     return canvas
 
 
+def tint_south_hair_tips(image: Image.Image) -> Image.Image:
+    """Strengthen the white-to-cyan fade on the two long frontal locks.
+
+    The central fringe ends above this range and therefore remains white. Dark
+    ink lines are protected so the Milira outline weight is unchanged.
+    """
+    result = image.copy().convert("RGBA")
+    pixels = result.load()
+    start_y, end_y = 318, 452
+    target = (112, 211, 232)
+    for y in range(start_y, min(end_y + 1, result.height)):
+        vertical = max(0.0, min(1.0, (y - start_y) / (end_y - start_y)))
+        strength = vertical * 0.58
+        for x in range(result.width):
+            r, g, b, a = pixels[x, y]
+            if a < 8 or (r + g + b) / 3 < 105:
+                continue
+            pixels[x, y] = (
+                round(r * (1 - strength) + target[0] * strength),
+                round(g * (1 - strength) + target[1] * strength),
+                round(b * (1 - strength) + target[2] * strength),
+                a,
+            )
+    return result
+
+
+def side_ear_gap_underlay(main_hair: Image.Image) -> Image.Image:
+    """Create a small rear layer that closes side-view gaps at the ear root.
+
+    It is rendered behind the fixed head, so it cannot cover the eye, face or
+    ear tip. Only transparent seams exposed by tiny HAR/animation offsets show
+    this hair-coloured buffer.
+    """
+    alpha = main_hair.getchannel("A")
+    expanded = alpha.filter(ImageFilter.MaxFilter(25))
+    zone = Image.new("L", main_hair.size)
+    ImageDraw.Draw(zone).rounded_rectangle((166, 188, 346, 348), radius=42, fill=255)
+    # Keep only the narrow expansion band. The approved visible hair remains in
+    # HairMain; HairBG merely bridges the seam and cannot become a second wig.
+    expansion_band = ImageChops.subtract(expanded, alpha)
+    fill_alpha = ImageChops.multiply(expansion_band, zone)
+    outer_alpha = fill_alpha.filter(ImageFilter.MaxFilter(5))
+    outline_alpha = ImageChops.subtract(outer_alpha, fill_alpha)
+
+    underlay = Image.new("RGBA", main_hair.size)
+    outline = Image.new("RGBA", main_hair.size, (39, 51, 55, 0))
+    outline.putalpha(outline_alpha)
+    underlay.alpha_composite(outline)
+
+    fill = Image.new("RGBA", main_hair.size, (238, 248, 250, 0))
+    fill.putalpha(fill_alpha)
+    underlay.alpha_composite(fill)
+    return underlay
+
+
 def rebuild_hair() -> None:
     master = rgba(MASTER, (1536, 1024))
     # The master is an art-layout sheet, not a 3x2 grid of game-ready canvases.
     # South keeps the approved fringe and north keeps the tied rear silhouette.
     # East/west use one coherent profile redraw derived from the fixed Milira
     # head; mirroring that source guarantees identical skull attachment points.
-    front_south = rgba(CALIBRATED_FRONT / "YunjianziHairFront_south.png")
+    front_south = tint_south_hair_tips(rgba(CALIBRATED_FRONT / "YunjianziHairFront_south.png"))
     back_south = extract_component(master, (220, 380, 480, 990), (183, 316), (164, 160))
     back_north = extract_component(master, (1030, 380, 1290, 990), (185, 337), (163, 160))
     unified_west = side_redraw_canvas()
@@ -82,12 +137,12 @@ def rebuild_hair() -> None:
     save_cell(unified_east, "HairFront", "YunjianziHairFront", "east")
     save_cell(back_north, "HairFront", "YunjianziHairFront", "north")
 
-    # Keep a native Milira HairBG node for variant linkage and compatibility,
-    # but this fixed hairstyle needs no extra rear sprite: its continuous long
-    # silhouette lives in HairMain like Milira styles 1/6/8/12.
+    # Keep the native Milira HairBG node for variant linkage. South/north remain
+    # transparent; side rotations use a compact underlay behind the fixed head
+    # to prevent a transparent seam around the ear root during animation.
     save_cell(Image.new("RGBA", (512, 512)), "HairBack", "YunjianziHairBack", "south")
-    save_cell(Image.new("RGBA", (512, 512)), "HairBack", "YunjianziHairBack", "west")
-    save_cell(Image.new("RGBA", (512, 512)), "HairBack", "YunjianziHairBack", "east")
+    save_cell(side_ear_gap_underlay(unified_west), "HairBack", "YunjianziHairBack", "west")
+    save_cell(side_ear_gap_underlay(unified_east), "HairBack", "YunjianziHairBack", "east")
     save_cell(Image.new("RGBA", (512, 512)), "HairBack", "YunjianziHairBack", "north")
 
     # Preserve the complete south rear-hair source for future animation work;
