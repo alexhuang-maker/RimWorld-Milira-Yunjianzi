@@ -199,9 +199,9 @@ namespace Yunjianzi
                         pawn.apparel.Wear(armor, false);
                     }
                 }
-                // Keep the visor as independent native Milian head apparel. Hair
-                // textures contain hair only, so there is no duplicate visor and
-                // the renderer can apply the correct head transform per direction.
+                // Match Milira Guard: hair contains no goggle; the visor is native
+                // Milian Overhead apparel with south/east assets, engine-mirrored
+                // west, and a transparent north view.
                 bool hasVisor = pawn.apparel.WornApparel
                     .Any(a => a.def == YJZDefOf.YJZ_Apparel_ShenjiVisor);
                 if (!hasVisor)

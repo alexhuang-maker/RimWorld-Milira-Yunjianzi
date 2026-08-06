@@ -32,14 +32,26 @@ def checker(size: tuple[int, int]) -> Image.Image:
 
 def pawn(tier: str, direction: str) -> Image.Image:
     source_direction = "east" if direction == "west" else direction
-    paths = [
-        REF / "Milian" / "Pawn" / "Body" / f"Naked_Female_{source_direction}.png",
-        SHENJI / "Apparel" / "Shenji" / f"ShenjiArmor_{tier}_Female_{source_direction}.png",
-        REF / "Milian" / "Pawn" / "Head" / f"MilianHeadN1_{source_direction}.png",
-        SHENJI / "Pawn" / "Shenji" / f"ShenjiHairBack_{source_direction}.png",
-        SHENJI / "Pawn" / "Shenji" / f"ShenjiHairFront_{source_direction}.png",
-        SHENJI / "Apparel" / "Shenji" / f"ShenjiVisor_Female_{source_direction}.png",
-    ]
+    common_body = REF / "Milian" / "Pawn" / "Body" / f"Naked_Female_{source_direction}.png"
+    common_head = REF / "Milian" / "Pawn" / "Head" / f"MilianHeadN1_{source_direction}.png"
+    common_hair = REF / "Milian" / "Pawn" / "Hair" / "Milian_HairN1" / f"MiliraHair4_{source_direction}.png"
+    if tier == "GuardReference":
+        paths = [
+            common_body,
+            REF / "Milian" / "Apparel" / "Middle" / "GuardArmor" / f"GuardArmor_Female_{source_direction}.png",
+            common_head,
+            common_hair,
+            REF / "Milian" / "Apparel" / "OverHead" / "Goggle" / f"Goggle_{source_direction}.png",
+        ]
+    else:
+        paths = [
+            common_body,
+            SHENJI / "Apparel" / "Shenji" / f"ShenjiArmor_{tier}_Female_{source_direction}.png",
+            common_head,
+            SHENJI / "Pawn" / "Shenji" / f"ShenjiHairBack_{source_direction}.png",
+            SHENJI / "Pawn" / "Shenji" / f"ShenjiHairFront_{source_direction}.png",
+            SHENJI / "Apparel" / "Shenji" / f"ShenjiVisor_Female_{source_direction}.png",
+        ]
     result = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
     for path in paths:
         result = Image.alpha_composite(result, load(path))
@@ -47,10 +59,10 @@ def pawn(tier: str, direction: str) -> Image.Image:
 
 
 def main() -> None:
-    tiers = ("Base", "Intermediate", "Final")
+    tiers = ("GuardReference", "Base", "Intermediate", "Final")
     directions = ("south", "east", "west", "north")
     tile = 300
-    sheet = checker((tile * 4, tile * 3 + 44))
+    sheet = checker((tile * 4, tile * 4 + 44))
     draw = ImageDraw.Draw(sheet)
     for row, tier in enumerate(tiers):
         for column, direction in enumerate(directions):
@@ -63,7 +75,7 @@ def main() -> None:
             guide_x = x + 140
             draw.line((guide_x, y, guide_x, y + 280), fill=(40, 220, 220, 105), width=1)
             draw.text((column * tile + 10, row * tile + 282), f"{tier} / {direction}", fill=(210, 244, 242, 255))
-    draw.text((14, tile * 3 + 14), "Current shipped layers: body -> realm armour -> head -> hair -> independent visor", fill=(132, 225, 225, 255))
+    draw.text((14, tile * 4 + 14), "Row 1 is native Milira Guard. Rows 2-4 preserve its exact goggle silhouette and anchor.", fill=(132, 225, 225, 255))
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     sheet.save(OUTPUT)
     print(OUTPUT)
