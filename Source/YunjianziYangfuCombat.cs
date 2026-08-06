@@ -532,6 +532,10 @@ namespace Yunjianzi
             {
                 IntVec3 cell = cells[i % cells.Count];
                 Pawn soldier = PawnGenerator.GeneratePawn(kind, caster.Faction ?? Faction.OfPlayer);
+                // 符兵是灵力凝成的临时构装体，不参与任何生物性别逻辑。
+                // PawnKindDef 继承 AnimalKindBase 时仍可能随机分配性别，因此
+                // 在生成完成、入图之前统一锁为 None，并由存档自然持久化。
+                soldier.gender = Gender.None;
                 GenSpawn.Spawn(soldier, cell, caster.Map);
                 CompYangfuBeanSoldier comp = soldier.TryGetComp<CompYangfuBeanSoldier>();
                 if (comp != null) comp.Initialize(caster, rank);

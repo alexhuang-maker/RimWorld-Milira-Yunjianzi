@@ -15,6 +15,9 @@
     </graphicData>
     <size>(3,3)</size>
     <altitudeLayer>BuildingOnTop</altitudeLayer>
+    <!-- RimWorld's non-rotatable buildings otherwise keep Rot4.North, which
+         turns the authored south-facing Jianmu facade by 180 degrees. -->
+    <defaultPlacingRot>South</defaultPlacingRot>
     <rotatable>false</rotatable>
     <passability>PassThroughOnly</passability>
     <pathCost>80</pathCost>

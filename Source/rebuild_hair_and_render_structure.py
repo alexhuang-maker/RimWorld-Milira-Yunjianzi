@@ -7,14 +7,14 @@ into a four-direction QA sheet.  It never edits the source layer sheet.
 
 from pathlib import Path
 
-from PIL import Image, ImageChops, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 
 
 MOD_ROOT = Path(__file__).resolve().parents[1]
 TEXTURES = MOD_ROOT / "Content" / "Textures" / "Yunjianzi"
 MASTER = MOD_ROOT / "ArtSource" / "LayerSheets" / "Yunjianzi_HairLayers_Transparent_v2.png"
 CALIBRATED_FRONT = MOD_ROOT / "ArtSource" / "LayerSheets" / "Yunjianzi_HairFront_Calibrated"
-SIDE_REDRAW = MOD_ROOT / "ArtSource" / "GeneratedAssets" / "Yunjianzi_HairSide_Redraw_v1_transparent.png"
+SIDE_REDRAW = MOD_ROOT / "ArtSource" / "GeneratedAssets" / "Yunjianzi_HairSide_Redraw_v3_transparent.png"
 OUTPUT = MOD_ROOT / "ArtSource" / "SpriteDraft" / "Yunjianzi_PawnStructure_Final_v2.png"
 
 MILIRA_WINGS = Path(
@@ -91,24 +91,6 @@ def tint_south_hair_tips(image: Image.Image) -> Image.Image:
     return result
 
 
-def reveal_west_ear(main_hair: Image.Image, fixed_head: Image.Image) -> Image.Image:
-    """Remove only the HairMain pixels that cover MiliraHead4's pointed ear.
-
-    West is the single authored side. East is mirrored from the finished west
-    asset, guaranteeing that the exposed ear and hair opening are symmetric.
-    The fixed head alpha is used as the cut mask, so no triangular background
-    hole can be created outside the actual ear silhouette.
-    """
-    ear_zone = Image.new("L", main_hair.size)
-    # MiliraHead4 west: the ear root is near x=263 and its pointed tip reaches
-    # x=297. Restrict the cut to that wedge instead of exposing the round skull.
-    ImageDraw.Draw(ear_zone).polygon(((258, 270), (307, 292), (264, 315)), fill=255)
-    ear_alpha = ImageChops.multiply(fixed_head.getchannel("A"), ear_zone)
-    result = main_hair.copy()
-    result.putalpha(ImageChops.subtract(main_hair.getchannel("A"), ear_alpha))
-    return result
-
-
 def rebuild_hair() -> None:
     master = rgba(MASTER, (1536, 1024))
     # The master is an art-layout sheet, not a 3x2 grid of game-ready canvases.
@@ -118,10 +100,10 @@ def rebuild_hair() -> None:
     front_south = tint_south_hair_tips(rgba(CALIBRATED_FRONT / "YunjianziHairFront_south.png"))
     back_south = extract_component(master, (220, 380, 480, 990), (183, 316), (164, 160))
     back_north = extract_component(master, (1030, 380, 1290, 990), (185, 337), (163, 160))
-    unified_west = reveal_west_ear(
-        side_redraw_canvas(),
-        rgba(TEXTURES / "Pawn" / "Head" / "YunjianziHead_west.png"),
-    )
+    # The authored side sprite already frames the single native Milira ear.
+    # Do not punch a second triangular alpha hole from the head silhouette: the
+    # old post-process exposed the cheek/jaw as another apparent pointed ear.
+    unified_west = side_redraw_canvas()
     unified_east = unified_west.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
 
     save_cell(front_south, "HairFront", "YunjianziHairFront", "south")
