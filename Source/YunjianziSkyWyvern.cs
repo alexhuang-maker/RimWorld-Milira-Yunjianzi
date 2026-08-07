@@ -328,7 +328,18 @@ namespace Yunjianzi
             if (groundGraphic == null)
                 groundGraphic = GraphicDatabase.Get<Graphic_Multi>(Props.groundTexPath, ShaderDatabase.Cutout,
                     new Vector2(Props.drawSize, Props.drawSize), Color.white);
-            groundGraphic.Draw(pawn.DrawPos, pawn.Rotation, pawn);
+            Vector3 drawPos = pawn.DrawPos;
+            if (pawn.pather != null && pawn.pather.Moving)
+            {
+                // Hidden chibi feet still need a readable two-beat gait. A
+                // restrained vertical step and tiny lateral weight shift avoid
+                // the old frictionless glide without reintroducing leg sprites.
+                float phase = (Find.TickManager.TicksGame + pawn.thingIDNumber * 7) * .22f;
+                drawPos.z += Mathf.Abs(Mathf.Sin(phase)) * .045f;
+                Vector3 lateral = pawn.Rotation.AsIntVec3.ToVector3().RotatedBy(90f) * (Mathf.Sin(phase * .5f) * .018f);
+                drawPos += lateral;
+            }
+            groundGraphic.Draw(drawPos, pawn.Rotation, pawn);
             if (shield > 0f && Find.TickManager.TicksGame >= shieldBrokenUntil)
                 GenDraw.DrawRadiusRing(pawn.Position, ShieldRadius, new Color(.18f, .82f, 1f, .18f));
         }

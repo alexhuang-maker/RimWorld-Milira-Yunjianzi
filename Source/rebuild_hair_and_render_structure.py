@@ -104,7 +104,7 @@ def tint_front_fringe(image: Image.Image, direction: str) -> Image.Image:
     target = (135, 224, 235)
     for y in range(start_y, min(end_y + 1, result.height)):
         vertical = max(0.0, min(1.0, (y - start_y) / (end_y - start_y)))
-        strength = vertical * 0.34
+        strength = vertical * 0.58
         for x in range(x_min, min(x_max + 1, result.width)):
             r, g, b, a = pixels[x, y]
             if a < 16 or (r + g + b) / 3 < 125:
@@ -115,6 +115,38 @@ def tint_front_fringe(image: Image.Image, direction: str) -> Image.Image:
                 round(b * (1 - strength) + target[2] * strength),
                 a,
             )
+    return result
+
+
+def lengthen_south_fringe(image: Image.Image) -> Image.Image:
+    """Lower the approved front fringe without scaling the side locks.
+
+    Only the central bang mass is stretched; the outer long locks and skull
+    attachment remain on their calibrated Milira anchors.
+    """
+    result = image.copy().convert("RGBA")
+    box = (190, 220, 322, 311)
+    fringe = image.crop(box).resize((box[2] - box[0], 108), Image.Resampling.LANCZOS)
+    result.alpha_composite(fringe, (box[0], box[1]))
+    return result
+
+
+def cover_profile_ear(image: Image.Image, facing: str) -> Image.Image:
+    """Extend the real temple-lock pixels over the native ear.
+
+    Copying the existing painted lock preserves highlights and ink contours;
+    a synthetic opaque polygon looked like a pale plate over the face.
+    """
+    result = image.copy().convert("RGBA")
+    if facing == "east":
+        # Rear temple mass sits immediately behind the peach ear triangle.
+        source_box = (198, 215, 248, 316)
+        offset = (18, 0)
+    else:
+        source_box = (264, 215, 314, 316)
+        offset = (-18, 0)
+    lock = image.crop(source_box)
+    result.alpha_composite(lock, (source_box[0] + offset[0], source_box[1] + offset[1]))
     return result
 
 
@@ -196,14 +228,14 @@ def rebuild_hair() -> None:
     # South keeps the approved fringe and north keeps the tied rear silhouette.
     # East/west use one coherent profile redraw derived from the fixed Milira
     # head; mirroring that source guarantees identical skull attachment points.
-    front_south = tint_south_hair_tips(rgba(CALIBRATED_FRONT / "YunjianziHairFront_south.png"))
+    front_south = tint_south_hair_tips(lengthen_south_fringe(rgba(CALIBRATED_FRONT / "YunjianziHairFront_south.png")))
     back_south = extract_component(master, (220, 380, 480, 990), (183, 316), (164, 160))
     back_north = extract_component(master, (1030, 380, 1290, 990), (185, 337), (163, 160))
     # The authored side sprite already frames the single native Milira ear.
     # Do not punch a second triangular alpha hole from the head silhouette: the
     # old post-process exposed the cheek/jaw as another apparent pointed ear.
-    unified_west = side_redraw_canvas()
-    unified_east = unified_west.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+    unified_west = cover_profile_ear(side_redraw_canvas(), "west")
+    unified_east = cover_profile_ear(unified_west.transpose(Image.Transpose.FLIP_LEFT_RIGHT), "east")
 
     front_south = add_forehead_chain(tint_front_fringe(front_south, "south"), "south")
     unified_east = add_forehead_chain(unified_east, "east")

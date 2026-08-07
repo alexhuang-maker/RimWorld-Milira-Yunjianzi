@@ -17,19 +17,16 @@ OUTPUT = MOD / "Content" / "Textures" / "Yunjianzi" / "Apparel" / "Shenji"
 ROWS = ("Base", "Intermediate", "Final")
 COLUMNS = ("south", "east", "north", "west")
 
-# Target boxes retain Milira's native head/feet baseline while allowing each
-# tier to acquire a visibly different silhouette. West is engine-mirrored from
-# east, so only the three normal RimWorld directional files are shipped.
-TARGETS = {
-    ("Base", "south"): (146, 176, 366, 468),
-    ("Base", "east"): (151, 176, 337, 466),
-    ("Base", "north"): (146, 176, 366, 468),
-    ("Intermediate", "south"): (132, 174, 380, 468),
-    ("Intermediate", "east"): (142, 174, 350, 468),
-    ("Intermediate", "north"): (132, 174, 380, 468),
-    ("Final", "south"): (115, 166, 397, 474),
-    ("Final", "east"): (128, 166, 366, 474),
-    ("Final", "north"): (115, 166, 397, 474),
+# Keep the generated armour's anatomy intact.  The previous pass forced every
+# cell into a wide RimWorld box and visibly flattened the chest, hips and legs.
+# These are vertical baselines plus a very small silhouette-specific width
+# correction; width is derived from the original aspect ratio.
+TARGET_HEIGHT = {"Base": 320, "Intermediate": 322, "Final": 330}
+TARGET_BOTTOM = {"Base": 480, "Intermediate": 480, "Final": 482}
+WIDTH_SCALE = {
+    ("Base", "south"): 1.04, ("Base", "east"): 1.10, ("Base", "north"): 1.04,
+    ("Intermediate", "south"): 1.04, ("Intermediate", "east"): 1.08, ("Intermediate", "north"): 1.04,
+    ("Final", "south"): 1.00, ("Final", "east"): 1.04, ("Final", "north"): 1.00,
 }
 
 
@@ -49,15 +46,16 @@ def source_cell(atlas: Image.Image, row: int, column: int) -> Image.Image:
     return cell.crop(bounds)
 
 
-def place(source: Image.Image, target_box: tuple[int, int, int, int]) -> Image.Image:
-    x0, y0, x1, y1 = target_box
-    target_w, target_h = x1 - x0, y1 - y0
-    # The concept sheet uses conventional humanoid proportions. Milian pawns
-    # are deliberately much wider and shorter, so preserving the source aspect
-    # ratio produces the old "thin strip under a large head" regression.
-    # Calibrate width and height independently to the native apparel box.
+def place(source: Image.Image, tier: str, direction: str) -> Image.Image:
+    target_h = TARGET_HEIGHT[tier]
+    natural_w = source.width * target_h / source.height
+    target_w = round(natural_w * WIDTH_SCALE[(tier, direction)])
     fitted = source.resize((target_w, target_h), Image.Resampling.LANCZOS)
-    x, y = x0, y0
+    # All three directions use the same neck/foot axis.  In profile the source
+    # contains a trailing cape, but centring the complete silhouette still puts
+    # the collar directly under the native Milian head.
+    x = round(256 - target_w / 2)
+    y = TARGET_BOTTOM[tier] - target_h
     canvas = Image.new("RGBA", (512, 512))
     canvas.alpha_composite(fitted, (x, y))
     return canvas
@@ -70,7 +68,7 @@ def main() -> None:
         built = {}
         for direction in ("south", "east", "north"):
             column = COLUMNS.index(direction)
-            image = place(source_cell(atlas, row, column), TARGETS[(tier, direction)])
+            image = place(source_cell(atlas, row, column), tier, direction)
             path = OUTPUT / f"ShenjiArmor_{tier}_Female_{direction}.png"
             image.save(path, optimize=True)
             built[direction] = image

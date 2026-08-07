@@ -160,14 +160,16 @@ namespace Yunjianzi
         protected override void Tick()
         {
             base.Tick();
-            if (Find.TickManager.TicksGame - spawnTick < 32) return;
+            // One full second of still, readable talisman before it bursts.
+            if (Find.TickManager.TicksGame - spawnTick < 75) return;
             Map map = Map;
             IntVec3 cell = Position;
             Pawn source = caster;
             YangfuCombatSpell castSpell = spell;
             int castRank = rank;
-            FleckMaker.ThrowLightningGlow(DrawPos, map, 1.5f);
-            FleckMaker.ThrowMicroSparks(DrawPos, map);
+            FleckMaker.ThrowLightningGlow(DrawPos, map, 2.1f);
+            for (int i = 0; i < 8; i++)
+                FleckMaker.ThrowMicroSparks(DrawPos + Gen.RandomHorizontalVector(.15f + i * .035f), map);
             Destroy(DestroyMode.Vanish);
             if (source == null || source.Dead || map == null) return;
             if (castSpell == YangfuCombatSpell.FireTornado)
@@ -188,12 +190,29 @@ namespace Yunjianzi
 
         protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
-            float age = Mathf.Clamp01((Find.TickManager.TicksGame - spawnTick) / 32f);
-            float pulse = 1f + Mathf.Sin(age * Mathf.PI) * .32f;
+            int ticks = Find.TickManager.TicksGame - spawnTick;
+            float age = Mathf.Clamp01(ticks / 60f);
+            float pulse = 1f + Mathf.Sin(age * Mathf.PI) * .10f;
             Vector3 loc = drawLoc;
             loc.y = AltitudeLayer.MoteOverhead.AltitudeFor();
-            Matrix4x4 matrix = Matrix4x4.TRS(loc, Quaternion.Euler(0f, age * 120f - 20f, 0f), new Vector3(pulse, 1f, pulse));
-            Graphics.DrawMesh(MeshPool.plane10, matrix, Graphic.MatSingle, 0);
+            if (ticks < 60)
+            {
+                // Upright and stationary: no flat-plane rotation.
+                Matrix4x4 matrix = Matrix4x4.TRS(loc, Quaternion.identity, new Vector3(pulse, 1f, pulse));
+                Graphics.DrawMesh(MeshPool.plane10, matrix, Graphic.MatSingle, 0);
+                return;
+            }
+            // Fifteen-tick outward shatter. Reusing the emissive glyph keeps
+            // each spell's red/purple/green identity without opaque paper.
+            float burst = Mathf.Clamp01((ticks - 60) / 15f);
+            for (int i = 0; i < 12; i++)
+            {
+                float angle = i * 30f * Mathf.Deg2Rad;
+                Vector3 shardLoc = loc + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * (burst * 1.25f);
+                float shardScale = Mathf.Lerp(.34f, .04f, burst);
+                Matrix4x4 shard = Matrix4x4.TRS(shardLoc, Quaternion.identity, new Vector3(shardScale * .34f, 1f, shardScale));
+                Graphics.DrawMesh(MeshPool.plane10, shard, Graphic.MatSingle, 0);
+            }
         }
 
         public override void ExposeData()
@@ -296,15 +315,19 @@ namespace Yunjianzi
             float[] endSizes = { 0f, .9f, 1.2f, 1.5f, 1.8f, 2.2f };
             float size = Mathf.Lerp(startSizes[rank], endSizes[rank], life);
             Vector3 loc = new Vector3(realPosition.x, AltitudeLayer.Weather.AltitudeFor(), realPosition.y);
-            Matrix4x4 matrix = Matrix4x4.TRS(loc, Quaternion.Euler(0f, ageTicks * 5.5f, 0f), new Vector3(size, 1f, size));
+            // The texture is a front-readable tornado sprite. Rotating the
+            // whole ground plane makes it look like a spinning card, so keep
+            // its world orientation fixed and express motion through size,
+            // translation, glow and smoke instead.
+            Matrix4x4 matrix = Matrix4x4.TRS(loc, Quaternion.identity, new Vector3(size, 1f, size));
             Graphics.DrawMesh(MeshPool.plane10, matrix, Graphic.MatSingle, 0);
-            // 紫府以上叠加反向旋转的内层风壁；化神的视觉尺度接近大型灵能火龙卷，
+            // 紫府以上叠加固定朝向的内层风壁；化神的视觉尺度接近大型灵能火龙卷，
             // 但实际伤害半径单独受控，避免仅因特效放大而失衡。
             if (rank >= 3)
             {
                 float inner = size * (rank >= 5 ? .72f : .62f);
                 Vector3 innerLoc = loc + new Vector3(0f, .006f, 0f);
-                Matrix4x4 innerMatrix = Matrix4x4.TRS(innerLoc, Quaternion.Euler(0f, -ageTicks * 7.2f, 0f), new Vector3(inner, 1f, inner));
+                Matrix4x4 innerMatrix = Matrix4x4.TRS(innerLoc, Quaternion.identity, new Vector3(inner, 1f, inner));
                 Graphics.DrawMesh(MeshPool.plane10, innerMatrix, Graphic.MatSingle, 0);
             }
         }

@@ -45,7 +45,13 @@ def main() -> None:
     for direction, (left, right) in zip(core.DIRECTIONS, runs):
         crop = source.crop((max(0, left - 4), 0, min(source.width, right + 4), source.height))
         sprites[direction] = core.normalize(core.keep_largest(crop))
-    sprites["west"] = ImageOps.mirror(sprites["east"])
+    # The generated profile in the second cell faces west. RimWorld's
+    # Graphic_Multi does not reinterpret the artwork: east must visibly face
+    # east and west must visibly face west. Keep the authored profile for west
+    # and mirror it once for east (the former version labelled them backwards).
+    west_profile = sprites["east"]
+    sprites["west"] = west_profile
+    sprites["east"] = ImageOps.mirror(west_profile)
 
     for direction in core.DIRECTIONS:
         sprites[direction].save(core.OUT / f"UnifiedGround_{direction}.png")
