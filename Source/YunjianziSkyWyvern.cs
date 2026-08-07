@@ -22,12 +22,14 @@ namespace Yunjianzi
 
     /// <summary>
     /// The unique 神机诀 beast. It remains grounded and uses one coherent directional
-    /// form plus an eight-frame walking cycle; combat state affects abilities, not art.
+    /// form; combat state affects abilities, not art.
     /// </summary>
     public sealed class CompYunjianziSkyWyvern : ThingComp
     {
+        private static readonly Dictionary<Map, HashSet<CompYunjianziSkyWyvern>> SpawnedByMap =
+            new Dictionary<Map, HashSet<CompYunjianziSkyWyvern>>();
+
         private int ownerThingId = -1;
-        private bool flying;
         private int combatUntilTick;
         private float shield;
         private int shieldBrokenUntil;
@@ -36,23 +38,27 @@ namespace Yunjianzi
         private int breathCharges;
         private int nextBreathChargeTick;
         private bool nativeControlBound;
-        private Graphic[] groundGraphics;
+        private int nextNativeControlAttemptTick;
+        private Pawn ownerCache;
+        private Graphic groundGraphic;
 
         private CompProperties_YunjianziSkyWyvern Props => (CompProperties_YunjianziSkyWyvern)props;
         public Pawn Pawn => parent as Pawn;
         public int Stage => Props.stage;
-        public bool Flying => false;
         public Pawn Owner
         {
             get
             {
                 if (ownerThingId < 0) return null;
+                if (ownerCache != null && ownerCache.thingIDNumber == ownerThingId && !ownerCache.Destroyed)
+                    return ownerCache;
                 foreach (Map map in Find.Maps)
                 {
                     Pawn found = map.mapPawns.AllPawns.FirstOrDefault(p => p.thingIDNumber == ownerThingId);
-                    if (found != null) return found;
+                    if (found != null) return ownerCache = found;
                 }
-                return Find.WorldPawns == null ? null : Find.WorldPawns.AllPawnsAlive.FirstOrDefault(p => p.thingIDNumber == ownerThingId);
+                Pawn worldPawn = Find.WorldPawns == null ? null : Find.WorldPawns.AllPawnsAlive.FirstOrDefault(p => p.thingIDNumber == ownerThingId);
+                return ownerCache = worldPawn;
             }
         }
         public bool IsBoundTo(Pawn owner) => owner != null && ownerThingId == owner.thingIDNumber;
@@ -65,16 +71,19 @@ namespace Yunjianzi
         public bool BindTo(Pawn owner)
         {
             ownerThingId = owner?.thingIDNumber ?? -1;
+            ownerCache = owner;
             shield = ShieldMax;
             breathCharges = BreathMax;
             nextBreathChargeTick = Find.TickManager.TicksGame + BreathRecharge;
             nativeControlBound = false;
+            nextNativeControlAttemptTick = 0;
             return EnsureNativeControlRelation();
         }
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
+            Register(this);
             if (!respawningAfterLoad)
             {
                 shield = ShieldMax;
@@ -82,6 +91,12 @@ namespace Yunjianzi
                 nextBreathChargeTick = Find.TickManager.TicksGame + BreathRecharge;
             }
             EnsureNativeControlRelation();
+        }
+
+        public override void PostDeSpawn(Map map, DestroyMode mode = DestroyMode.Vanish)
+        {
+            Unregister(this, map);
+            base.PostDeSpawn(map, mode);
         }
 
         public override void CompTick()
@@ -92,6 +107,9 @@ namespace Yunjianzi
 
             if (pawn.IsHashIntervalTick(60)) DrawMovementEffects();
             if (!pawn.IsHashIntervalTick(30)) return;
+
+            if (!nativeControlBound && Find.TickManager.TicksGame >= nextNativeControlAttemptTick)
+                EnsureNativeControlRelation();
 
             if (Find.TickManager.TicksGame >= shieldBrokenUntil)
                 shield = Mathf.Min(ShieldMax, shield + ShieldMax / 600f);
@@ -302,52 +320,48 @@ namespace Yunjianzi
             }
         }
 
-        public void DrawCustom(Vector3 drawLoc)
+        public override void PostDraw()
         {
-            if (groundGraphics == null) groundGraphics = LoadDirectional(Props.groundTexPath);
-            groundGraphics[Pawn.Rotation.AsInt].Draw(drawLoc, Rot4.North, Pawn);
+            base.PostDraw();
+            Pawn pawn = Pawn;
+            if (pawn == null) return;
+            if (groundGraphic == null)
+                groundGraphic = GraphicDatabase.Get<Graphic_Multi>(Props.groundTexPath, ShaderDatabase.Cutout,
+                    new Vector2(Props.drawSize, Props.drawSize), Color.white);
+            groundGraphic.Draw(pawn.DrawPos, pawn.Rotation, pawn);
             if (shield > 0f && Find.TickManager.TicksGame >= shieldBrokenUntil)
-                GenDraw.DrawRadiusRing(Pawn.Position, ShieldRadius, new Color(.18f, .82f, 1f, .18f));
-        }
-
-        private Graphic[] LoadDirectional(string basePath)
-        {
-            Graphic[] graphics = new Graphic[4];
-            graphics[Rot4.North.AsInt] = LoadSingle(basePath + "_north");
-            graphics[Rot4.East.AsInt] = LoadSingle(basePath + "_east");
-            graphics[Rot4.South.AsInt] = LoadSingle(basePath + "_south");
-            graphics[Rot4.West.AsInt] = LoadSingle(basePath + "_west");
-            return graphics;
-        }
-
-        private Graphic LoadSingle(string path)
-        {
-            return GraphicDatabase.Get<Graphic_Single>(path, ShaderDatabase.Cutout,
-                new Vector2(Props.drawSize, Props.drawSize), Color.white);
+                GenDraw.DrawRadiusRing(pawn.Position, ShieldRadius, new Color(.18f, .82f, 1f, .18f));
         }
 
         private bool EnsureNativeControlRelation()
         {
             if (nativeControlBound) return true;
+            if (Find.TickManager.TicksGame < nextNativeControlAttemptTick) return false;
+            nextNativeControlAttemptTick = Find.TickManager.TicksGame + 300;
             Pawn pawn = Pawn;
             Pawn owner = Owner;
             if (!ModsConfig.BiotechActive || pawn == null || owner == null || pawn.relations == null) return false;
+            bool relationAdded = false;
             try
             {
                 if (owner.mechanitor == null)
-                {
                     owner.mechanitor = new Pawn_MechanitorTracker(owner);
-                    owner.mechanitor.Notify_PawnSpawned(false);
-                }
-                AccessTools.Method(typeof(Pawn_MechanitorTracker), "Notify_ControlGroupAmountMayChanged")?.Invoke(owner.mechanitor, null);
+                owner.mechanitor.Notify_PawnSpawned(true);
                 if (!pawn.relations.DirectRelationExists(PawnRelationDefOf.Overseer, owner))
+                {
                     pawn.relations.AddDirectRelation(PawnRelationDefOf.Overseer, owner);
+                    relationAdded = true;
+                }
                 owner.mechanitor.AssignPawnControlGroup(pawn, MechWorkModeDefOf.Work);
                 nativeControlBound = MechanitorUtility.GetMechControlGroup(pawn) != null;
+                if (!nativeControlBound && relationAdded)
+                    pawn.relations.RemoveDirectRelation(PawnRelationDefOf.Overseer, owner);
                 return nativeControlBound;
             }
             catch (Exception ex)
             {
+                if (relationAdded && pawn.relations.DirectRelationExists(PawnRelationDefOf.Overseer, owner))
+                    pawn.relations.RemoveDirectRelation(PawnRelationDefOf.Overseer, owner);
                 Log.ErrorOnce("[Yunjianzi] 云间机飞龙控制关系初始化失败：" + ex, pawn.thingIDNumber ^ 0x71D23);
                 return false;
             }
@@ -357,7 +371,8 @@ namespace Yunjianzi
         {
             base.PostExposeData();
             Scribe_Values.Look(ref ownerThingId, "yjz_wyvernOwner", -1);
-            Scribe_Values.Look(ref flying, "yjz_wyvernFlying", false);
+            bool legacyFlying = false;
+            Scribe_Values.Look(ref legacyFlying, "yjz_wyvernFlying", false);
             Scribe_Values.Look(ref combatUntilTick, "yjz_wyvernCombatUntil", 0);
             Scribe_Values.Look(ref shield, "yjz_wyvernShield", 0f);
             Scribe_Values.Look(ref shieldBrokenUntil, "yjz_wyvernShieldBrokenUntil", 0);
@@ -366,7 +381,36 @@ namespace Yunjianzi
             Scribe_Values.Look(ref breathCharges, "yjz_wyvernBreathCharges", 0);
             Scribe_Values.Look(ref nextBreathChargeTick, "yjz_wyvernNextBreath", 0);
             Scribe_Values.Look(ref nativeControlBound, "yjz_wyvernNativeControl", false);
-            if (Scribe.mode == LoadSaveMode.PostLoadInit) flying = false;
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+            {
+                ownerCache = null;
+                nextNativeControlAttemptTick = 0;
+            }
+        }
+
+        private static void Register(CompYunjianziSkyWyvern comp)
+        {
+            Map map = comp?.Pawn?.Map;
+            if (map == null) return;
+            if (!SpawnedByMap.TryGetValue(map, out HashSet<CompYunjianziSkyWyvern> set))
+                SpawnedByMap[map] = set = new HashSet<CompYunjianziSkyWyvern>();
+            set.Add(comp);
+        }
+
+        private static void Unregister(CompYunjianziSkyWyvern comp, Map map)
+        {
+            if (map == null || !SpawnedByMap.TryGetValue(map, out HashSet<CompYunjianziSkyWyvern> set)) return;
+            set.Remove(comp);
+            if (set.Count == 0) SpawnedByMap.Remove(map);
+        }
+
+        public static bool TryInterceptOnMap(Projectile projectile)
+        {
+            if (projectile?.Map == null || !SpawnedByMap.TryGetValue(projectile.Map, out HashSet<CompYunjianziSkyWyvern> set))
+                return false;
+            foreach (CompYunjianziSkyWyvern comp in set)
+                if (comp != null && comp.TryInterceptProjectile(projectile)) return true;
+            return false;
         }
     }
 
@@ -440,31 +484,13 @@ namespace Yunjianzi
         }
     }
 
-    [HarmonyPatch(typeof(Pawn), "DrawAt", new Type[] { typeof(Vector3), typeof(bool) })]
-    internal static class Patch_Pawn_DrawAt_YunjianziSkyWyvern
-    {
-        private static bool Prefix(Pawn __instance, Vector3 drawLoc)
-        {
-            CompYunjianziSkyWyvern comp = __instance?.TryGetComp<CompYunjianziSkyWyvern>();
-            if (comp == null) return true;
-            comp.DrawCustom(drawLoc);
-            return false;
-        }
-    }
-
     [HarmonyPatch(typeof(Projectile), "Tick")]
     internal static class Patch_Projectile_Tick_YunjianziSkyWyvernShield
     {
         private static bool Prefix(Projectile __instance)
         {
             if (__instance?.Spawned != true || __instance.Map == null) return true;
-            Pawn[] pawns = __instance.Map.mapPawns.AllPawnsSpawned.ToArray();
-            for (int i = 0; i < pawns.Length; i++)
-            {
-                CompYunjianziSkyWyvern comp = pawns[i].TryGetComp<CompYunjianziSkyWyvern>();
-                if (comp != null && comp.TryInterceptProjectile(__instance)) return false;
-            }
-            return true;
+            return !CompYunjianziSkyWyvern.TryInterceptOnMap(__instance);
         }
     }
 }

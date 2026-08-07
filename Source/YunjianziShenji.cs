@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -25,7 +24,8 @@ namespace Yunjianzi
         private int lastArmorTier;
         private int boundTick;
         private bool nativeControlBound;
-        private bool nativeControlAttempted;
+        private int nextNativeControlAttemptTick;
+        private Pawn ownerCache;
 
         public Pawn Pawn { get { return parent as Pawn; } }
         public Pawn Owner
@@ -33,10 +33,12 @@ namespace Yunjianzi
             get
             {
                 if (ownerThingId < 0) return null;
+                if (ownerCache != null && ownerCache.thingIDNumber == ownerThingId && !ownerCache.Destroyed)
+                    return ownerCache;
                 foreach (Map map in Find.Maps)
                 {
                     Pawn found = map.mapPawns.AllPawns.FirstOrDefault(p => p.thingIDNumber == ownerThingId);
-                    if (found != null) return found;
+                    if (found != null) return ownerCache = found;
                 }
                 return null;
             }
@@ -57,10 +59,11 @@ namespace Yunjianzi
         public bool BindTo(Pawn owner)
         {
             ownerThingId = owner == null ? -1 : owner.thingIDNumber;
+            ownerCache = owner;
             boundTick = Find.TickManager == null ? 0 : Find.TickManager.TicksGame;
             shield = ShieldMax;
             SynchronizeTier(true);
-            nativeControlAttempted = false;
+            nextNativeControlAttemptTick = 0;
             return EnsureNativeControlRelation();
         }
 
@@ -74,7 +77,7 @@ namespace Yunjianzi
             if (respawningAfterLoad)
             {
                 nativeControlBound = false;
-                nativeControlAttempted = false;
+                nextNativeControlAttemptTick = 0;
             }
             EnsureNativeControlRelation();
         }
@@ -86,6 +89,8 @@ namespace Yunjianzi
             if (pawn == null || pawn.Dead) return;
             if (pawn.IsHashIntervalTick(60))
             {
+                if (!nativeControlBound && Find.TickManager.TicksGame >= nextNativeControlAttemptTick)
+                    EnsureNativeControlRelation();
                 if (pawn.needs != null && pawn.needs.energy != null) pawn.needs.energy.CurLevelPercentage = 1f;
                 if (Find.TickManager.TicksGame >= shieldBrokenUntil && ShieldMax > 0f)
                     shield = Mathf.Min(ShieldMax, shield + ShieldMax / 120f);
@@ -96,8 +101,8 @@ namespace Yunjianzi
         private bool EnsureNativeControlRelation()
         {
             if (nativeControlBound) return true;
-            if (nativeControlAttempted || !ModsConfig.BiotechActive) return false;
-            nativeControlAttempted = true;
+            if (!ModsConfig.BiotechActive || Find.TickManager.TicksGame < nextNativeControlAttemptTick) return false;
+            nextNativeControlAttemptTick = Find.TickManager.TicksGame + 300;
             Pawn pawn = Pawn;
             Pawn owner = Owner;
             if (pawn == null || owner == null || pawn.relations == null) return false;
@@ -106,17 +111,12 @@ namespace Yunjianzi
             try
             {
                 if (owner.mechanitor == null)
-                {
                     owner.mechanitor = new Pawn_MechanitorTracker(owner);
-                    owner.mechanitor.Notify_PawnSpawned(false);
-                }
 
-                // 控制组数量由 MechControlGroups 属性决定。先让 tracker 按云间灵脉提供的
-                // 宽带/控制组容量建立真实原版控制组，再添加监督者关系与分组。
-                MethodInfo refreshGroups = AccessTools.Method(typeof(Pawn_MechanitorTracker), "Notify_ControlGroupAmountMayChanged");
-                if (refreshGroups == null)
-                    throw new MissingMethodException("Pawn_MechanitorTracker.Notify_ControlGroupAmountMayChanged");
-                refreshGroups.Invoke(owner.mechanitor, null);
+                // RimWorld 1.6 exposes this public lifecycle notification.  With
+                // respawningAfterLoad=true it refreshes bandwidth and control
+                // groups, avoiding reflection into the private tracker method.
+                owner.mechanitor.Notify_PawnSpawned(true);
                 if (owner.mechanitor.TotalAvailableControlGroups <= 0)
                     throw new InvalidOperationException("云间子没有可用的机械控制组。请确认云间灵脉的 MechControlGroups 属性已加载。");
 
@@ -320,7 +320,13 @@ namespace Yunjianzi
             Scribe_Values.Look(ref lastArmorTier, "yjz_shenjiArmorTier", 0);
             Scribe_Values.Look(ref boundTick, "yjz_shenjiBoundTick", 0);
             Scribe_Values.Look(ref nativeControlBound, "yjz_shenjiNativeControlBound", false);
-            if (Scribe.mode == LoadSaveMode.PostLoadInit) nativeControlAttempted = false;
+            bool legacyNativeControlAttempted = false;
+            Scribe_Values.Look(ref legacyNativeControlAttempted, "yjz_shenjiNativeControlAttempted", false);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+            {
+                ownerCache = null;
+                nextNativeControlAttemptTick = 0;
+            }
         }
     }
 
@@ -520,8 +526,7 @@ namespace Yunjianzi
     }
 
     // 米莉拉原版工作/配置页会排除没有 OverseerSubject 的机械体。
-    // 神机刻意不接机械师带宽，因此只在界面结果中补入，不伪造监督者关系，也不会触发失控机制。
-    [HarmonyPatch]
+    // 神机使用真实的 Overseer 关系与原版控制组；这里仅补足外部配置页的识别兼容。
     // 米莉拉配件白名单兼容。
     [StaticConstructorOnStartup]
     internal static class YunjianziShenjiAccessoryCompatibility

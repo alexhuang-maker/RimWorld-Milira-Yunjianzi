@@ -27,7 +27,10 @@ namespace Yunjianzi
     {
         static YunjianziBootstrap()
         {
-            new Harmony("alex.miliraprivateexpansion.yunjianzi.fixedtemplate").PatchAll();
+            // Patch the assembly exactly once.  A second PatchAll used to live in
+            // the optional facial-animation integration and installed every
+            // postfix/prefix twice when that integration was present.
+            new Harmony("alex.miliraprivateexpansion.yunjianzi").PatchAll();
         }
     }
 

@@ -5,15 +5,6 @@ using Verse;
 
 namespace Yunjianzi.FA
 {
-    [StaticConstructorOnStartup]
-    internal static class FacialAnimationBootstrap
-    {
-        static FacialAnimationBootstrap()
-        {
-            new Harmony("alex.miliraprivateexpansion.yunjianzi.facialanimation").PatchAll();
-        }
-    }
-
     // Ariandel's normal NPCFA route intentionally requires a registered unique
     // NPC instance. Character Editor can create unregistered duplicate previews,
     // so bind the face by PawnKindDef as well. This keeps every test generation

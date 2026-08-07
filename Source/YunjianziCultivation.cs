@@ -139,6 +139,13 @@ namespace Yunjianzi
             Matrix4x4 matrix = Matrix4x4.TRS(drawLoc, Quaternion.AngleAxis(angle, Vector3.up), new Vector3(size, 1f, size));
             Graphics.DrawMesh(MeshPool.plane10, matrix, SwordWardMaterial, 0, null, 0, swordWardPropertyBlock);
         }
+
+        public override void PostDraw()
+        {
+            base.PostDraw();
+            Pawn pawn = Pawn;
+            if (pawn != null) DrawSwordWardEffect(pawn.DrawPos);
+        }
         public int ShadowCount
         {
             get
@@ -157,10 +164,21 @@ namespace Yunjianzi
             base.PostSpawnSetup(respawningAfterLoad);
             if (!IsYunjianzi) return;
             EnsureRealmAndAbilities();
+            EnsureMechanitorTracker();
             InitializeCultivationProgress();
             if (energy < 0f) energy = EnergyMax;
             if (shield < 0f) shield = ShieldMax;
             TryCreateBoundScroll();
+        }
+
+        private void EnsureMechanitorTracker()
+        {
+            if (!ModsConfig.BiotechActive || Pawn == null) return;
+            if (Pawn.mechanitor == null)
+                Pawn.mechanitor = new Pawn_MechanitorTracker(Pawn);
+            // The public load notification refreshes both bandwidth and the
+            // number of control groups after the realm Hediff is present.
+            Pawn.mechanitor.Notify_PawnSpawned(true);
         }
 
         private void EnsureRealmAndAbilities()
@@ -911,16 +929,6 @@ namespace Yunjianzi
         }
     }
 
-    [HarmonyPatch(typeof(Pawn), "DrawAt", new Type[] { typeof(Vector3), typeof(bool) })]
-    internal static class Patch_Pawn_DrawAt_YunjianziSwordWard
-    {
-        private static void Postfix(Pawn __instance, Vector3 drawLoc)
-        {
-            CompYunjianziCultivation comp = __instance == null ? null : __instance.TryGetComp<CompYunjianziCultivation>();
-            if (comp != null) comp.DrawSwordWardEffect(drawLoc);
-        }
-    }
-
     [DefOf]
     public static class YJZDefOf
     {
@@ -1089,6 +1097,16 @@ namespace Yunjianzi
         }
     }
 
+    internal static class YunjianziNeedUtility
+    {
+        // Verse.Need keeps its owner in a protected field. Cache a strongly typed
+        // accessor once instead of constructing a Traverse on every need tick.
+        private static readonly AccessTools.FieldRef<Need, Pawn> PawnRef =
+            AccessTools.FieldRefAccess<Need, Pawn>("pawn");
+
+        internal static Pawn PawnOf(Need need) => need == null ? null : PawnRef(need);
+    }
+
     [HarmonyPatch(typeof(Need_Food), "get_FoodFallPerTick")]
     internal static class Patch_NeedFood_YunjianziCultivation
     {
@@ -1096,7 +1114,7 @@ namespace Yunjianzi
 
         private static void Postfix(Need_Food __instance, ref float __result)
         {
-            Pawn pawn = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
+            Pawn pawn = YunjianziNeedUtility.PawnOf(__instance);
             int realm = YunjianziRealmUtility.RealmOf(pawn);
             if (realm > 0) __result *= Factors[Mathf.Clamp(realm, 0, 5)];
         }
@@ -1109,7 +1127,7 @@ namespace Yunjianzi
 
         private static void Postfix(Need_Rest __instance, ref float __result)
         {
-            Pawn pawn = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
+            Pawn pawn = YunjianziNeedUtility.PawnOf(__instance);
             int realm = YunjianziRealmUtility.RealmOf(pawn);
             if (realm > 0) __result *= Factors[Mathf.Clamp(realm, 0, 5)];
         }
