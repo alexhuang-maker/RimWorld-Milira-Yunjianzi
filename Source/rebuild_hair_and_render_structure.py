@@ -73,7 +73,7 @@ def tint_south_hair_tips(image: Image.Image) -> Image.Image:
     """
     result = image.copy().convert("RGBA")
     pixels = result.load()
-    start_y, end_y = 318, 452
+    start_y, end_y = 306, 402
     target = (112, 211, 232)
     for y in range(start_y, min(end_y + 1, result.height)):
         vertical = max(0.0, min(1.0, (y - start_y) / (end_y - start_y)))
@@ -118,16 +118,28 @@ def tint_front_fringe(image: Image.Image, direction: str) -> Image.Image:
     return result
 
 
-def lengthen_south_fringe(image: Image.Image) -> Image.Image:
-    """Lower the approved front fringe without scaling the side locks.
+def reshape_south_front(image: Image.Image) -> Image.Image:
+    """Increase central fringe volume while shortening only the side locks.
 
-    Only the central bang mass is stretched; the outer long locks and skull
-    attachment remain on their calibrated Milira anchors.
+    The previous revision interpreted "more forehead hair" as longer side
+    strands.  This pass keeps the central fringe at the approved eye line,
+    widens it across the forehead, and compresses the two lateral locks so the
+    separate rear-hair silhouette remains visible from the south view.
     """
     result = image.copy().convert("RGBA")
-    box = (190, 220, 322, 311)
-    fringe = image.crop(box).resize((box[2] - box[0], 108), Image.Resampling.LANCZOS)
-    result.alpha_composite(fringe, (box[0], box[1]))
+
+    # Shorten the lower halves of the two side locks without moving their
+    # temple anchors.  The tapered cyan tips are preserved by compression.
+    for box in ((170, 286, 232, 460), (280, 286, 342, 460)):
+        lower = image.crop(box).resize((box[2] - box[0], 116), Image.Resampling.LANCZOS)
+        result.paste((0, 0, 0, 0), box)
+        result.alpha_composite(lower, (box[0], box[1]))
+
+    # Widen, rather than lengthen, the central bang mass.  Its lower edge stays
+    # at y=311, so the eyes remain open and the jade chain keeps its anchor.
+    box = (210, 220, 302, 311)
+    fringe = image.crop(box).resize((124, box[3] - box[1]), Image.Resampling.LANCZOS)
+    result.alpha_composite(fringe, (194, box[1]))
     return result
 
 
@@ -228,7 +240,7 @@ def rebuild_hair() -> None:
     # South keeps the approved fringe and north keeps the tied rear silhouette.
     # East/west use one coherent profile redraw derived from the fixed Milira
     # head; mirroring that source guarantees identical skull attachment points.
-    front_south = tint_south_hair_tips(lengthen_south_fringe(rgba(CALIBRATED_FRONT / "YunjianziHairFront_south.png")))
+    front_south = tint_south_hair_tips(reshape_south_front(rgba(CALIBRATED_FRONT / "YunjianziHairFront_south.png")))
     back_south = extract_component(master, (220, 380, 480, 990), (183, 316), (164, 160))
     back_north = extract_component(master, (1030, 380, 1290, 990), (185, 337), (163, 160))
     # The authored side sprite already frames the single native Milira ear.
@@ -246,16 +258,15 @@ def rebuild_hair() -> None:
     save_cell(unified_east, "HairFront", "YunjianziHairFront", "east")
     save_cell(back_north, "HairFront", "YunjianziHairFront", "north")
 
-    # Keep a native Milira HairBG node for variant linkage. The continuous long
-    # silhouette lives in HairMain; all rear sprites remain transparent so the
-    # exposed MiliraHead4 ear cannot be mistaken for a hole in a second wig.
-    save_cell(Image.new("RGBA", (512, 512)), "HairBack", "YunjianziHairBack", "south")
+    # South needs its real tied rear hair in HairBG.  It is deliberately behind
+    # the robe/head/front fringe, which lets its outer silhouette show from the
+    # front without ever covering the face.
+    save_cell(back_south, "HairBack", "YunjianziHairBack", "south")
     save_cell(Image.new("RGBA", (512, 512)), "HairBack", "YunjianziHairBack", "west")
     save_cell(Image.new("RGBA", (512, 512)), "HairBack", "YunjianziHairBack", "east")
     save_cell(Image.new("RGBA", (512, 512)), "HairBack", "YunjianziHairBack", "north")
 
-    # Preserve the complete south rear-hair source for future animation work;
-    # it is deliberately not loaded by the current foreground addon.
+    # Preserve the complete south rear-hair source used by the loaded HairBG.
     source_copy = MOD_ROOT / "ArtSource" / "LayerSheets" / "Yunjianzi_HairBack_south_source.png"
     back_south.save(source_copy, optimize=True)
 
