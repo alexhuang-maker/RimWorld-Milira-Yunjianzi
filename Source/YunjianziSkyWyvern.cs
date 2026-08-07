@@ -5,6 +5,7 @@ using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 
 namespace Yunjianzi
 {
@@ -37,6 +38,10 @@ namespace Yunjianzi
         private int missileReadyTick;
         private int breathCharges;
         private int nextBreathChargeTick;
+        private bool animalBonded;
+        private bool raidReleased;
+        // Kept only so old saves containing the former mech-control state can
+        // be read. Runtime control is now entirely animal-based.
         private bool nativeControlBound;
         private int nextNativeControlAttemptTick;
         private Pawn ownerCache;
@@ -62,6 +67,8 @@ namespace Yunjianzi
             }
         }
         public bool IsBoundTo(Pawn owner) => owner != null && ownerThingId == owner.thingIDNumber;
+        public bool RaidReleased => raidReleased;
+        public bool CanUseBreath => Stage >= 4 && breathCharges > 0 && Pawn?.Spawned == true;
         public bool CanProjectShield => shield > 0f && Find.TickManager.TicksGame >= shieldBrokenUntil;
         private float ShieldMax => Stage >= 5 ? 25000f : Stage >= 4 ? 8000f : 2500f;
         private float ShieldRadius => Stage >= 5 ? 10f : Stage >= 4 ? 8.5f : 7f;
@@ -75,9 +82,8 @@ namespace Yunjianzi
             shield = ShieldMax;
             breathCharges = BreathMax;
             nextBreathChargeTick = Find.TickManager.TicksGame + BreathRecharge;
-            nativeControlBound = false;
-            nextNativeControlAttemptTick = 0;
-            return EnsureNativeControlRelation();
+            animalBonded = false;
+            return EnsureAnimalBond();
         }
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
@@ -90,7 +96,7 @@ namespace Yunjianzi
                 breathCharges = BreathMax;
                 nextBreathChargeTick = Find.TickManager.TicksGame + BreathRecharge;
             }
-            EnsureNativeControlRelation();
+            EnsureAnimalBond();
         }
 
         public override void PostDeSpawn(Map map, DestroyMode mode = DestroyMode.Vanish)
@@ -105,11 +111,13 @@ namespace Yunjianzi
             Pawn pawn = Pawn;
             if (pawn == null || pawn.Dead || !pawn.Spawned) return;
 
-            if (pawn.IsHashIntervalTick(60)) DrawMovementEffects();
+            if (!animalBonded && pawn.IsHashIntervalTick(600)) EnsureAnimalBond();
+            if (pawn.IsHashIntervalTick(60))
+            {
+                DrawMovementEffects();
+                UpdateRaidReleaseState();
+            }
             if (!pawn.IsHashIntervalTick(30)) return;
-
-            if (!nativeControlBound && Find.TickManager.TicksGame >= nextNativeControlAttemptTick)
-                EnsureNativeControlRelation();
 
             if (Find.TickManager.TicksGame >= shieldBrokenUntil)
                 shield = Mathf.Min(ShieldMax, shield + ShieldMax / 600f);
@@ -127,7 +135,7 @@ namespace Yunjianzi
         {
             Pawn pawn = Pawn;
             int now = Find.TickManager.TicksGame;
-            bool threatened = pawn.Drafted || pawn.mindState?.enemyTarget != null ||
+            bool threatened = raidReleased || pawn.Drafted || pawn.mindState?.enemyTarget != null ||
                 pawn.Map.attackTargetsCache.GetPotentialTargetsFor(pawn).Any(t => t.Thing != null && t.Thing.Position.DistanceTo(pawn.Position) <= 25f);
             if (threatened) combatUntilTick = now + 600;
             return now < combatUntilTick;
@@ -266,7 +274,9 @@ namespace Yunjianzi
             return true;
         }
 
-        public override IEnumerable<Gizmo> CompGetGizmosExtra()
+        // Retained as a save-safe legacy implementation; the actual command is
+        // now supplied by AbilityDef so AI and player casts share one path.
+        private IEnumerable<Gizmo> LegacyBreathGizmo()
         {
             foreach (Gizmo gizmo in base.CompGetGizmosExtra()) yield return gizmo;
             if (Stage < 4 || Pawn?.Faction != Faction.OfPlayer) yield break;
@@ -320,6 +330,14 @@ namespace Yunjianzi
             }
         }
 
+        public bool TryCastBreath(IntVec3 cell)
+        {
+            if (!CanUseBreath || !cell.InBounds(Pawn.Map) || cell.DistanceTo(Pawn.Position) > 15.9f)
+                return false;
+            CastBreath(cell);
+            return true;
+        }
+
         public override void PostDraw()
         {
             base.PostDraw();
@@ -342,6 +360,74 @@ namespace Yunjianzi
             groundGraphic.Draw(drawPos, pawn.Rotation, pawn);
             if (shield > 0f && Find.TickManager.TicksGame >= shieldBrokenUntil)
                 GenDraw.DrawRadiusRing(pawn.Position, ShieldRadius, new Color(.18f, .82f, 1f, .18f));
+        }
+
+        private bool EnsureAnimalBond()
+        {
+            if (animalBonded) return true;
+            Pawn pawn = Pawn;
+            Pawn owner = Owner;
+            if (pawn == null || owner == null) return false;
+            try
+            {
+                // This pawn used to be implemented as a bandwidth mech. Remove
+                // that legacy relation before assigning the vanilla animal
+                // master so old saves migrate without consuming bandwidth.
+                if (ModsConfig.BiotechActive && pawn.relations != null &&
+                    pawn.relations.DirectRelationExists(PawnRelationDefOf.Overseer, owner))
+                    pawn.relations.RemoveDirectRelation(PawnRelationDefOf.Overseer, owner);
+
+                if (pawn.Faction != Faction.OfPlayer) pawn.SetFaction(Faction.OfPlayer);
+                if (pawn.playerSettings == null) pawn.playerSettings = new Pawn_PlayerSettings(pawn);
+                if (pawn.training == null) pawn.training = new Pawn_TrainingTracker(pawn);
+                pawn.playerSettings.Master = owner;
+                pawn.playerSettings.followDrafted = true;
+
+                TrainableDef[] essentials =
+                {
+                    TrainableDefOf.Tameness,
+                    TrainableDefOf.Obedience,
+                    TrainableDefOf.Release,
+                    DefDatabase<TrainableDef>.GetNamedSilentFail("Haul"),
+                    DefDatabase<TrainableDef>.GetNamedSilentFail("Rescue")
+                };
+                foreach (TrainableDef trainable in essentials)
+                    if (trainable != null && !pawn.training.HasLearned(trainable))
+                        pawn.training.Train(trainable, owner, true);
+
+                if (ModsConfig.OdysseyActive)
+                {
+                    TrainableDef attack = DefDatabase<TrainableDef>.GetNamedSilentFail("AttackTarget");
+                    if (attack != null && !pawn.training.HasLearned(attack))
+                        pawn.training.Train(attack, owner, true);
+                }
+
+                animalBonded = true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.ErrorOnce("[Yunjianzi] Sky wyvern animal bonding failed: " + ex,
+                    pawn.thingIDNumber ^ 0x71D23);
+                return false;
+            }
+        }
+
+        private void UpdateRaidReleaseState()
+        {
+            Pawn pawn = Pawn;
+            if (pawn?.Map == null) return;
+            bool shouldRelease = pawn.Map.IsPlayerHome &&
+                GenHostility.AnyHostileActiveThreatToPlayer(pawn.Map);
+            if (raidReleased == shouldRelease) return;
+
+            raidReleased = shouldRelease;
+            if (shouldRelease) combatUntilTick = Find.TickManager.TicksGame + 1200;
+            if (pawn.mindState != null) pawn.mindState.enemyTarget = null;
+            pawn.jobs?.EndCurrentJob(JobCondition.InterruptForced, false, true);
+            if (shouldRelease)
+                Messages.Message("袭击来临，云龙自行解放并扑向敌群。", pawn,
+                    MessageTypeDefOf.ThreatSmall, false);
         }
 
         private bool EnsureNativeControlRelation()
@@ -392,10 +478,13 @@ namespace Yunjianzi
             Scribe_Values.Look(ref breathCharges, "yjz_wyvernBreathCharges", 0);
             Scribe_Values.Look(ref nextBreathChargeTick, "yjz_wyvernNextBreath", 0);
             Scribe_Values.Look(ref nativeControlBound, "yjz_wyvernNativeControl", false);
+            Scribe_Values.Look(ref animalBonded, "yjz_wyvernAnimalBonded", false);
+            Scribe_Values.Look(ref raidReleased, "yjz_wyvernRaidReleased", false);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 ownerCache = null;
                 nextNativeControlAttemptTick = 0;
+                animalBonded = false;
             }
         }
 
@@ -422,6 +511,90 @@ namespace Yunjianzi
             foreach (CompYunjianziSkyWyvern comp in set)
                 if (comp != null && comp.TryInterceptProjectile(projectile)) return true;
             return false;
+        }
+    }
+
+    /// <summary>
+    /// Vanilla Animal_PreMain insertion. It stays dormant outside an active
+    /// home-map threat, then uses the standard enemy acquisition and attack
+    /// job machinery (including AI-castable abilities) for the released dragon.
+    /// </summary>
+    public sealed class JobGiver_YunjianziSkyWyvernRaidAssault : JobGiver_AIFightEnemies
+    {
+        protected override Job TryGiveJob(Pawn pawn)
+        {
+            CompYunjianziSkyWyvern comp = pawn?.TryGetComp<CompYunjianziSkyWyvern>();
+            return comp?.RaidReleased == true ? base.TryGiveJob(pawn) : null;
+        }
+
+        protected override bool ExtraTargetValidator(Pawn pawn, Thing target)
+        {
+            if (!base.ExtraTargetValidator(pawn, target) || target is not IAttackTarget attackTarget)
+                return false;
+            return GenHostility.IsActiveThreatToPlayer(attackTarget);
+        }
+    }
+
+    public sealed class CompProperties_AbilitySkyWyvernBreath : CompProperties_AbilityEffect
+    {
+        public CompProperties_AbilitySkyWyvernBreath()
+        {
+            compClass = typeof(CompAbilityEffect_SkyWyvernBreath);
+        }
+    }
+
+    public sealed class CompAbilityEffect_SkyWyvernBreath : CompAbilityEffect
+    {
+        private CompYunjianziSkyWyvern Dragon => parent?.pawn?.TryGetComp<CompYunjianziSkyWyvern>();
+
+        public override bool CanCast => Dragon?.CanUseBreath == true;
+
+        public override bool GizmoDisabled(out string reason)
+        {
+            if (Dragon?.CanUseBreath == true)
+            {
+                reason = null;
+                return false;
+            }
+            reason = "龙息尚未完成蓄力。";
+            return true;
+        }
+
+        public override bool AICanTargetNow(LocalTargetInfo target)
+        {
+            return Dragon?.RaidReleased == true && CanTarget(target, hostileOnly: true);
+        }
+
+        public override bool CanApplyOn(LocalTargetInfo target, LocalTargetInfo dest)
+        {
+            return CanTarget(target, hostileOnly: false);
+        }
+
+        public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
+        {
+            return CanTarget(target, hostileOnly: false);
+        }
+
+        public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
+        {
+            base.Apply(target, dest);
+            Dragon?.TryCastBreath(target.Cell);
+        }
+
+        public override void DrawEffectPreview(LocalTargetInfo target)
+        {
+            if (target.IsValid) GenDraw.DrawRadiusRing(target.Cell, 3.9f, new Color(.35f, .92f, 1f));
+        }
+
+        private bool CanTarget(LocalTargetInfo target, bool hostileOnly)
+        {
+            Pawn caster = parent?.pawn;
+            if (Dragon?.CanUseBreath != true || caster?.Map == null || !target.IsValid ||
+                !target.Cell.InBounds(caster.Map) || target.Cell.DistanceTo(caster.Position) > 15.9f)
+                return false;
+            if (!hostileOnly) return true;
+            return target.Thing is IAttackTarget attackTarget &&
+                GenHostility.IsActiveThreatToPlayer(attackTarget);
         }
     }
 
@@ -465,6 +638,7 @@ namespace Yunjianzi
             Pawn same = existing.FirstOrDefault(p => p.kindDef == desired && p.TryGetComp<CompYunjianziSkyWyvern>()?.IsBoundTo(Pawn) == true);
             if (same != null)
             {
+                same.TryGetComp<CompYunjianziSkyWyvern>()?.BindTo(Pawn);
                 if (same.Spawned && same.Map != Pawn.Map) same.DeSpawn();
                 if (!same.Spawned) GenSpawn.Spawn(same, Pawn.Position, Pawn.Map);
                 same.Position = CellFinder.RandomClosewalkCellNear(Pawn.Position, Pawn.Map, 4);

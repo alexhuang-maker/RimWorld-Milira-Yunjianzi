@@ -1,31 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <ThingDef Name="YJZ_SkyWyvern_Base" ParentName="HeavyMechanoid" Abstract="True">
+  <ThingDef Name="YJZ_SkyWyvern_Base" ParentName="AnimalThingBase" Abstract="True">
     <label>云间机飞龙</label>
     <description>以米莉拉天空精灵技术铸成骨骼，以建木神枢镇压核心，再由神机诀赋予灵识的唯一机关灵兽。它舍弃了不稳定的飞行构型，以四足稳行、搬运重物，并在地面战斗中展开护盾、雷息与青雷利爪。</description>
     <thingClass>Pawn</thingClass>
     <statBases>
-      <BandwidthCost>0</BandwidthCost>
-      <MechEnergyLossPerHP>0</MechEnergyLossPerHP>
       <CarryingCapacity>3000</CarryingCapacity>
+      <Wildness>0</Wildness>
       <ArmorRating_Sharp>1.5</ArmorRating_Sharp>
       <ArmorRating_Blunt>1.0</ArmorRating_Blunt>
       <ArmorRating_Heat>1.2</ArmorRating_Heat>
     </statBases>
     <race>
       <body>Mech_Diabolus</body>
-      <intelligence>ToolUser</intelligence>
-      <thinkTreeMain>Mechanoid</thinkTreeMain>
-      <mechWeightClass>Heavy</mechWeightClass>
-      <!-- Define the sole age stage explicitly. Several active mods query
-           DevelopmentalStage while PawnGenerator is still constructing needs;
-           inheriting an empty/foreign stage list makes that query index -1. -->
+      <renderTree>Animal</renderTree>
+      <intelligence>Animal</intelligence>
+      <thinkTreeMain>Animal</thinkTreeMain>
+      <thinkTreeConstant>AnimalConstant</thinkTreeConstant>
+      <trainability>Advanced</trainability>
+      <hasGenders>false</hasGenders>
+      <herdAnimal>false</herdAnimal>
+      <predator>false</predator>
+      <baseHungerRate>0</baseHungerRate>
+      <foodType>OmnivoreAnimal</foodType>
+      <lifeExpectancy>9999</lifeExpectancy>
+      <specialTrainables>
+        <li MayRequire="Ludeon.RimWorld.Odyssey">AttackTarget</li>
+      </specialTrainables>
       <lifeStageAges Inherit="False">
-        <li><def>MechanoidFullyFormed</def><minAge>0</minAge></li>
+        <li><def>AnimalAdult</def><minAge>0</minAge></li>
       </lifeStageAges>
-      <mechEnabledWorkTypes>
-        <li>Hauling</li>
-      </mechEnabledWorkTypes>
     </race>
     <tools>
       <li><label>青雷前爪</label><capacities><li>Scratch</li></capacities><power>30</power><cooldownTime>1.75</cooldownTime></li>
@@ -75,15 +79,68 @@
     </comps>
   </ThingDef>
 
-  <PawnKindDef Name="YJZ_SkyWyvernKind_Base" ParentName="HeavyMechanoidKind" Abstract="True">
+  <PawnKindDef Name="YJZ_SkyWyvernKind_Base" ParentName="AnimalKindBase" Abstract="True">
     <label>云间机飞龙</label><combatPower>1600</combatPower><weaponMoney>0</weaponMoney><apparelMoney>0</apparelMoney><techHediffsMoney>0</techHediffsMoney>
     <lifeStages>
       <li><bodyGraphicData><texPath>Yunjianzi/Pawn/Shenji/ShenjiTransparentBody</texPath><shaderType>Cutout</shaderType><graphicClass>Graphic_Multi</graphicClass><drawSize>1</drawSize></bodyGraphicData></li>
     </lifeStages>
   </PawnKindDef>
   <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base"><defName>YJZ_SkyWyvern_Purple</defName><label>云间机飞龙·紫府</label><race>YJZ_SkyWyvern_Race_Purple</race><combatPower>1800</combatPower></PawnKindDef>
-  <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base"><defName>YJZ_SkyWyvern_Golden</defName><label>云间机飞龙·金丹</label><race>YJZ_SkyWyvern_Race_Golden</race><combatPower>4500</combatPower></PawnKindDef>
-  <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base"><defName>YJZ_SkyWyvern_Spirit</defName><label>云间机飞龙·化神</label><race>YJZ_SkyWyvern_Race_Spirit</race><combatPower>12000</combatPower></PawnKindDef>
+  <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base">
+    <defName>YJZ_SkyWyvern_Golden</defName><label>云间机飞龙·金丹</label><race>YJZ_SkyWyvern_Race_Golden</race><combatPower>4500</combatPower>
+    <abilities><li>YJZ_SkyWyvernBreath</li></abilities>
+  </PawnKindDef>
+  <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base">
+    <defName>YJZ_SkyWyvern_Spirit</defName><label>云间机飞龙·化神</label><race>YJZ_SkyWyvern_Race_Spirit</race><combatPower>12000</combatPower>
+    <abilities><li>YJZ_SkyWyvernBreath</li></abilities>
+  </PawnKindDef>
+
+  <!-- Animal_PreMain is an official extension point in the vanilla Animal
+       think tree. The job giver immediately returns null for every other
+       animal, so this does not alter colony pets or released war animals. -->
+  <ThinkTreeDef>
+    <defName>YJZ_SkyWyvernRaidAssault</defName>
+    <insertTag>Animal_PreMain</insertTag>
+    <insertPriority>1000</insertPriority>
+    <thinkRoot Class="Yunjianzi.JobGiver_YunjianziSkyWyvernRaidAssault">
+      <targetAcquireRadius>999</targetAcquireRadius>
+      <targetKeepRadius>999</targetKeepRadius>
+      <chaseTarget>true</chaseTarget>
+      <allowTurrets>true</allowTurrets>
+      <ignoreNonCombatants>true</ignoreNonCombatants>
+    </thinkRoot>
+  </ThinkTreeDef>
+
+  <AbilityDef>
+    <defName>YJZ_SkyWyvernBreath</defName>
+    <label>雷霆龙息</label>
+    <description>喷吐高密度雷霆，对目标区域造成雷电、EMP与麻痹。云龙在袭击中会自主选择密集敌群施放。</description>
+    <iconPath>Yunjianzi/UI/Abilities/SummonSkyWyvern</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <aiCanUse>true</aiCanUse>
+    <ai_IsOffensive>true</ai_IsOffensive>
+    <ai_SearchAOEForTargets>true</ai_SearchAOEForTargets>
+    <hostile>true</hostile>
+    <statBases><Ability_EffectRadius>3.9</Ability_EffectRadius></statBases>
+    <verbProperties>
+      <verbClass>Verb_CastAbility</verbClass>
+      <range>15.9</range>
+      <warmupTime>1.2</warmupTime>
+      <requireLineOfSight>true</requireLineOfSight>
+      <targetParams>
+        <canTargetLocations>true</canTargetLocations>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetAnimals>true</canTargetAnimals>
+        <canTargetHumans>true</canTargetHumans>
+        <canTargetMechs>true</canTargetMechs>
+        <canTargetBuildings>true</canTargetBuildings>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="Yunjianzi.CompProperties_AbilitySkyWyvernBreath" />
+    </comps>
+  </AbilityDef>
 
   <HediffDef>
     <defName>YJZ_SkyWyvernAcceleration</defName>
