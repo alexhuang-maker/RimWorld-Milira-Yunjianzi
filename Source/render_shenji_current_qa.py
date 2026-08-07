@@ -13,6 +13,7 @@ MOD = Path(__file__).resolve().parents[1]
 REF = MOD.parent / "参考Mod" / "必需" / "Milira Race [3256974620]" / "Content" / "Textures"
 SHENJI = MOD / "Content" / "Textures" / "Yunjianzi"
 OUTPUT = MOD / "ArtSource" / "Shenji" / "Shenji_CurrentAssets_QA.png"
+EQUIPMENT_OUTPUT = MOD / "ArtSource" / "Shenji" / "Shenji_ThreeTier_Equipment_QA.png"
 
 
 def load(path: Path) -> Image.Image:
@@ -78,7 +79,51 @@ def main() -> None:
     draw.text((14, tile * 4 + 14), "Row 1 is native Milira Guard. Rows 2-4 preserve its exact goggle silhouette and anchor.", fill=(132, 225, 225, 255))
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     sheet.save(OUTPUT)
+    render_equipment_sheet()
     print(OUTPUT)
+    print(EQUIPMENT_OUTPUT)
+
+
+def fit_visible(image: Image.Image, size: tuple[int, int]) -> Image.Image:
+    bounds = image.getchannel("A").getbbox()
+    result = Image.new("RGBA", size)
+    if bounds is None:
+        return result
+    visible = image.crop(bounds)
+    visible.thumbnail((size[0] - 24, size[1] - 42), Image.Resampling.LANCZOS)
+    result.alpha_composite(visible, ((size[0] - visible.width) // 2, (size[1] - visible.height) // 2))
+    return result
+
+
+def render_equipment_sheet() -> None:
+    tiers = (
+        ("Base - Qigong / Foundation", "Base", "ShenjiCannon_Assault.png", "Assault / Gatling physical rounds"),
+        ("Intermediate - Zifu / Jindan", "Intermediate", "ShenjiCannon_Gauss.png", "Pale-cyan beam weapon"),
+        ("Final - Huashen", "Final", "ShenjiCannon_Legendary.png", "Legendary beam + ricochet node"),
+    )
+    directions = ("south", "east", "west", "north")
+    tile_w, tile_h = 340, 330
+    header = 58
+    canvas = checker((tile_w * 5, header + tile_h * 3))
+    draw = ImageDraw.Draw(canvas)
+    draw.rectangle((0, 0, canvas.width, header), fill=(10, 24, 31, 255))
+    draw.text((18, 17), "Shenji Milian - actual shipped three-tier equipment", fill=(218, 248, 245, 255))
+    for row, (label, tier, weapon_name, weapon_desc) in enumerate(tiers):
+        y = header + row * tile_h
+        for column, direction in enumerate(directions):
+            x = column * tile_w
+            actual = pawn(tier, direction)
+            canvas.alpha_composite(actual.resize((320, 320), Image.Resampling.LANCZOS), (x + 10, y))
+            draw.line((x + tile_w // 2, y, x + tile_w // 2, y + 300), fill=(40, 220, 220, 100), width=1)
+            draw.text((x + 10, y + 302), f"{label} / {direction}", fill=(215, 240, 240, 255))
+        weapon_path = SHENJI / "Weapons" / weapon_name
+        weapon = fit_visible(load(weapon_path), (tile_w, 255))
+        wx = tile_w * 4
+        canvas.alpha_composite(weapon, (wx, y + 18))
+        draw.text((wx + 10, y + 274), label, fill=(240, 220, 150, 255))
+        draw.text((wx + 10, y + 302), weapon_desc, fill=(165, 220, 225, 255))
+    EQUIPMENT_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    canvas.save(EQUIPMENT_OUTPUT)
 
 
 if __name__ == "__main__":
