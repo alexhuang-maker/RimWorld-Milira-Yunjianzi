@@ -178,6 +178,25 @@ namespace Yunjianzi
 
             if (pawn.apparel != null)
             {
+                // Native Milian kinds are generated with Milian_Lining under
+                // their middle armour. Shenji uses the same real layer, always
+                // made from hyperweave. It is issued once at initialization;
+                // later tier changes preserve this exact lining.
+                bool firstInitialization = force && lastArmorTier <= 0;
+                bool hasLining = pawn.apparel.WornApparel
+                    .Any(a => a.def == YJZDefOf.Milian_Lining);
+                if (firstInitialization && !hasLining)
+                {
+                    Apparel lining = ThingMaker.MakeThing(YJZDefOf.Milian_Lining, YJZDefOf.Hyperweave) as Apparel;
+                    if (lining != null)
+                    {
+                        CompQuality quality = lining.TryGetComp<CompQuality>();
+                        if (quality != null)
+                            quality.SetQuality(QualityCategory.Normal, ArtGenerationContext.Outsider);
+                        pawn.apparel.Wear(lining, false);
+                    }
+                }
+
                 ThingDef desiredArmor = tier >= 3 ? YJZDefOf.YJZ_Apparel_ShenjiArmor_Final :
                     tier >= 2 ? YJZDefOf.YJZ_Apparel_ShenjiArmor_Intermediate : YJZDefOf.YJZ_Apparel_ShenjiArmor_Base;
                 List<Apparel> obsoleteIntrinsicArmor = pawn.apparel.WornApparel
@@ -376,7 +395,8 @@ namespace Yunjianzi
     {
         public static bool IsIntrinsicApparel(ThingDef def)
         {
-            return IsIntrinsicArmor(def) || def == YJZDefOf.YJZ_Apparel_ShenjiVisor;
+            return IsIntrinsicArmor(def) || def == YJZDefOf.YJZ_Apparel_ShenjiVisor ||
+                def == YJZDefOf.Milian_Lining;
         }
 
         public static bool IsIntrinsicArmor(ThingDef def)

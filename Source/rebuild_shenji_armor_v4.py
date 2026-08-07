@@ -1,10 +1,10 @@
-"""Build the three Shenji armor tiers from the arm-free 3x4 atlas.
+"""Build the three Shenji armor tiers from the fitted-arm 3x4 atlas.
 
 The generated atlas is only a design source. This deterministic pass removes
 the layout padding, scales every direction onto the native 512px Milian pawn
-canvas, and writes the exact apparel paths loaded by RimWorld. The rigid arms
-and shoulders are intentionally absent: Milian weapons use the separate
-PawnRenderNode_Carried pipeline and cannot pose apparel-painted limbs.
+canvas, and writes the exact apparel paths loaded by RimWorld. The armour uses
+native Milian construction: compact neutral limbs remain in the apparel
+silhouette while the weapon is drawn independently by the carried node.
 """
 
 from pathlib import Path
@@ -13,7 +13,7 @@ from PIL import Image
 
 
 MOD = Path(__file__).resolve().parents[1]
-ATLAS = MOD / "ArtSource" / "GeneratedAssets" / "Shenji" / "ShenjiArmor_Orthographic_Armless_v5_transparent.png"
+ATLAS = MOD / "ArtSource" / "GeneratedAssets" / "Shenji" / "ShenjiArmor_Orthographic_FittedArms_v6_transparent.png"
 OUTPUT = MOD / "Content" / "Textures" / "Yunjianzi" / "Apparel" / "Shenji"
 
 ROWS = ("Base", "Intermediate", "Final")
