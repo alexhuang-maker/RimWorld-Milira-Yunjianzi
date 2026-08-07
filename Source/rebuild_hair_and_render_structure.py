@@ -91,6 +91,105 @@ def tint_south_hair_tips(image: Image.Image) -> Image.Image:
     return result
 
 
+def tint_front_fringe(image: Image.Image, direction: str) -> Image.Image:
+    """Give the compact front fringe the icon's restrained cyan tip colour."""
+    result = image.copy().convert("RGBA")
+    pixels = result.load()
+    if direction == "south":
+        start_y, end_y = 238, 310
+        x_min, x_max = 188, 324
+    else:
+        start_y, end_y = 230, 355
+        x_min, x_max = 150, 362
+    target = (135, 224, 235)
+    for y in range(start_y, min(end_y + 1, result.height)):
+        vertical = max(0.0, min(1.0, (y - start_y) / (end_y - start_y)))
+        strength = vertical * 0.34
+        for x in range(x_min, min(x_max + 1, result.width)):
+            r, g, b, a = pixels[x, y]
+            if a < 16 or (r + g + b) / 3 < 125:
+                continue
+            pixels[x, y] = (
+                round(r * (1 - strength) + target[0] * strength),
+                round(g * (1 - strength) + target[1] * strength),
+                round(b * (1 - strength) + target[2] * strength),
+                a,
+            )
+    return result
+
+
+def add_forehead_chain(image: Image.Image, direction: str) -> Image.Image:
+    """Add the gold hair-chain and its jade to the foreground hair layer.
+
+    It is authored directly on the same 512px pawn canvas, so the ornament
+    inherits the hair addon's rotation and cannot drift like a separate halo.
+    """
+    scale = 4
+    overlay = Image.new("RGBA", (512 * scale, 512 * scale))
+    draw = ImageDraw.Draw(overlay)
+
+    def pt(value):
+        return tuple(round(component * scale) for component in value)
+
+    gold_dark = (111, 78, 34, 255)
+    gold = (216, 177, 82, 255)
+    gold_light = (250, 221, 132, 255)
+    jade_dark = (48, 147, 164, 255)
+    jade = (118, 226, 235, 255)
+    jade_light = (220, 252, 249, 255)
+
+    if direction == "south":
+        # A shallow chain follows the hairline and visibly carries the jade.
+        points = []
+        for index in range(25):
+            t = index / 24
+            x = 205 + (307 - 205) * t
+            y = 221 + 22 * (1 - (2 * t - 1) ** 2)
+            points.append(pt((x, y)))
+        draw.line(points, fill=gold_dark, width=3 * scale)
+        draw.line(points, fill=gold, width=2 * scale)
+        for index in range(0, 25, 2):
+            x, y = points[index]
+            radius = 1.45 * scale
+            draw.ellipse((x - radius, y - radius, x + radius, y + radius), fill=gold_light, outline=gold_dark, width=scale)
+
+        cx, cy = 256, 244
+        outer = [pt((cx, cy - 17)), pt((cx + 12, cy)), pt((cx, cy + 18)), pt((cx - 12, cy))]
+        inner = [pt((cx, cy - 12)), pt((cx + 8, cy)), pt((cx, cy + 13)), pt((cx - 8, cy))]
+        shine = [pt((cx - 1, cy - 9)), pt((cx + 5, cy)), pt((cx - 1, cy + 7)), pt((cx - 4, cy))]
+        draw.polygon(outer, fill=gold, outline=gold_dark)
+        draw.line(outer + [outer[0]], fill=gold_dark, width=scale)
+        draw.polygon(inner, fill=jade, outline=jade_dark)
+        draw.line(inner + [inner[0]], fill=jade_dark, width=scale)
+        draw.polygon(shine, fill=jade_light)
+    elif direction in ("east", "west"):
+        # Only the visible temple segment and the thin jade edge survive in
+        # profile. West is generated from east below, keeping anatomy exact.
+        if direction == "east":
+            chain_points = [pt((270, 223)), pt((282, 228)), pt((294, 235)), pt((303, 241))]
+            jade_points = [pt((304, 235)), pt((308, 242)), pt((304, 249)), pt((301, 242))]
+        else:
+            chain_points = [pt((242, 223)), pt((230, 228)), pt((218, 235)), pt((209, 241))]
+            jade_points = [pt((208, 235)), pt((211, 242)), pt((208, 249)), pt((204, 242))]
+        draw.line(chain_points, fill=gold_dark, width=3 * scale)
+        draw.line(chain_points, fill=gold, width=2 * scale)
+        for x, y in chain_points[:-1]:
+            radius = 1.35 * scale
+            draw.ellipse((x - radius, y - radius, x + radius, y + radius), fill=gold_light, outline=gold_dark, width=scale)
+        draw.polygon(jade_points, fill=gold, outline=gold_dark)
+        inset = []
+        center_x = sum(point[0] for point in jade_points) / 4
+        center_y = sum(point[1] for point in jade_points) / 4
+        for x, y in jade_points:
+            inset.append((round(center_x + (x - center_x) * 0.58), round(center_y + (y - center_y) * 0.68)))
+        draw.polygon(inset, fill=jade, outline=jade_dark)
+
+    overlay = overlay.resize((512, 512), Image.Resampling.LANCZOS)
+    result = image.copy().convert("RGBA")
+    result.alpha_composite(overlay)
+    return result
+
+
 def rebuild_hair() -> None:
     master = rgba(MASTER, (1536, 1024))
     # The master is an art-layout sheet, not a 3x2 grid of game-ready canvases.
@@ -105,6 +204,10 @@ def rebuild_hair() -> None:
     # old post-process exposed the cheek/jaw as another apparent pointed ear.
     unified_west = side_redraw_canvas()
     unified_east = unified_west.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+
+    front_south = add_forehead_chain(tint_front_fringe(front_south, "south"), "south")
+    unified_east = add_forehead_chain(unified_east, "east")
+    unified_west = add_forehead_chain(unified_west, "west")
 
     save_cell(front_south, "HairFront", "YunjianziHairFront", "south")
     save_cell(unified_west, "HairFront", "YunjianziHairFront", "west")
