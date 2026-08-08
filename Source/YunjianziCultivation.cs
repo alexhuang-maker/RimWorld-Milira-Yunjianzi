@@ -241,6 +241,27 @@ namespace Yunjianzi
             return true;
         }
 
+        // Summoning is preparation, not an emergency combat action.  Drafted
+        // pawns and pawns already tracking an enemy must first leave combat.
+        // Every summon entry point checks this again so hotkeys and external
+        // gizmo activators cannot bypass the disabled Command.
+        private bool SummoningBlockedByCombat
+        {
+            get
+            {
+                return Pawn != null &&
+                    (Pawn.Drafted || Pawn.mindState?.enemyTarget != null);
+            }
+        }
+
+        private bool RejectSummoningDuringCombat()
+        {
+            if (!SummoningBlockedByCombat) return false;
+            Messages.Message("战斗中无法唤起神机或云麒麟。请先解除征召并脱离交战。",
+                Pawn, MessageTypeDefOf.RejectInput, false);
+            return true;
+        }
+
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
             foreach (Gizmo gizmo in base.CompGetGizmosExtra()) yield return gizmo;

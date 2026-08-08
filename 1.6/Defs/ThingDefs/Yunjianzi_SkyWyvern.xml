@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
   <ThingDef Name="YJZ_SkyWyvern_Base" ParentName="AnimalThingBase" Abstract="True">
-    <label>云间机飞龙</label>
-    <description>以米莉拉天空精灵技术铸成骨骼，以建木神枢镇压核心，再由神机诀赋予灵识的唯一机关灵兽。它舍弃了不稳定的飞行构型，以四足稳行、搬运重物，并在地面战斗中展开护盾、雷息与青雷利爪。</description>
+    <label>云麒麟</label>
+    <description>栖于云海之上的古老生物灵兽，也是上一代云间子的坐骑。旧主远去后，她守着那份传承沉眠多年；当新一代云间子展开宝卷，她从相似却尚显稚嫩的气息中认出了道统，于是再度履行旧约，陪伴在传人身旁。她平日温顺而聪慧，能够搬运重物；袭击来临时则会自行解放，展开灵力护盾，以雷霆吐息与青雷利爪扑向敌群。</description>
     <thingClass>Pawn</thingClass>
     <statBases>
       <CarryingCapacity>3000</CarryingCapacity>
@@ -12,7 +12,7 @@
       <ArmorRating_Heat>1.2</ArmorRating_Heat>
     </statBases>
     <race>
-      <body>Mech_Diabolus</body>
+      <body>QuadrupedAnimalWithPawsAndTail</body>
       <renderTree>Animal</renderTree>
       <intelligence>Animal</intelligence>
       <thinkTreeMain>Animal</thinkTreeMain>
@@ -39,7 +39,7 @@
 
   <ThingDef ParentName="YJZ_SkyWyvern_Base">
     <defName>YJZ_SkyWyvern_Race_Purple</defName>
-    <label>云间机飞龙·紫府</label>
+    <label>云麒麟·紫府</label>
     <statBases>
       <MoveSpeed>4.14</MoveSpeed><MaxHitPoints>6000</MaxHitPoints><MarketValue>24000</MarketValue>
     </statBases>
@@ -52,7 +52,7 @@
   </ThingDef>
   <ThingDef ParentName="YJZ_SkyWyvern_Base">
     <defName>YJZ_SkyWyvern_Race_Golden</defName>
-    <label>云间机飞龙·金丹</label>
+    <label>云麒麟·金丹</label>
     <statBases>
       <MoveSpeed>4.6</MoveSpeed><MaxHitPoints>30000</MaxHitPoints><MarketValue>65000</MarketValue>
       <ArmorRating_Sharp>2.0</ArmorRating_Sharp><ArmorRating_Blunt>1.5</ArmorRating_Blunt><ArmorRating_Heat>1.8</ArmorRating_Heat>
@@ -66,7 +66,7 @@
   </ThingDef>
   <ThingDef ParentName="YJZ_SkyWyvern_Base">
     <defName>YJZ_SkyWyvern_Race_Spirit</defName>
-    <label>云间机飞龙·化神</label>
+    <label>云麒麟·化神</label>
     <statBases>
       <MoveSpeed>5.98</MoveSpeed><MaxHitPoints>500000</MaxHitPoints><MarketValue>250000</MarketValue>
       <ArmorRating_Sharp>2.8</ArmorRating_Sharp><ArmorRating_Blunt>2.2</ArmorRating_Blunt><ArmorRating_Heat>2.5</ArmorRating_Heat>
@@ -80,18 +80,18 @@
   </ThingDef>
 
   <PawnKindDef Name="YJZ_SkyWyvernKind_Base" ParentName="AnimalKindBase" Abstract="True">
-    <label>云间机飞龙</label><combatPower>1600</combatPower><weaponMoney>0</weaponMoney><apparelMoney>0</apparelMoney><techHediffsMoney>0</techHediffsMoney>
+    <label>云麒麟</label><combatPower>1600</combatPower><weaponMoney>0</weaponMoney><apparelMoney>0</apparelMoney><techHediffsMoney>0</techHediffsMoney>
     <lifeStages>
       <li><bodyGraphicData><texPath>Yunjianzi/Pawn/Shenji/ShenjiTransparentBody</texPath><shaderType>Cutout</shaderType><graphicClass>Graphic_Multi</graphicClass><drawSize>1</drawSize></bodyGraphicData></li>
     </lifeStages>
   </PawnKindDef>
-  <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base"><defName>YJZ_SkyWyvern_Purple</defName><label>云间机飞龙·紫府</label><race>YJZ_SkyWyvern_Race_Purple</race><combatPower>1800</combatPower></PawnKindDef>
+  <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base"><defName>YJZ_SkyWyvern_Purple</defName><label>云麒麟·紫府</label><race>YJZ_SkyWyvern_Race_Purple</race><combatPower>1800</combatPower></PawnKindDef>
   <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base">
-    <defName>YJZ_SkyWyvern_Golden</defName><label>云间机飞龙·金丹</label><race>YJZ_SkyWyvern_Race_Golden</race><combatPower>4500</combatPower>
+    <defName>YJZ_SkyWyvern_Golden</defName><label>云麒麟·金丹</label><race>YJZ_SkyWyvern_Race_Golden</race><combatPower>4500</combatPower>
     <abilities><li>YJZ_SkyWyvernBreath</li></abilities>
   </PawnKindDef>
   <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base">
-    <defName>YJZ_SkyWyvern_Spirit</defName><label>云间机飞龙·化神</label><race>YJZ_SkyWyvern_Race_Spirit</race><combatPower>12000</combatPower>
+    <defName>YJZ_SkyWyvern_Spirit</defName><label>云麒麟·化神</label><race>YJZ_SkyWyvern_Race_Spirit</race><combatPower>12000</combatPower>
     <abilities><li>YJZ_SkyWyvernBreath</li></abilities>
   </PawnKindDef>
 
@@ -113,8 +113,8 @@
 
   <AbilityDef>
     <defName>YJZ_SkyWyvernBreath</defName>
-    <label>雷霆龙息</label>
-    <description>喷吐高密度雷霆，对目标区域造成雷电、EMP与麻痹。云龙在袭击中会自主选择密集敌群施放。</description>
+    <label>雷霆吐息</label>
+    <description>吐出汇聚于灵角与经脉中的高密度雷霆，对目标区域造成雷电、EMP与麻痹。云麒麟在袭击中会自主选择密集敌群施放。</description>
     <iconPath>Yunjianzi/UI/Abilities/SummonSkyWyvern</iconPath>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
     <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
@@ -144,8 +144,8 @@
 
   <HediffDef>
     <defName>YJZ_SkyWyvernAcceleration</defName>
-    <label>云间机加速场</label>
-    <description>云间机飞龙展开的稳定加速场，正在提升友军的移动与操作效率。</description>
+    <label>云麒麟瑞气</label>
+    <description>云麒麟舒展的护佑瑞气，正在提升友军的移动与操作效率。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <stages><li><statOffsets><MoveSpeed>0.6</MoveSpeed></statOffsets><capMods><li><capacity>Manipulation</capacity><offset>0.08</offset></li></capMods></li></stages>

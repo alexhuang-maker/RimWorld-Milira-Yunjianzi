@@ -463,7 +463,10 @@ namespace Yunjianzi
             int count = BoundShenji().Count;
             if (count >= ShenjiLimit)
                 summon.defaultDesc += string.Format("\n\n当前神机：{0}/{1}。再次召唤将覆盖最早召唤的一台。", count, ShenjiLimit);
-            if (Energy < 10f) summon.Disable("灵力不足：需要10点。");
+            if (SummoningBlockedByCombat)
+                summon.Disable("战斗中无法唤起神机。请先解除征召并脱离交战。");
+            else if (Energy < 10f)
+                summon.Disable("灵力不足：需要10点。");
             yield return summon;
         }
 
@@ -487,7 +490,7 @@ namespace Yunjianzi
 
         private void SummonShenji()
         {
-            if (Pawn == null || !Pawn.Spawned || !TrySpend(10f)) return;
+            if (Pawn == null || !Pawn.Spawned || RejectSummoningDuringCombat() || !TrySpend(10f)) return;
             List<Pawn> bound = BoundShenji();
             Pawn shenji = PawnGenerator.GeneratePawn(YJZDefOf.YJZ_Shenji, Faction.OfPlayer);
             int removeCount = Math.Max(0, bound.Count - ShenjiLimit + 1);

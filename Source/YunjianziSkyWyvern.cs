@@ -22,8 +22,9 @@ namespace Yunjianzi
     }
 
     /// <summary>
-    /// The unique 神机诀 beast. It remains grounded and uses one coherent directional
-    /// form; combat state affects abilities, not art.
+    /// The unique biological cloud qilin bound to Yunjianzi's lineage. It remains
+    /// grounded and uses one coherent directional form; combat state affects
+    /// abilities, not art.
     /// </summary>
     public sealed class CompYunjianziSkyWyvern : ThingComp
     {
@@ -475,7 +476,7 @@ namespace Yunjianzi
             if (pawn.mindState != null) pawn.mindState.enemyTarget = null;
             pawn.jobs?.EndCurrentJob(JobCondition.InterruptForced, false, true);
             if (shouldRelease)
-                Messages.Message("袭击来临，云龙自行解放并扑向敌群。", pawn,
+                Messages.Message("袭击来临，云麒麟自行解放并扑向敌群。", pawn,
                     MessageTypeDefOf.ThreatSmall, false);
         }
 
@@ -508,7 +509,7 @@ namespace Yunjianzi
             {
                 if (relationAdded && pawn.relations.DirectRelationExists(PawnRelationDefOf.Overseer, owner))
                     pawn.relations.RemoveDirectRelation(PawnRelationDefOf.Overseer, owner);
-                Log.ErrorOnce("[Yunjianzi] 云间机飞龙控制关系初始化失败：" + ex, pawn.thingIDNumber ^ 0x71D23);
+                Log.ErrorOnce("[Yunjianzi] 云麒麟羁绊初始化失败：" + ex, pawn.thingIDNumber ^ 0x71D23);
                 return false;
             }
         }
@@ -653,12 +654,15 @@ namespace Yunjianzi
         {
             Command_Action summon = new Command_Action
             {
-                defaultLabel = "神机诀·唤云间机飞龙",
-                defaultDesc = "消耗100点灵力，唤醒或召回世界中唯一的云间机飞龙。已解锁更高形态时会以新躯替换旧躯。",
+                defaultLabel = "神机诀·唤云麒麟",
+                defaultDesc = "消耗100点灵力，唤来或召回世界中唯一的云麒麟。她曾是上一代云间子的坐骑，如今认可新一代传人并守护在侧。更高境界会唤醒她更完整的力量。",
                 icon = YunjianziAbilityTextures.SummonSkyWyvern,
                 action = SummonSkyWyvern
             };
-            if (Energy < 100f) summon.Disable("灵力不足：需要100点。");
+            if (SummoningBlockedByCombat)
+                summon.Disable("战斗中无法唤起云麒麟。请先解除征召并脱离交战。");
+            else if (Energy < 100f)
+                summon.Disable("灵力不足：需要100点。");
             yield return summon;
         }
 
@@ -681,7 +685,7 @@ namespace Yunjianzi
 
         private void SummonSkyWyvern()
         {
-            if (Pawn == null || !Pawn.Spawned || !TrySpend(100f)) return;
+            if (Pawn == null || !Pawn.Spawned || RejectSummoningDuringCombat() || !TrySpend(100f)) return;
             PawnKindDef desired = DesiredSkyWyvernKind();
             List<Pawn> existing = BoundSkyWyverns();
             Pawn same = existing.FirstOrDefault(p => p.kindDef == desired && p.TryGetComp<CompYunjianziSkyWyvern>()?.IsBoundTo(Pawn) == true);
@@ -710,11 +714,11 @@ namespace Yunjianzi
             {
                 wyvern.Destroy(DestroyMode.Vanish);
                 Energy += 100f;
-                Messages.Message("云间机飞龙未能进入原生控制组，召唤已回滚并返还灵力。", Pawn, MessageTypeDefOf.RejectInput, false);
+                Messages.Message("未能与云麒麟建立羁绊，召唤已回滚并返还灵力。", Pawn, MessageTypeDefOf.RejectInput, false);
                 return;
             }
             FleckMaker.Static(cell, Pawn.Map, FleckDefOf.PsycastSkipOuterRingExit, 2.4f);
-            Messages.Message("建木神枢开启，云间机飞龙应召而至。", wyvern, MessageTypeDefOf.PositiveEvent, false);
+            Messages.Message("云气汇聚，云麒麟循着旧约来到新一代云间子身旁。", wyvern, MessageTypeDefOf.PositiveEvent, false);
         }
     }
 

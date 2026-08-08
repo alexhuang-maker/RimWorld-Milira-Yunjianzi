@@ -135,11 +135,11 @@ namespace Yunjianzi
             N(ShenjiLegendaryFirepower, "神机炮·传说", "神机炮达到传奇高斯步枪级火力，武器能量永不枯竭。", 4, 2, 0, ShenjiGauss),
             N(ShenjiRicochetLaser, "流光折跃", "神机激光命中后向目标附近至多三个敌人连续跳射；每次跳射造成主射击30%的伤害。", 4, 2, 1, ShenjiGauss),
             N(ShenjiQuadControl, "四象神机", "云间子可同时维持四台终极神机。", 5, 2, 7, ShenjiDualControl),
-            N(ShenjiWyvern, "云间机飞龙", "唤醒唯一的机械天兽。紫府形态可在战斗中起飞，以三道青雷爪痕横扫近敌，并为友军提供加速与范围护盾；平时仅负责搬运。", 3, 2, 8, ShenjiSummon),
-            N(ShenjiWyvernAdaptiveShield, "金丹龙躯", "飞龙体型与装甲进化，移动速度提升到普通小人水平，并获得会针对近期伤害逐步适应的厚重护盾。", 4, 2, 8, ShenjiWyvern),
-            N(ShenjiWyvernBreath, "雷霆龙息", "飞龙获得十五格雷电龙息：每日恢复一发、最多储存两发，以迫击炮级范围造成高额雷电伤害、EMP与麻痹。", 4, 2, 9, ShenjiWyvern),
-            N(ShenjiWyvernAscension, "化神天兽", "飞龙完成终极重构：巨躯、五道电爪、近身碾压场与五十万级结构耐久完全展开，移动速度提升至普通小人的130%。", 5, 2, 8, ShenjiWyvernAdaptiveShield),
-            N(ShenjiWyvernArsenal, "万雷神枢", "龙息改为半日恢复一发、最多五发；背部神枢自动向敌阵发射激光火箭，并强化所有雷电、EMP与麻痹效果。", 5, 2, 9, ShenjiWyvernBreath, ShenjiWyvernAscension),
+            N(ShenjiWyvern, "云麒麟旧约", "唤来上一代云间子的坐骑——生物灵兽云麒麟。她认可了新一代传人，平时协助搬运；袭击来临时会自行解放、扑向敌群，以三道青雷爪痕横扫近敌，并为友军展开加速与范围护盾。", 3, 2, 8, ShenjiSummon),
+            N(ShenjiWyvernAdaptiveShield, "金丹灵躯", "云麒麟唤醒更深层的血脉，体型与灵躯强度提升，移动速度达到普通小人水平，并获得会针对近期伤害逐步适应的厚重灵力护盾。", 4, 2, 8, ShenjiWyvern),
+            N(ShenjiWyvernBreath, "雷霆吐息", "云麒麟获得十五格雷霆吐息：每日恢复一发、最多储存两发，以迫击炮级范围造成高额雷电伤害、EMP与麻痹。", 4, 2, 9, ShenjiWyvern),
+            N(ShenjiWyvernAscension, "化神瑞兽", "云麒麟彻底唤醒传承灵性：巨躯、五道电爪、近身威压场与五十万级生命力完全展开，移动速度提升至普通小人的130%。", 5, 2, 8, ShenjiWyvernAdaptiveShield),
+            N(ShenjiWyvernArsenal, "万雷云庭", "雷霆吐息改为半日恢复一发、最多五发；背部灵鳞会凝出雷光飞矢射向敌阵，并强化所有雷电、EMP与麻痹效果。", 5, 2, 9, ShenjiWyvernBreath, ShenjiWyvernAscension),
 
             N(YangfuPrimer, "阳符入门", "研墨裁纸，以灵力落笔。参悟后开启画符台与阳符传承。", 1, 3, 2),
             N(FireTornadoI, "火龙卷·燃符", "向十五格内凝出赤符，符破后生成受控火龙卷，持续游戏内半小时。", 1, 3, 6, YangfuPrimer),
@@ -394,7 +394,7 @@ namespace Yunjianzi
         {
             new[] { "附灵", "护体·同契", "剑影", "瞬斩", "天剑雨", "护主", "破甲" },
             new[] { "回元", "雷域", "阵纹", "阵遁", "随身阵", "灵盾", "界壁" },
-            new[] { "主火力", "折射", "机动", "护盾", "预留", "接口", "败阵归元", "控制", "天兽龙躯", "雷霆龙息" },
+            new[] { "主火力", "折射", "机动", "护盾", "预留", "接口", "败阵归元", "控制", "瑞兽灵躯", "雷霆吐息" },
             new[] { "器道", "悟道", "身法", "心境", "医身", "心剑", "火龙卷", "天雷神风", "撒豆成兵" }
         };
 
