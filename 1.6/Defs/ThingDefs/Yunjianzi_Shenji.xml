@@ -137,14 +137,17 @@
       <shaderType>Cutout</shaderType>
       <drawSize>(1.64,1.15)</drawSize>
     </graphicData>
-    <verbs>
-      <li>
-        <verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand>
+    <verbs Inherit="false">
+      <li Class="AncotLibrary.VerbProperties_Custom">
+        <verbClass>AncotLibrary.Verb_ChargeShootSustained</verbClass><hasStandardCommand>true</hasStandardCommand>
         <defaultProjectile>YJZ_Projectile_ShenjiLaser</defaultProjectile><warmupTime>1.0</warmupTime>
-        <range>35.9</range><burstShotCount>6</burstShotCount><ticksBetweenBurstShots>4</ticksBetweenBurstShots>
-        <soundCast>Shot_AssaultRifle</soundCast><muzzleFlashScale>9</muzzleFlashScale>
+        <range>35.9</range><burstShotCount>9999</burstShotCount><ticksBetweenBurstShots>6</ticksBetweenBurstShots>
+        <soundCast>Milira_Shot_RayRifle</soundCast><soundCastTail>GunTail_Heavy</soundCastTail><muzzleFlashScale>9</muzzleFlashScale>
       </li>
     </verbs>
+    <comps>
+      <li Class="AncotLibrary.CompProperties_SustainedShoot" />
+    </comps>
   </ThingDef>
 
   <ThingDef ParentName="YJZ_Weapon_Shenji_Gauss_Base">
@@ -161,12 +164,12 @@
       <shaderType>Cutout</shaderType>
       <drawSize>(1.72,1.18)</drawSize>
     </graphicData>
-    <verbs>
-      <li>
-        <verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand>
+    <verbs Inherit="false">
+      <li Class="AncotLibrary.VerbProperties_Custom">
+        <verbClass>AncotLibrary.Verb_ChargeShootSustained</verbClass><hasStandardCommand>true</hasStandardCommand>
         <defaultProjectile>YJZ_Projectile_ShenjiLaser</defaultProjectile><warmupTime>0.65</warmupTime>
-        <range>39.9</range><burstShotCount>9</burstShotCount><ticksBetweenBurstShots>3</ticksBetweenBurstShots>
-        <soundCast>Shot_AssaultRifle</soundCast><muzzleFlashScale>11</muzzleFlashScale>
+        <range>39.9</range><burstShotCount>9999</burstShotCount><ticksBetweenBurstShots>4</ticksBetweenBurstShots>
+        <soundCast>Milira_Shot_RayRifle</soundCast><soundCastTail>GunTail_Heavy</soundCastTail><muzzleFlashScale>11</muzzleFlashScale>
       </li>
     </verbs>
   </ThingDef>

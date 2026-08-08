@@ -46,6 +46,8 @@ namespace Yunjianzi
         private int nextNativeControlAttemptTick;
         private Pawn ownerCache;
         private Graphic groundGraphic;
+        private static Material shieldMaterial;
+        private MaterialPropertyBlock shieldPropertyBlock;
 
         private CompProperties_YunjianziSkyWyvern Props => (CompProperties_YunjianziSkyWyvern)props;
         public Pawn Pawn => parent as Pawn;
@@ -74,6 +76,27 @@ namespace Yunjianzi
         private float ShieldRadius => Stage >= 5 ? 10f : Stage >= 4 ? 8.5f : 7f;
         private int BreathMax => Stage >= 5 ? 5 : Stage >= 4 ? 2 : 0;
         private int BreathRecharge => Stage >= 5 ? 30000 : 60000;
+        private bool CombatShieldVisible
+        {
+            get
+            {
+                Pawn pawn = Pawn;
+                if (pawn == null || !CanProjectShield) return false;
+                int now = Find.TickManager.TicksGame;
+                return raidReleased || pawn.Drafted || pawn.mindState?.enemyTarget != null || now < combatUntilTick;
+            }
+        }
+
+        private static Material ShieldMaterial
+        {
+            get
+            {
+                if (shieldMaterial == null)
+                    shieldMaterial = MaterialPool.MatFrom("Yunjianzi/Effects/SwordWardShield",
+                        ShaderDatabase.TransparentPostLight);
+                return shieldMaterial;
+            }
+        }
 
         public bool BindTo(Pawn owner)
         {
@@ -235,6 +258,7 @@ namespace Yunjianzi
         {
             absorbed = false;
             if (!dinfo.Def.harmsHealth || shield <= 0f) return;
+            combatUntilTick = Find.TickManager.TicksGame + 600;
             float adaptation = Stage >= 4 ? (dinfo.Def.isRanged ? .55f : .72f) : 1f;
             float cost = dinfo.Amount * adaptation;
             if (shield >= cost)
@@ -261,6 +285,7 @@ namespace Yunjianzi
             Vector3 delta = projectile.ExactPosition - pawn.DrawPos;
             delta.y = 0f;
             if (delta.sqrMagnitude > ShieldRadius * ShieldRadius) return false;
+            combatUntilTick = Find.TickManager.TicksGame + 600;
             float cost = Mathf.Max(12f, projectile.DamageAmount * (Stage >= 4 ? .6f : 1f));
             shield -= cost;
             FleckMaker.ThrowLightningGlow(projectile.ExactPosition, pawn.Map, 1f);
@@ -358,13 +383,39 @@ namespace Yunjianzi
                 drawPos += lateral;
             }
             groundGraphic.Draw(drawPos, pawn.Rotation, pawn);
-            if (shield > 0f && Find.TickManager.TicksGame >= shieldBrokenUntil)
-                GenDraw.DrawRadiusRing(pawn.Position, ShieldRadius, new Color(.18f, .82f, 1f, .18f));
+            if (CombatShieldVisible) DrawCombatShield(pawn);
+        }
+
+        private void DrawCombatShield(Pawn pawn)
+        {
+            if (shieldPropertyBlock == null) shieldPropertyBlock = new MaterialPropertyBlock();
+            float ratio = Mathf.Clamp01(shield / Mathf.Max(1f, ShieldMax));
+            float phase = (Find.TickManager.TicksGame + pawn.thingIDNumber * 19) * .018f;
+            float pulse = Mathf.Sin(phase) * .018f;
+            float diameter = ShieldRadius * (2.02f + pulse);
+            float alpha = Mathf.Lerp(.22f, .46f, Mathf.Sqrt(ratio));
+
+            shieldPropertyBlock.SetColor(ShaderPropertyIDs.Color,
+                new Color(.62f, .98f, 1f, alpha));
+            Vector3 center = pawn.DrawPos;
+            center.y = Altitudes.AltitudeFor(AltitudeLayer.MoteOverhead);
+            Matrix4x4 matrix = Matrix4x4.TRS(center,
+                Quaternion.AngleAxis((Find.TickManager.TicksGame * .045f + pawn.thingIDNumber * 13f) % 360f,
+                    Vector3.up),
+                new Vector3(diameter, 1f, diameter));
+            Graphics.DrawMesh(MeshPool.plane10, matrix, ShieldMaterial, 0, null, 0, shieldPropertyBlock);
+
+            // The double rim makes the field read as a dense, rounded barrier
+            // rather than the old single debug-radius outline. The patterned
+            // plane above supplies the cloud-and-sword qi tracery.
+            GenDraw.DrawRadiusRing(pawn.Position, ShieldRadius,
+                new Color(.58f, .96f, 1f, Mathf.Lerp(.38f, .72f, ratio)));
+            GenDraw.DrawRadiusRing(pawn.Position, ShieldRadius * .92f,
+                new Color(.28f, .84f, 1f, Mathf.Lerp(.18f, .42f, ratio)));
         }
 
         private bool EnsureAnimalBond()
         {
-            if (animalBonded) return true;
             Pawn pawn = Pawn;
             Pawn owner = Owner;
             if (pawn == null || owner == null) return false;
@@ -382,6 +433,7 @@ namespace Yunjianzi
                 if (pawn.training == null) pawn.training = new Pawn_TrainingTracker(pawn);
                 pawn.playerSettings.Master = owner;
                 pawn.playerSettings.followDrafted = true;
+                pawn.playerSettings.followFieldwork = true;
 
                 TrainableDef[] essentials =
                 {
@@ -395,12 +447,9 @@ namespace Yunjianzi
                     if (trainable != null && !pawn.training.HasLearned(trainable))
                         pawn.training.Train(trainable, owner, true);
 
-                if (ModsConfig.OdysseyActive)
-                {
-                    TrainableDef attack = DefDatabase<TrainableDef>.GetNamedSilentFail("AttackTarget");
-                    if (attack != null && !pawn.training.HasLearned(attack))
-                        pawn.training.Train(attack, owner, true);
-                }
+                TrainableDef attack = DefDatabase<TrainableDef>.GetNamedSilentFail("AttackTarget");
+                if (attack != null && !pawn.training.HasLearned(attack))
+                    pawn.training.Train(attack, owner, true);
 
                 animalBonded = true;
                 return true;
