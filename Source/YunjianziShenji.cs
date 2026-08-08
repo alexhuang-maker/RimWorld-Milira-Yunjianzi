@@ -9,6 +9,24 @@ using Verse.AI;
 
 namespace Yunjianzi
 {
+    /// <summary>
+    /// The Foundation-stage ion round keeps vanilla explosive resolution but
+    /// adds a compact cyan discharge so it reads as ionized energy rather than
+    /// a conventional high-explosive minigun shell.
+    /// </summary>
+    public sealed class Projectile_YunjianziIonRound : Projectile_Explosive
+    {
+        protected override void Impact(Thing hitThing, bool blockedByShield = false)
+        {
+            if (!blockedByShield && Map != null)
+            {
+                FleckMaker.ThrowLightningGlow(ExactPosition, Map, 0.55f);
+                for (int i = 0; i < 3; i++) FleckMaker.ThrowMicroSparks(ExactPosition, Map);
+            }
+            base.Impact(hitThing, blockedByShield);
+        }
+    }
+
     public sealed class CompProperties_YunjianziShenji : CompProperties
     {
         public CompProperties_YunjianziShenji() { compClass = typeof(CompYunjianziShenji); }

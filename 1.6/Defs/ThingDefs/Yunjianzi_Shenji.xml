@@ -92,13 +92,46 @@
 
 道书第二幅炮图须待筑基方能展开：单一枪管围绕灵能中枢化作连星炮机。每一发都借下一发校正自身，密集弹流如群星循轨。
 
-效果：筑基阶段使用的速射武器，擅长以密集弹流压制敌人；会随境界自动替换。</description>
+效果：筑基阶段使用的离子速射武器。离子弹命中后会产生一格左右的小型爆炸，擅长压制密集敌群；会随境界自动替换。</description>
     <graphicData>
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Gatling</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <shaderType>Cutout</shaderType>
       <drawSize>(1.52,1.12)</drawSize>
     </graphicData>
+    <verbs Inherit="false">
+      <li>
+        <verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand>
+        <defaultProjectile>YJZ_Projectile_ShenjiIonRound</defaultProjectile><warmupTime>2.5</warmupTime>
+        <range>30.9</range><burstShotCount>25</burstShotCount><ticksBetweenBurstShots>5</ticksBetweenBurstShots>
+        <soundCast>Shot_Minigun</soundCast><soundCastTail>GunTail_Medium</soundCastTail><muzzleFlashScale>9</muzzleFlashScale>
+      </li>
+    </verbs>
+  </ThingDef>
+
+  <!-- 筑基离子弹：用原版 Projectile_Explosive 落点结算，半径仅覆盖命中点周围
+       约一格。伤害低于普通迷你枪弹，但能有效处理紧密集群。 -->
+  <ThingDef ParentName="BaseBullet">
+    <defName>YJZ_Projectile_ShenjiIonRound</defName>
+    <label>神机离子弹</label>
+    <thingClass>Yunjianzi.Projectile_YunjianziIonRound</thingClass>
+    <graphicData>
+      <texPath>Things/Projectile/Bullet_Small</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>TransparentPostLight</shaderType>
+      <color>(112,238,255)</color>
+      <drawSize>(0.72,0.72)</drawSize>
+    </graphicData>
+    <projectile>
+      <speed>70</speed>
+      <damageDef>Bomb</damageDef>
+      <damageAmountBase>8</damageAmountBase>
+      <armorPenetrationBase>0.18</armorPenetrationBase>
+      <explosionRadius>1.1</explosionRadius>
+      <explosionDamageFalloff>true</explosionDamageFalloff>
+      <explosionChanceToStartFire>0</explosionChanceToStartFire>
+      <soundExplode>Explosion_Bomb</soundExplode>
+    </projectile>
   </ThingDef>
 
   <!-- 紫府后的主射线与金丹折射射线共享米莉拉帝国的淡蓝光束材质。
