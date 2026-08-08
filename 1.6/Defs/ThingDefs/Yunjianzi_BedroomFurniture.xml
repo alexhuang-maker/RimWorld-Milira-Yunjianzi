@@ -63,6 +63,7 @@
     <comps>
       <li Class="CompProperties_Facility"><statOffsets><Comfort>0.05</Comfort></statOffsets><maxSimultaneous>1</maxSimultaneous><mustBePlacedAdjacentCardinalToBedHead>true</mustBePlacedAdjacentCardinalToBedHead></li>
     </comps>
+    <uiIconOffset>(-0.112,0.091)</uiIconOffset>
     <uiOrder>3971</uiOrder>
   </ThingDef>
 
@@ -80,7 +81,7 @@
     <costList><Milira_SplendidSteel>45</Milira_SplendidSteel></costList>
     <statBases><MaxHitPoints>220</MaxHitPoints><Beauty>14</Beauty><WorkToBuild>850</WorkToBuild><Mass>7</Mass><Flammability>0</Flammability><Comfort>0.85</Comfort></statBases>
     <building><isSittable>true</isSittable><paintable>false</paintable></building>
-    <replaceTags><li>Chair</li></replaceTags><uiOrder>3972</uiOrder>
+    <replaceTags><li>Chair</li></replaceTags><uiIconOffset>(-0.155,0.133)</uiIconOffset><uiOrder>3972</uiOrder>
   </ThingDef>
 
   <ThingDef ParentName="FurnitureBase">

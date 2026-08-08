@@ -14,14 +14,17 @@
       <texPath>Yunjianzi/Buildings/Storage/TreasureCasket</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <shaderType>CutoutComplex</shaderType>
-      <drawSize>(3.65,3.65)</drawSize>
-      <drawOffset>(0,0,0.05)</drawOffset>
+      <!-- The physical footprint remains 3x3. The Jianmu canopy deliberately
+           overhangs it, while the positive Z anchor keeps the casket base on
+           the selected footprint instead of centering the tall tree there. -->
+      <drawSize>(5.35,5.35)</drawSize>
+      <drawOffset>(0,0,1.85)</drawOffset>
     </graphicData>
     <size>(3,3)</size>
     <altitudeLayer>BuildingOnTop</altitudeLayer>
-    <!-- RimWorld's non-rotatable buildings otherwise keep Rot4.North, which
-         turns the authored south-facing Jianmu facade by 180 degrees. -->
-    <defaultPlacingRot>South</defaultPlacingRot>
+    <!-- Graphic_Single still receives the thing rotation. The authored asset
+         is upright at North; forcing South was what inverted it in game. -->
+    <defaultPlacingRot>North</defaultPlacingRot>
     <rotatable>false</rotatable>
     <passability>PassThroughOnly</passability>
     <pathCost>80</pathCost>
