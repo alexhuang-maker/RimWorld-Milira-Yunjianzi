@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef Name="YJZ_AdvancedCultivationFacilityBase" ParentName="BuildingBase" Abstract="True">
+    <thingClass>Building</thingClass>
+    <category>Building</category>
+    <tickerType>Normal</tickerType>
+    <drawerType>MapMeshAndRealTime</drawerType>
+    <altitudeLayer>BuildingOnTop</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <pathCost>35</pathCost>
+    <fillPercent>0.35</fillPercent>
+    <rotatable>false</rotatable>
+    <designationCategory>YJZ_QinglingJade</designationCategory>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <thingCategories>
+      <li>BuildingsMisc</li>
+      <li>BuildingsPower</li>
+    </thingCategories>
+    <terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
+    <constructionSkillPrerequisite>12</constructionSkillPrerequisite>
+    <building>
+      <isEdifice>true</isEdifice>
+      <ai_chillDestination>false</ai_chillDestination>
+      <destroySound>BuildingDestroyed_Metal_Medium</destroySound>
+    </building>
+    <comps>
+      <li Class="CompProperties_Facility">
+        <maxSimultaneous>4</maxSimultaneous>
+        <maxDistance>8</maxDistance>
+      </li>
+      <li Class="CompProperties_Flickable" />
+      <li Class="CompProperties_Breakdownable" />
+      <li Class="CompProperties_Forbiddable" />
+    </comps>
+    <placeWorkers>
+      <li>PlaceWorker_ShowFacilitiesConnections</li>
+    </placeWorkers>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_AdvancedCultivationFacilityBase">
+    <defName>YJZ_Building_SpiritConvergencePool</defName>
+    <label>青灵聚元池</label>
+    <description>一座以真玉钢约束地脉、以青灵玉珠调和灵潮的聚元池。池中瀑流并非凡水，而是被凝成可见形态的灵力；中央玉珠一面稳定电网，一面将逸散能量送入附近的蒲团与白玉台。\n\n效果：持续输出 20,000W 电力，相当于四座米莉拉帝国暗物质电池；连接修炼座位后，额外提高 50% 灵力恢复与修为增长速度，并提高 25% 突破速度。设施关闭、故障或断开连接时不提供修炼加成。</description>
+    <size>(2,2)</size>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/CultivationFacilities/SpiritConvergencePool</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(2.65,2.65)</drawSize>
+      <drawOffset>(0,0,0.22)</drawOffset>
+    </graphicData>
+    <uiIconScale>0.68</uiIconScale>
+    <statBases>
+      <MaxHitPoints>3000</MaxHitPoints>
+      <WorkToBuild>18000</WorkToBuild>
+      <Mass>180</Mass>
+      <Beauty>150</Beauty>
+      <Flammability>0</Flammability>
+    </statBases>
+    <costList>
+      <YJZ_TrueJadeSteel>120</YJZ_TrueJadeSteel>
+      <Jade>180</Jade>
+      <Milira_SolarCrystal>20</Milira_SolarCrystal>
+      <ComponentSpacer>8</ComponentSpacer>
+    </costList>
+    <comps>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerPlant</compClass>
+        <basePowerConsumption>-20000</basePowerConsumption>
+        <transmitsPower>true</transmitsPower>
+      </li>
+      <li Class="CompProperties_Glower">
+        <glowRadius>6</glowRadius>
+        <glowColor>(255,255,255,0)</glowColor>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_AdvancedCultivationFacilityBase">
+    <defName>YJZ_Building_CelestialDaoGate</defName>
+    <thingClass>Yunjianzi.Building_CelestialDaoGate</thingClass>
+    <drawerType>RealtimeOnly</drawerType>
+    <label>云阙问道仪</label>
+    <description>一座将灵脉、玉枢与超维能源回路合为一体的问道仪。悬于云阙中央的青灵玉珠持续牵引周天灵机，环门则把灵潮中的杂乱波动炼为可供殖民地使用的稳定电力。\n\n效果：持续输出 120,000W 电力，达到联合重工大型发生器的等级；连接修炼座位后，额外提高 100% 灵力恢复与修为增长速度，并提高 50% 突破速度。设施关闭、故障或断开连接时不提供修炼加成。</description>
+    <size>(3,3)</size>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/CultivationFacilities/CelestialDaoGate</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(4.25,4.25)</drawSize>
+    </graphicData>
+    <uiIconScale>0.52</uiIconScale>
+    <statBases>
+      <MaxHitPoints>8000</MaxHitPoints>
+      <WorkToBuild>50000</WorkToBuild>
+      <Mass>520</Mass>
+      <Beauty>320</Beauty>
+      <Flammability>0</Flammability>
+    </statBases>
+    <costList>
+      <YJZ_TrueJadeSteel>400</YJZ_TrueJadeSteel>
+      <Jade>500</Jade>
+      <Milira_SunPlateSteel>250</Milira_SunPlateSteel>
+      <Milira_SolarCrystal>100</Milira_SolarCrystal>
+      <ComponentSpacer>20</ComponentSpacer>
+    </costList>
+    <comps>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerPlant</compClass>
+        <basePowerConsumption>-120000</basePowerConsumption>
+        <transmitsPower>true</transmitsPower>
+      </li>
+      <li Class="CompProperties_Glower">
+        <glowRadius>11</glowRadius>
+        <glowColor>(255,255,255,0)</glowColor>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- 神机制造体系及云间子的高阶法器只在合玉炉显示；Replace 会移除
+       本体配方原有的工作台入口。机体培育配方不受影响。 -->
+  <Operation Class="PatchOperationSequence">
+    <operations>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/RecipeDef[defName="YJZ_UpgradeCore_Lingwei"]/recipeUsers</xpath>
+        <value><recipeUsers><li>YJZ_Building_TrueJadeForge</li></recipeUsers></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/RecipeDef[defName="YJZ_UpgradeCore_Tianjiang"]/recipeUsers</xpath>
+        <value><recipeUsers><li>YJZ_Building_TrueJadeForge</li></recipeUsers></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/RecipeDef[defName="YJZ_Make_ShenjiArmor_Base"]/recipeUsers</xpath>
+        <value><recipeUsers><li>YJZ_Building_TrueJadeForge</li></recipeUsers></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/RecipeDef[defName="YJZ_Make_ShenjiArmor_Intermediate"]/recipeUsers</xpath>
+        <value><recipeUsers><li>YJZ_Building_TrueJadeForge</li></recipeUsers></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/RecipeDef[defName="YJZ_Make_ShenjiArmor_Final"]/recipeUsers</xpath>
+        <value><recipeUsers><li>YJZ_Building_TrueJadeForge</li></recipeUsers></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/RecipeDef[defName="YJZ_Make_ShenjiVisor"]/recipeUsers</xpath>
+        <value><recipeUsers><li>YJZ_Building_TrueJadeForge</li></recipeUsers></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/RecipeDef[defName="YJZ_Make_JiuxiaoImmortalCrown"]/recipeUsers</xpath>
+        <value><recipeUsers><li>YJZ_Building_TrueJadeForge</li></recipeUsers></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/RecipeDef[defName="YJZ_Make_Shenji_Assault"]/recipeUsers</xpath>
+        <value><recipeUsers><li>YJZ_Building_TrueJadeForge</li></recipeUsers></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/RecipeDef[defName="YJZ_Make_Shenji_Gatling"]/recipeUsers</xpath>
+        <value><recipeUsers><li>YJZ_Building_TrueJadeForge</li></recipeUsers></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/RecipeDef[defName="YJZ_Make_Shenji_Gauss"]/recipeUsers</xpath>
+        <value><recipeUsers><li>YJZ_Building_TrueJadeForge</li></recipeUsers></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/RecipeDef[defName="YJZ_Make_Shenji_Legendary"]/recipeUsers</xpath>
+        <value><recipeUsers><li>YJZ_Building_TrueJadeForge</li></recipeUsers></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/RecipeDef[defName="YJZ_Make_CloudSwordArray"]/recipeUsers</xpath>
+        <value><recipeUsers><li>YJZ_Building_TrueJadeForge</li></recipeUsers></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/RecipeDef[defName="YJZ_Make_JiuxiaoXianxu"]/recipeUsers</xpath>
+        <value><recipeUsers><li>YJZ_Building_TrueJadeForge</li></recipeUsers></value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>

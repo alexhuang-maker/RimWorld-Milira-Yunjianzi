@@ -6,7 +6,7 @@
   <supportedVersions>
     <li>1.6</li>
   </supportedVersions>
-  <description>添加特殊米莉拉角色“云间子”。她拥有固定身份、固定形象、修行与战斗体系及唯一角色保护机制。本体保留蒲团、白玉台、云间画符台与云间玉筝，其余建筑内容由可选的“云间子建筑扩展”提供。</description>
+  <description>添加特殊米莉拉角色“云间子”。她拥有固定身份、固定形象、修行与战斗体系及唯一角色保护机制。本体提供蒲团、白玉台、云间画符台、云间玉筝，以及建木镇宝匣、合玉炉、青灵聚元池、云阙问道仪、云间养剑台、云间之影和配套真玉钢制作体系。其余家具、装饰、门、地砖及奥德赛飞船组件由可选的“云间子建筑扩展”提供。</description>
   <modDependencies>
     <li>
       <packageId>brrainz.harmony</packageId>

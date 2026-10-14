@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <StuffAppearanceDef>
+    <defName>YJZ_TrueJadeSteel</defName>
+    <label>真玉钢纹</label>
+    <pathPrefix>Yunjianzi/StuffAppearance/TrueJadeSteel</pathPrefix>
+  </StuffAppearanceDef>
+
+  <ThingDef ParentName="ResourceBase">
+    <defName>YJZ_TrueJadeSteel</defName>
+    <label>真玉钢</label>
+    <description>以翡翠为灵质骨架、日盘钢为金属经络，在合玉炉中反复熔合而成的玉质超合金。其晶格会将冲击沿青色灵脉分散，再由金色导脉重新闭合，因此硬度足以与米莉拉帝国的零素材料相比。真玉钢只用于专门设计的云间机械与结构，不能作为普通墙体或飞船船壳的通用建材。</description>
+    <graphicData>
+      <texPath>Yunjianzi/Items/TrueJadeSteel</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(0.72,0.72)</drawSize>
+    </graphicData>
+    <stackLimit>75</stackLimit>
+    <tradeability>Sellable</tradeability>
+    <resourceReadoutPriority>Middle</resourceReadoutPriority>
+    <thingCategories>
+      <li>ResourcesRaw</li>
+    </thingCategories>
+    <statBases>
+      <MarketValue>42</MarketValue>
+      <Mass>0.32</Mass>
+      <Beauty>8</Beauty>
+      <Flammability>0</Flammability>
+      <StuffPower_Armor_Sharp>2.5</StuffPower_Armor_Sharp>
+      <StuffPower_Armor_Blunt>2.4</StuffPower_Armor_Blunt>
+      <StuffPower_Armor_Heat>5</StuffPower_Armor_Heat>
+      <StuffPower_Insulation_Cold>40</StuffPower_Insulation_Cold>
+      <StuffPower_Insulation_Heat>40</StuffPower_Insulation_Heat>
+      <SharpDamageMultiplier>2.4</SharpDamageMultiplier>
+      <BluntDamageMultiplier>2.4</BluntDamageMultiplier>
+    </statBases>
+    <stuffProps>
+      <categories>
+        <li>YJZ_TrueJadeOnly</li>
+      </categories>
+      <appearance>YJZ_TrueJadeSteel</appearance>
+      <commonality>0</commonality>
+      <color>(214,239,230)</color>
+      <constructEffect>ConstructMetal</constructEffect>
+      <soundImpactBullet>BulletImpact_Metal</soundImpactBullet>
+      <soundImpactMelee>Pawn_Melee_Punch_HitBuilding_Metal</soundImpactMelee>
+      <soundMeleeHitSharp>MeleeHit_Metal_Sharp</soundMeleeHitSharp>
+      <soundMeleeHitBlunt>MeleeHit_Metal_Blunt</soundMeleeHitBlunt>
+      <isAirtight>true</isAirtight>
+      <statOffsets>
+        <Beauty>12</Beauty>
+      </statOffsets>
+      <statFactors>
+        <MaxHitPoints>12</MaxHitPoints>
+        <Beauty>4</Beauty>
+        <Flammability>0</Flammability>
+        <WorkToMake>5.5</WorkToMake>
+        <WorkToBuild>6</WorkToBuild>
+        <MeleeWeapon_CooldownMultiplier>0.8</MeleeWeapon_CooldownMultiplier>
+      </statFactors>
+    </stuffProps>
+    <terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>YJZ_Building_TrueJadeForge</defName>
+    <label>合玉炉</label>
+    <description>横置的封闭式灵质熔合台。左仓送入翡翠，右仓送入日盘钢，中央炉心以交错的灵力场把两种晶格压合成真玉钢。炉体会自动校正灵脉方向，避免成材内部留下肉眼不可见的断纹。</description>
+    <thingClass>Building_WorkTable</thingClass>
+    <size>(3,1)</size>
+    <rotatable>true</rotatable>
+    <defaultPlacingRot>North</defaultPlacingRot>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/Production/TrueJadeForge</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(3,1)</drawSize>
+    </graphicData>
+    <altitudeLayer>Building</altitudeLayer>
+    <designationCategory>YJZ_QinglingJade</designationCategory>
+    <uiOrder>3945</uiOrder>
+    <passability>PassThroughOnly</passability>
+    <pathCost>35</pathCost>
+    <hasInteractionCell>true</hasInteractionCell>
+    <interactionCellOffset>(0,0,-1)</interactionCellOffset>
+    <surfaceType>Item</surfaceType>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <thingCategories>
+      <li>BuildingsProduction</li>
+    </thingCategories>
+    <inspectorTabs>
+      <li>ITab_Bills</li>
+    </inspectorTabs>
+    <statBases>
+      <MaxHitPoints>650</MaxHitPoints>
+      <WorkToBuild>4200</WorkToBuild>
+      <Mass>95</Mass>
+      <Beauty>22</Beauty>
+      <Flammability>0</Flammability>
+      <WorkTableWorkSpeedFactor>1</WorkTableWorkSpeedFactor>
+      <WorkTableEfficiencyFactor>1</WorkTableEfficiencyFactor>
+    </statBases>
+    <costList>
+      <Milira_SplendidSteel>80</Milira_SplendidSteel>
+      <Jade>30</Jade>
+      <Milira_SunPlateSteel>25</Milira_SunPlateSteel>
+      <ComponentIndustrial>4</ComponentIndustrial>
+    </costList>
+    <constructionSkillPrerequisite>8</constructionSkillPrerequisite>
+    <building>
+      <spawnedConceptLearnOpportunity>BillsTab</spawnedConceptLearnOpportunity>
+      <canPlaceOverImpassablePlant>false</canPlaceOverImpassablePlant>
+      <ai_chillDestination>false</ai_chillDestination>
+      <buildingTags>
+        <li>Production</li>
+      </buildingTags>
+    </building>
+    <comps>
+      <li Class="CompProperties_Forbiddable" />
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>800</basePowerConsumption>
+      </li>
+      <li Class="CompProperties_Flickable" />
+      <li Class="CompProperties_Breakdownable" />
+      <li Class="CompProperties_ReportWorkSpeed">
+        <workSpeedStat>WorkTableWorkSpeedFactor</workSpeedStat>
+      </li>
+      <li Class="CompProperties_Glower">
+        <glowRadius>3.5</glowRadius>
+        <glowColor>(255,255,255,0)</glowColor>
+      </li>
+    </comps>
+    <placeWorkers>
+      <li>PlaceWorker_ReportWorkSpeedPenalties</li>
+      <li>PlaceWorker_PreventInteractionSpotOverlap</li>
+    </placeWorkers>
+  </ThingDef>
+</Defs>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>YJZ_MakeTrueJadeSteel</defName>
+    <label>熔合真玉钢</label>
+    <description>以翡翠搭建灵质晶格，再将日盘钢压入其中，熔合成坚韧且具有自洽灵脉的真玉钢。</description>
+    <jobString>正在熔合真玉钢。</jobString>
+    <workAmount>5000</workAmount>
+    <workSkill>Crafting</workSkill>
+    <workSkillLearnFactor>0.25</workSkillLearnFactor>
+    <effectWorking>Smith</effectWorking>
+    <soundWorking>Recipe_Smith</soundWorking>
+    <ingredients>
+      <li>
+        <filter><thingDefs><li>Jade</li></thingDefs></filter>
+        <count>40</count>
+      </li>
+      <li>
+        <filter><thingDefs><li>Milira_SunPlateSteel</li></thingDefs></filter>
+        <count>80</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>Jade</li>
+        <li>Milira_SunPlateSteel</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+    <products>
+      <YJZ_TrueJadeSteel>40</YJZ_TrueJadeSteel>
+    </products>
+    <recipeUsers>
+      <li>YJZ_Building_TrueJadeForge</li>
+    </recipeUsers>
+  </RecipeDef>
+</Defs>

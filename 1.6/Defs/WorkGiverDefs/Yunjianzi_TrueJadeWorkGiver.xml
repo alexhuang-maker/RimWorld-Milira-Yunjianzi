@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <WorkGiverDef>
+    <defName>YJZ_TrueJadeForgeBill</defName>
+    <label>在合玉炉熔合材料</label>
+    <giverClass>WorkGiver_DoBill</giverClass>
+    <workType>Smithing</workType>
+    <priorityInType>101</priorityInType>
+    <fixedBillGiverDefs>
+      <li>YJZ_Building_TrueJadeForge</li>
+    </fixedBillGiverDefs>
+    <verb>熔合</verb>
+    <gerund>熔合于</gerund>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+    <prioritizeSustains>true</prioritizeSustains>
+  </WorkGiverDef>
+</Defs>
