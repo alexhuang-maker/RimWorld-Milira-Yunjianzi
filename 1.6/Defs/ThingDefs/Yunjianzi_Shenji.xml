@@ -1,22 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <ThingDef ParentName="Milira_MilianBase_Pawn">
-    <defName>YJZ_Shenji_Race</defName>
-    <label>神机米莉安</label>
+  <ThingDef Name="YJZ_Shenji_RaceBase" ParentName="Milira_MilianBase_Pawn" Abstract="True">
+    <label>青羽机侍</label>
     <description>“金石能载道，光电亦可书符。”
 
 道书《神机篇》记着上一代云间子与一位米莉安同行的旧事，也留下重塑其身的完整器图。现任云间子依图以米莉拉技术塑身、以符法贯通能源与灵识，却仍把选择与成长留给被唤醒者自己。
 
-效果：云间子的专属火力支援型米莉安，不占用机械带宽，拥有自循环能源；武器与固有装甲会随云间子的境界成长。</description>
-    <statBases>
-      <MoveSpeed>4.6</MoveSpeed>
-      <MarketValue>2200</MarketValue>
-      <BandwidthCost MayRequire="Ludeon.Rimworld.Biotech">0</BandwidthCost>
-      <MechEnergyLossPerHP MayRequire="Ludeon.Rimworld.Biotech">0</MechEnergyLossPerHP>
-    </statBases>
-    <race>
-      <baseHealthScale>1.35</baseHealthScale>
-    </race>
+效果：云间子的专属火力支援型米莉安，不占用机械带宽，拥有自循环能源。机体型号由投入米莉安培育器的神机核心决定；装甲与武器需要另行制造和穿戴。</description>
+    <statBases><BandwidthCost MayRequire="Ludeon.Rimworld.Biotech">0</BandwidthCost><MechEnergyLossPerHP MayRequire="Ludeon.Rimworld.Biotech">0</MechEnergyLossPerHP></statBases>
     <comps Inherit="False">
       <!-- 神机使用米莉拉自己的双层发型渲染器。列表故意只留一项：
            N1-3 是齐颈短发（北向的小辫属于同一套背发），因此生成与换向都不会随机。 -->
@@ -55,27 +46,80 @@
     <uiIconPath>Milian/Mechanoid_uiIcon/PawnI</uiIconPath>
   </ThingDef>
 
-  <PawnKindDef ParentName="BaseMilianKind_Mechanoid">
-    <defName>YJZ_Shenji</defName>
-    <label>神机米莉安</label>
+  <!-- 三种机体是固定型号，不再随主人境界自动变形。 -->
+  <ThingDef ParentName="YJZ_Shenji_RaceBase">
+    <defName>YJZ_Shenji_Race</defName><label>青羽机侍</label>
+    <statBases><MoveSpeed>4.6</MoveSpeed><WorkSpeedGlobal>0.80</WorkSpeedGlobal><MarketValue>2200</MarketValue></statBases>
+    <race><baseHealthScale>1.35</baseHealthScale><mechFixedSkillLevel>10</mechFixedSkillLevel></race>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_Shenji_RaceBase">
+    <defName>YJZ_Shenji_Race_Lingwei</defName><label>玄翎灵卫</label>
+    <statBases><MoveSpeed>4.9</MoveSpeed><WorkSpeedGlobal>1.00</WorkSpeedGlobal><MarketValue>3400</MarketValue></statBases>
+    <race><baseHealthScale>1.70</baseHealthScale><mechFixedSkillLevel>12</mechFixedSkillLevel></race>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_Shenji_RaceBase">
+    <defName>YJZ_Shenji_Race_Tianjiang</defName><label>九霄天将</label>
+    <statBases><MoveSpeed>5.25</MoveSpeed><WorkSpeedGlobal>1.20</WorkSpeedGlobal><MarketValue>5200</MarketValue></statBases>
+    <race>
+      <baseHealthScale>2.15</baseHealthScale>
+      <mechFixedSkillLevel>14</mechFixedSkillLevel>
+      <!-- 普通米莉安底板没有知识工作；仅完成体能够进行研究。 -->
+      <mechEnabledWorkTypes><li>Research</li></mechEnabledWorkTypes>
+    </race>
+  </ThingDef>
+
+  <PawnKindDef Name="YJZ_ShenjiKindBase" ParentName="BaseMilianKind_Mechanoid" Abstract="True">
     <race>YJZ_Shenji_Race</race>
     <combatPower>220</combatPower>
-    <forceNormalGearQuality>true</forceNormalGearQuality>
     <weaponMoney>0</weaponMoney>
     <apparelMoney>0</apparelMoney>
     <techHediffsMoney>0</techHediffsMoney>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="YJZ_ShenjiKindBase">
+    <defName>YJZ_Shenji</defName>
+    <label>青羽机侍</label>
     <!-- Intrinsic armor is a true Milian apparel overlay. Keep the native
          Milian body underneath so legs and joints remain visible. -->
   </PawnKindDef>
 
+  <PawnKindDef ParentName="YJZ_ShenjiKindBase">
+    <defName>YJZ_Shenji_Lingwei</defName>
+    <label>玄翎灵卫</label>
+    <race>YJZ_Shenji_Race_Lingwei</race>
+    <combatPower>340</combatPower>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="YJZ_ShenjiKindBase">
+    <defName>YJZ_Shenji_Tianjiang</defName>
+    <label>九霄天将</label>
+    <race>YJZ_Shenji_Race_Tianjiang</race>
+    <combatPower>520</combatPower>
+    <modExtensions>
+      <li Class="MilianModification.MilianComponentExtension">
+        <componentScheme>
+          <li>
+            <selectWeight>1</selectWeight>
+            <availableComponents_Head>
+              <li>YJZ_MilianFitting_CloudCommandChip</li>
+            </availableComponents_Head>
+          </li>
+        </componentScheme>
+      </li>
+    </modExtensions>
+  </PawnKindDef>
+
   <ThingDef ParentName="Gun_AssaultRifle">
     <defName>YJZ_Weapon_Shenji_Assault</defName>
-    <label>神机炮·初式</label>
+    <tradeability>None</tradeability>
+    <generateCommonality>0</generateCommonality>
+    <weaponTags Inherit="False" />
+    <label>青芒灵铳</label>
     <description>“九层之台，起于累土。”——《道德经》
 
-道书第一幅炮图仍保留制式突击步枪结构，只在枪机内多出一圈与修炼者灵脉同频的青色符路。它不以奇迹取胜，却是此后一切火力变化的可靠根基。
+道书第一幅器图仍保留制式突击步枪结构，只在铳机内多出一圈与修炼者灵脉同频的青色符路。它不以奇迹取胜，却是此后一切武装变化的可靠根基。
 
-效果：练气阶段使用的可靠点射武器，性能接近制式突击步枪；会随境界自动替换。</description>
+效果：青羽机侍初醒时使用的可靠点射武器，是此后诸般炮形展开的根基。仅神机可以装备，青羽机侍、玄翎灵卫和九霄天将通用。</description>
     <graphicData>
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Assault</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -87,12 +131,15 @@
 
   <ThingDef ParentName="Gun_Minigun">
     <defName>YJZ_Weapon_Shenji_Gatling</defName>
-    <label>神机炮·连星</label>
+    <tradeability>None</tradeability>
+    <generateCommonality>0</generateCommonality>
+    <weaponTags Inherit="False" />
+    <label>连星机括</label>
     <description>“枢始得其环中，以应无穷。”——《庄子》
 
 道书第二幅炮图须待筑基方能展开：单一枪管围绕灵能中枢化作连星炮机。每一发都借下一发校正自身，密集弹流如群星循轨。
 
-效果：筑基阶段使用的离子速射武器。离子弹命中后会产生一格左右的小型爆炸，擅长压制密集敌群；会随境界自动替换。</description>
+效果：连星机括发射密集离子弹流，落点会迸出小片爆光，尤其擅长压制聚集之敌。仅神机可以装备，青羽机侍、玄翎灵卫和九霄天将通用。</description>
     <graphicData>
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Gatling</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -103,6 +150,7 @@
       <li>
         <verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand>
         <defaultProjectile>YJZ_Projectile_ShenjiIonRound</defaultProjectile><warmupTime>2.5</warmupTime>
+        <forcedMissRadius>1.1</forcedMissRadius>
         <range>30.9</range><burstShotCount>25</burstShotCount><ticksBetweenBurstShots>5</ticksBetweenBurstShots>
         <soundCast>Shot_Minigun</soundCast><soundCastTail>GunTail_Medium</soundCastTail><muzzleFlashScale>9</muzzleFlashScale>
       </li>
@@ -134,15 +182,18 @@
     </projectile>
   </ThingDef>
 
-  <!-- 紫府后的主射线与金丹折射射线共享米莉拉帝国的淡蓝光束材质。
+  <!-- 紫府后的主射线与金丹折射射线使用神机专属的青白光束材质。
+       使用帝国能量射线的伤害结算，避免普通射线受额外伤害系数压到1点；
        主射线基础伤害为10，折射射线为3，严格等于30%。 -->
   <ThingDef ParentName="MiliraBullet_Ray">
     <defName>YJZ_Projectile_ShenjiLaser</defName>
     <label>神机辉光</label>
     <thingClass>Yunjianzi.Projectile_YunjianziShenjiLaser</thingClass>
     <projectile>
+      <damageDef>MI_Energy_Ray</damageDef>
       <damageAmountBase>10</damageAmountBase>
-      <armorPenetrationBase>0.45</armorPenetrationBase>
+      <armorPenetrationBase>0.85</armorPenetrationBase>
+      <stoppingPower>0.8</stoppingPower>
     </projectile>
   </ThingDef>
 
@@ -150,58 +201,65 @@
     <defName>YJZ_Projectile_ShenjiChainLaser</defName>
     <label>神机折射辉光</label>
     <projectile>
+      <damageDef>MI_Energy_Ray</damageDef>
       <damageAmountBase>3</damageAmountBase>
-      <armorPenetrationBase>0.30</armorPenetrationBase>
+      <armorPenetrationBase>0.85</armorPenetrationBase>
       <beamStartOffset>0</beamStartOffset>
     </projectile>
   </ThingDef>
 
   <ThingDef ParentName="Gun_AssaultRifle" Name="YJZ_Weapon_Shenji_Gauss_Base">
     <defName>YJZ_Weapon_Shenji_Gauss</defName>
-    <label>神机炮·辉光</label>
+    <tradeability>None</tradeability>
+    <generateCommonality>0</generateCommonality>
+    <weaponTags Inherit="False" />
+    <label>贯日光铳</label>
     <description>“电以照幽，雷以震妄。”
 
-道书第三幅炮图须以紫府神识读取，使神机炮舍弃实体弹丸，将日棱晶约束的能量压成淡蓝辉光。这是上一代云间子对古人所谓“神光”的工程学解答。
+道书第三幅器图须以紫府神识读取，使神机武装舍弃实体弹丸，将日棱晶约束的能量压成青白辉光。这是上一代云间子对古人所谓“神光”的工程学解答。
 
-效果：紫府阶段使用的远程脉冲激光炮，能够快速连射并有效穿透护甲。</description>
+效果：贯日光铳将能量约束为连绵辉光，能够迅疾洞穿远处之敌。仅神机可以装备，青羽机侍、玄翎灵卫和九霄天将通用。</description>
     <graphicData>
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Gauss</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <shaderType>Cutout</shaderType>
       <drawSize>(1.64,1.15)</drawSize>
     </graphicData>
+    <statBases>
+      <RangedWeapon_Cooldown>0.25</RangedWeapon_Cooldown>
+    </statBases>
     <verbs Inherit="false">
-      <li Class="AncotLibrary.VerbProperties_Custom">
-        <verbClass>AncotLibrary.Verb_ChargeShootSustained</verbClass><hasStandardCommand>true</hasStandardCommand>
-        <defaultProjectile>YJZ_Projectile_ShenjiLaser</defaultProjectile><warmupTime>1.0</warmupTime>
-        <range>35.9</range><burstShotCount>9999</burstShotCount><ticksBetweenBurstShots>6</ticksBetweenBurstShots>
+      <li>
+        <verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand>
+        <defaultProjectile>YJZ_Projectile_ShenjiLaser</defaultProjectile><warmupTime>0.25</warmupTime>
+        <range>35.9</range><burstShotCount>6</burstShotCount><ticksBetweenBurstShots>6</ticksBetweenBurstShots>
         <soundCast>Milira_Shot_RayRifle</soundCast><soundCastTail>GunTail_Heavy</soundCastTail><muzzleFlashScale>9</muzzleFlashScale>
       </li>
     </verbs>
-    <comps>
-      <li Class="AncotLibrary.CompProperties_SustainedShoot" />
-    </comps>
   </ThingDef>
 
   <ThingDef ParentName="YJZ_Weapon_Shenji_Gauss_Base">
     <defName>YJZ_Weapon_Shenji_Legendary</defName>
-    <label>神机炮·传说</label>
+    <label>九霄神光仪</label>
     <description>“大方无隅，大器晚成。”——《道德经》
 
-道书最后一幅炮图只写“以金丹为炉，以神机为器”。至此炮身所有折叠结构完全展开，主辉光贯穿目标，余能由阵列重新导向，在敌阵之间递次折射。
+道书最后一幅器图只写“以金丹为炉，以神机为器”。至此，贯日光铳原有的折叠结构完全展开，不再拘于寻常铳炮之形；主辉光贯穿目标，余能则由光仪阵列重新导向，在敌阵之间递次折射。
 
-效果：金丹及更高境界使用的最终辉光炮，射程远、连射迅疾，并能使光束向其他敌人折射。</description>
+效果：九霄神光仪持续放出迅疾而深远的青白辉光；悟得流光千折后，余光还会循敌影递次折射。仅神机可以装备，青羽机侍、玄翎灵卫和九霄天将通用。</description>
     <graphicData>
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Legendary</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <shaderType>Cutout</shaderType>
       <drawSize>(1.72,1.18)</drawSize>
     </graphicData>
+    <statBases>
+      <RangedWeapon_Cooldown>0.20</RangedWeapon_Cooldown>
+    </statBases>
     <verbs Inherit="false">
-      <li Class="AncotLibrary.VerbProperties_Custom">
-        <verbClass>AncotLibrary.Verb_ChargeShootSustained</verbClass><hasStandardCommand>true</hasStandardCommand>
-        <defaultProjectile>YJZ_Projectile_ShenjiLaser</defaultProjectile><warmupTime>0.65</warmupTime>
-        <range>39.9</range><burstShotCount>9999</burstShotCount><ticksBetweenBurstShots>4</ticksBetweenBurstShots>
+      <li>
+        <verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand>
+        <defaultProjectile>YJZ_Projectile_ShenjiLaser</defaultProjectile><warmupTime>0.20</warmupTime>
+        <range>39.9</range><burstShotCount>8</burstShotCount><ticksBetweenBurstShots>4</ticksBetweenBurstShots>
         <soundCast>Milira_Shot_RayRifle</soundCast><soundCastTail>GunTail_Heavy</soundCastTail><muzzleFlashScale>11</muzzleFlashScale>
       </li>
     </verbs>

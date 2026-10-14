@@ -23,3 +23,7 @@ ArtSource/Shenji/ShenjiArmor_ThreeStage_Concept.png
 *.pem
 *.key
 id_ed25519*
+
+# Python bytecode caches
+__pycache__/
+*.py[cod]

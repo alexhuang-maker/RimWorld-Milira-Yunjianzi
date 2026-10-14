@@ -7,7 +7,7 @@
     <degreeDatas>
       <li>
         <label>云海剑心</label>
-        <description>她拥有一颗追寻真理而不迷失方向的心。对未知，她保持探索；对力量，她保持克制；对需要帮助的人，她选择守护。剑对她而言并非单纯的武器，而是连接知识、技艺与意志的道路。</description>
+        <description>她愿意追问未知，却不把力量误认作答案；她也会拔剑，但总记得剑锋之后仍是众生。所谓剑心，并非冷硬无情，而是在纷乱中仍知道自己为何出剑、又该在何时归鞘。</description>
         <skillGains>
           <Melee>4</Melee>
           <Crafting>4</Crafting>

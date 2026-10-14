@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- 独立于原版落雷与 Burn 的诛邪雷炁。仍使用标准伤口结算，
+       但拥有自己的伤害身份、死亡文本和紫色电灼表现。 -->
+  <DamageDef ParentName="Flame">
+    <defName>YJZ_ShenxiaoLightning</defName>
+    <label>神霄雷炁</label>
+    <deathMessage>{0}被诛邪引下的神霄雷炁击灭了。</deathMessage>
+    <hediff>ElectricalBurn</hediff>
+    <impactSoundType>Electric</impactSoundType>
+    <explosionColorCenter>(0.92,0.78,1)</explosionColorCenter>
+    <explosionColorEdge>(0.52,0.16,1)</explosionColorEdge>
+    <scaleDamageToBuildingsBasedOnFlammability>false</scaleDamageToBuildingsBasedOnFlammability>
+    <minDamageToFragment>1</minDamageToFragment>
+  </DamageDef>
+
+  <!-- Heavy-shell mechanics reserved for the thunder spear's two damage stages. -->
+  <DamageDef ParentName="Bomb">
+    <defName>YJZ_ThunderSpearBlast</defName>
+    <label>万钧雷枪</label>
+    <deathMessage>{0}被万钧雷枪轰灭了。</deathMessage>
+    <hediff>ElectricalBurn</hediff>
+    <hediffSolid>ElectricalBurn</hediffSolid>
+    <impactSoundType>Electric</impactSoundType>
+    <explosionColorCenter>(0.92,0.78,1)</explosionColorCenter>
+    <explosionColorEdge>(0.52,0.16,1)</explosionColorEdge>
+  </DamageDef>
+
+  <!-- Ordinary targets still use the maneuver's normal Cut/Stab damage.
+       This identity is substituted only when Zhuxie strikes a building. -->
+  <DamageDef ParentName="CutBase">
+    <defName>YJZ_ZhuxieBuildingCut</defName>
+    <label>诛邪剑罡</label>
+    <deathMessage>{0}被诛邪剑罡斩碎了。</deathMessage>
+    <buildingDamageFactor>4</buildingDamageFactor>
+    <buildingDamageFactorPassable>1</buildingDamageFactorPassable>
+    <buildingDamageFactorImpassable>1.5</buildingDamageFactorImpassable>
+  </DamageDef>
+</Defs>

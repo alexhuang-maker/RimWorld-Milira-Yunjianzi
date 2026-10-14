@@ -235,6 +235,15 @@ def add_forehead_chain(image: Image.Image, direction: str) -> Image.Image:
 
 
 def rebuild_hair() -> None:
+    # The 2026-08-22 approved concept is entirely redrawn from new four-view
+    # source sheets. Runtime anchors are calibrated by the candidate builder;
+    # no pixels are cropped or transformed from the superseded hair sprites.
+    from prepare_concept_redraw_candidates import prepare_candidates, promote_candidates
+
+    prepare_candidates()
+    promote_candidates()
+    return
+
     master = rgba(MASTER, (1536, 1024))
     # The master is an art-layout sheet, not a 3x2 grid of game-ready canvases.
     # South keeps the approved fringe and north keeps the tied rear silhouette.
@@ -378,12 +387,13 @@ def render_sheet() -> None:
         draw.text((x + 12, 1204), names[direction], font=label, fill=(236, 244, 246, 255))
 
     draw.text((55, 1282), "固定分层顺序", font=section, fill=(236, 226, 190, 255))
-    order = "原生后发 BG → 云间道袍 → 固定头脸 → 连续长发主层 → 翅膀前层 → 光环"
+    order = "中央后束 BG → 云间道袍 → 固定头脸 → 披肩主发与单束长发 → 翅膀前层 → 灵光环"
     draw.text((55, 1334), order, font=label, fill=(221, 240, 242, 255))
     notes = [
-        "• 东/西贴图由同一侧面母图镜像生成，不再存在重复发片或方向混用。",
-        "• 北面与侧面长发遵循 Milira 长发：完整轮廓位于 HairMain，保留末端珠玉发束。",
-        "• HairBG 使用原生锚点且保持透明，不再叠出第二个头壳。",
+        "• 四方向均来自全新重绘母稿，不裁切或拼接旧运行时头发像素。",
+        "• 主发止于肩部；只有中央一束穿过青玉横扣并延伸到腰间。",
+        "• 刘海发尖为冰青渐变，额心青玉由横向金链固定，耳侧无羽状外挑。",
+        "• 灵光环位于人物左上，剑柄在左上、剑尖斜指右下。",
         "• 此图直接读取 Content/Textures 中将被游戏加载的 PNG，不使用概念图替代。",
     ]
     for index, note in enumerate(notes):

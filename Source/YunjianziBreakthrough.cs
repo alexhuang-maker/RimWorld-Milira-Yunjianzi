@@ -33,7 +33,7 @@ namespace Yunjianzi
 
         public override string CompInspectStringExtra()
         {
-            return "此宝卷只回应云间子的神魂印记。研读10秒后消耗，使初始灵力上限提升至10点。";
+            return "宝卷只回应云间子的神魂印记。静心研读后，纸上文字将沉入识海，化作最初一缕灵力。";
         }
 
         public override void PostExposeData()
@@ -55,8 +55,13 @@ namespace Yunjianzi
         private float cultivatedEnergyMax = -1f;
         private bool boundScrollCreated;
         private bool boundScrollConsumed;
+        private int autoCultivationResumeTick;
 
         public bool HasOpenedBoundScroll { get { return boundScrollConsumed; } }
+        internal bool AutoCultivationCoolingDown
+        {
+            get { return Find.TickManager != null && Find.TickManager.TicksGame < autoCultivationResumeTick; }
+        }
         public bool CanBreakthrough
         {
             get
@@ -66,7 +71,10 @@ namespace Yunjianzi
             }
         }
 
-        public float CultivationGainPerHour { get { return Realm >= 3 ? 20f : 10f; } }
+        // Cultivation is intended to occupy meaningful stretches of colony
+        // time. The previous 10/20 points per hour made even late realms pass
+        // in a handful of work sessions.
+        public float CultivationGainPerHour { get { return Realm >= 3 ? 4f : 2f; } }
 
         private void InitializeCultivationProgress()
         {
@@ -110,7 +118,7 @@ namespace Yunjianzi
             Command_Action read = new Command_Action
             {
                 defaultLabel = "研读遗仙宝卷",
-                defaultDesc = "前往绑定于云间子的遗仙宝卷处研读10秒。研读完成后宝卷消耗，灵力上限提升至10点并补满。",
+                defaultDesc = "前往遗仙宝卷所在之处静心研读。书中文字将脱离纸墨，沉入识海，显出传承的第一篇章。",
                 icon = YunjianziBreakthroughTextures.BoundScroll,
                 action = delegate
                 {
@@ -132,7 +140,7 @@ namespace Yunjianzi
             cultivatedEnergyMax = Mathf.Max(cultivatedEnergyMax, 10f);
             Energy = EnergyMax;
             scroll.Destroy(DestroyMode.Vanish);
-            Messages.Message("云间子悟得宝卷真意，灵力上限提升至10点。", Pawn,
+            Messages.Message("卷上墨迹尽化流光，归入识海。云间子由此引气入脉，踏出修行第一步。", Pawn,
                 MessageTypeDefOf.PositiveEvent, false);
         }
 
@@ -144,12 +152,43 @@ namespace Yunjianzi
             bool reached = before < RealmEnergyCap - 0.001f && EnergyMax >= RealmEnergyCap - 0.001f;
             if (reached && announceCap)
             {
-                Messages.Message(Realm < 5
-                        ? RealmLabel + "修为已臻圆满，可以在修行设施上闭关突破。"
-                        : "化神境修为已臻圆满。",
-                    Pawn, MessageTypeDefOf.PositiveEvent, false);
+                Messages.Message(CultivationCapMessage(), Pawn, MessageTypeDefOf.PositiveEvent, false);
             }
             return EnergyMax > before + 0.0001f;
+        }
+
+        private string CultivationCapMessage()
+        {
+            switch (Realm)
+            {
+                case 1:
+                    return "云间子周身灵气充盈，百脉已通。练气圆满，可闭关叩问筑基。";
+                case 2:
+                    return "云间子道基已固，气血、灵脉与神魂渐成一体。筑基圆满，可闭关开辟紫府。";
+                case 3:
+                    return "云间子紫府澄明，神识内照，万缕灵机正归于一点。紫府圆满，可闭关凝结金丹。";
+                case 4:
+                    return "云间子金丹无垢，性命相抱，形与神之间的界限已然松动。金丹圆满，可闭关叩问化神。";
+                default:
+                    return "云间子神与道合，化神境修为已臻圆满。";
+            }
+        }
+
+        private static string BreakthroughMessage(int newRealm)
+        {
+            switch (newRealm)
+            {
+                case 2:
+                    return "灵气沉入血肉，百脉如根系扎入生命深处。";
+                case 3:
+                    return "眉心灵台洞开，神识第一次越过耳目，触及天地间无声流转的灵机。";
+                case 4:
+                    return "精、气、神汇于一处，在紫府之中凝成一枚性命真种。";
+                case 5:
+                    return "金丹化开，真灵自形骸深处醒来，神魂从此不再受血肉所限。";
+                default:
+                    return "云间子破境成功。";
+            }
         }
 
         public void NotifyEnemyDestroyed(Pawn victim, float marketValue)
@@ -165,11 +204,12 @@ namespace Yunjianzi
         public void MeditateForTicks(int ticks, CompYunjianziMeditationSeat seat)
         {
             if (!boundScrollConsumed || seat == null || ticks <= 0) return;
-            const float naturalRecoveryPerSecond = 0.005f;
-            float bannerFactor = 1f + seat.LinkedBannerCount * 0.25f;
-            float meditationRecovery =
-                (naturalRecoveryPerSecond + seat.Props.extraEnergyPerSecond) * bannerFactor -
-                naturalRecoveryPerSecond;
+            const float naturalRecoveryPerSecond = 0.004f;
+            // All cultivation facilities stack additively.  Passive recovery
+            // already runs separately, so add only the portion above 1x here.
+            float meditationRecovery = naturalRecoveryPerSecond *
+                (seat.TotalRecoveryFactor - 1f);
+            meditationRecovery *= RobeEnergyRecoveryFactor;
 
             if (Energy < EnergyMax - 0.001f)
                 Energy += EnergyMax * meditationRecovery * (ticks / 60f);
@@ -196,7 +236,7 @@ namespace Yunjianzi
             JobDef jobDef = YJZDefOf.YJZ_Meditate;
             if (CanBreakthrough)
             {
-                if (Realm >= 3 && seat.def != YJZDefOf.YJZ_Building_WhiteJadePlatform)
+                if (Realm >= 3 && seat.def != YunjianziOptionalBuildingDefs.WhiteJadePlatform)
                 {
                     Messages.Message("突破金丹及之后的境界必须使用白玉修行台。", Pawn,
                         MessageTypeDefOf.RejectInput, false);
@@ -209,13 +249,52 @@ namespace Yunjianzi
             Pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
         }
 
-        public void CompleteBreakthrough(int expectedRealm)
+        public bool CompleteBreakthrough(int expectedRealm)
         {
-            if (!CanBreakthrough || Realm != expectedRealm || RealmHediff == null) return;
-            RealmHediff.Severity = expectedRealm + 1f;
+            // Revalidate only the identity of the breakthrough being completed.
+            // The job already checked the cultivation cap before it began; using
+            // CanBreakthrough again at the finish can strand a completed,
+            // non-interruptible job if another mod temporarily changes a cached
+            // stat while the pawn is on the platform.
+            Hediff realmHediff = RealmHediff;
+            if (Realm != expectedRealm || expectedRealm < 1 || expectedRealm >= 5 || realmHediff == null)
+                return false;
+
+            // Commit the actual realm first. Everything below is presentation or
+            // cache maintenance and must not be able to roll back the promotion.
+            realmHediff.Severity = expectedRealm + 1f;
+            bool advanced = Realm >= expectedRealm + 1;
+            if (!advanced) return false;
+
+            // Hediff.Severity already updates its stage. This explicit cache
+            // invalidation is retained for modded stats, but isolated so a
+            // third-party postfix cannot trap the pawn in the breakthrough job.
+            try { Pawn.health.Notify_HediffChanged(realmHediff); }
+            catch (Exception exception)
+            {
+                Log.Error("[云间子] 破境已完成，但刷新境界缓存时发生异常：" + exception);
+            }
+            // The next realm has a larger cultivation cap. Without a grace
+            // period the normal work giver immediately starts another meditate
+            // job on the same seat, making the completed breakthrough appear
+            // stuck until the pawn is drafted.
+            autoCultivationResumeTick = Find.TickManager.TicksGame + 2500;
+            try { MaintainFastingNeeds(); }
+            catch (Exception exception)
+            {
+                Log.Error("[云间子] 破境已完成，但刷新辟谷需求时发生异常：" + exception);
+            }
             Shield = ShieldMax;
-            Messages.Message(string.Format("云间子破境成功，踏入{0}。", RealmLabel), Pawn,
-                MessageTypeDefOf.PositiveEvent, false);
+            try
+            {
+                Messages.Message(BreakthroughMessage(expectedRealm + 1), Pawn,
+                    MessageTypeDefOf.PositiveEvent, false);
+            }
+            catch (Exception exception)
+            {
+                Log.Error("[云间子] 破境已完成，但显示破境消息时发生异常：" + exception);
+            }
+            return true;
         }
 
         private void ExposeBreakthroughData()
@@ -223,6 +302,7 @@ namespace Yunjianzi
             Scribe_Values.Look(ref cultivatedEnergyMax, "yjz_cultivatedEnergyMax", -1f);
             Scribe_Values.Look(ref boundScrollCreated, "yjz_boundScrollCreated", false);
             Scribe_Values.Look(ref boundScrollConsumed, "yjz_boundScrollConsumed", false);
+            Scribe_Values.Look(ref autoCultivationResumeTick, "yjz_autoCultivationResumeTick", 0);
         }
     }
 
@@ -310,7 +390,8 @@ namespace Yunjianzi
                 pawn.pather.StopDead();
                 pawn.Rotation = Rot4.South;
                 elapsedTicks++;
-                float speed = 1f + seatComp.Props.breakthroughPower + seatComp.LinkedBannerCount * 0.25f;
+                float speed = 1f + seatComp.Props.breakthroughPower + seatComp.LinkedBannerCount * 0.25f +
+                    seatComp.AdvancedBreakthroughBonus;
                 workLeft -= speed;
 
                 if (!stormCalled && elapsedTicks >= 2500 && pawn.Map != null)
@@ -329,13 +410,30 @@ namespace Yunjianzi
                         IntVec3 cell = CellFinder.RandomClosewalkCellNear(pawn.Position, pawn.Map, 4);
                         FleckMaker.Static(cell, pawn.Map, FleckDefOf.PsycastAreaEffect, Rand.Range(0.3f, 0.65f));
                     }
-                    FleckMaker.ThrowLightningGlow(pawn.DrawPos, pawn.Map, 0.55f);
+                    YunjianziPurpleLightning.Glow(pawn.DrawPos, pawn.Map, 0.55f);
                 }
 
                 if (workLeft <= 0f)
                 {
-                    cultivation.CompleteBreakthrough(startingRealm);
-                    EndJobWith(JobCondition.Succeeded);
+                    workLeft = 0f;
+                    bool completed = false;
+                    try
+                    {
+                        completed = cultivation.CompleteBreakthrough(startingRealm);
+                    }
+                    catch (Exception exception)
+                    {
+                        Log.Error("[云间子] 闭关收束时发生异常：" + exception);
+                    }
+                    finally
+                    {
+                        // EndJobWith delegates to Pawn_JobTracker.EndCurrentJob.
+                        // Always release a full progress, non-interruptible job;
+                        // a successfully committed realm counts as success even
+                        // if a later third-party notification threw an exception.
+                        completed = completed || cultivation.Realm > startingRealm;
+                        EndJobWith(completed ? JobCondition.Succeeded : JobCondition.Incompletable);
+                    }
                 }
             };
             retreat.WithProgressBar(TargetIndex.B, delegate

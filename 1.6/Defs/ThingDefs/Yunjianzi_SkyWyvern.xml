@@ -2,14 +2,38 @@
 <Defs>
   <ThingDef Name="YJZ_SkyWyvern_Base" ParentName="AnimalThingBase" Abstract="True">
     <label>云麒麟</label>
-    <description>栖于云海之上的古老生物灵兽，也是上一代云间子的坐骑。旧主远去后，她守着那份传承沉眠多年；当新一代云间子展开宝卷，她从相似却尚显稚嫩的气息中认出了道统，于是再度履行旧约，陪伴在传人身旁。她平日温顺而聪慧，能够搬运重物；袭击来临时则会自行解放，展开灵力护盾，以雷霆吐息与青雷利爪扑向敌群。</description>
+    <description>“云从龙，风从虎。”——《周易·乾卦·文言》
+
+道书末页没有法诀，只有半枚没入云纹的蹄印。上一代云间子曾在星海尽头救下一头负伤幼麟，后来一人一兽踏云同行：云间子为她疗伤、辨路，她则驮着旧友越过雷海与荒星。二者从无主仆之名，只有一句彼此守望的旧约。
+
+多年以后，道书再度展开。云麒麟循着熟悉的气息而来，却没有因为相同的道号便立刻俯首。她看过新传人的剑，也看过她如何对待弱者，最终才将额头轻轻抵在她掌中——她所认可的从来不是一本书或一个名字，而是仍值得同行的人。
+
+平日里，云麒麟收敛雷威，愿意帮助搬运；强敌来犯时，她会自行迎战，以青雷利爪撕开敌阵，并用护盾与瑞气庇护身旁之人。随着云间子继续参悟道书，她沉睡的血脉也会逐步苏醒。
+
+她的形态由云间子的境界决定，不必另行学习进阶技能。突破后再次施展“瑞麟践约”，便会显现相应境界的真形，麟涎的凝聚进度随之保留。
+
+麟威战吼：各境界的云麒麟在进入战斗时都会自动发出战吼，激发血脉之力。自身移动速度提高50%，近战、雷爪、威压与背部雷矢的攻击频率提高50%，持续15秒。战吼冷却60秒，每次进入战斗仅触发一次。
+
+紫府·云中灵麟：平日搬运物资，战时自行迎敌，以青雷利爪扫击敌群，并以灵盾、瑞气和自愈之力守护同行者。
+
+金丹·负霆瑞兽：玉骨生云，体魄、脚力与再生能力一同成长，护体云光可适应接连而来的伤害；灵角引雷，吐息成霆，能够席卷敌阵，使血肉麻痹、机械失灵，遭遇袭击时会自行择敌吐雷。
+
+化神·九天麟主：九霄真形尽显，巨躯、雷爪、威压与护体灵光进一步增强；背部灵鳞化作随行云庭，不断孕育雷光飞矢，吐息更为频繁，雷霆的震击、麻痹与破坏也一并加深。
+
+瑞兽不受屠宰或放生之令，也不产出肉皮。被消灭时散为云气，不留下尸体或死亡产物；“瑞麟践约”随即进入10天冷却，期满后可再次呼唤。她每10天凝聚1份麟涎，由驯兽员采集；服用后可治愈一项最严重的健康问题，效果等同于治疗机械液。</description>
     <thingClass>Pawn</thingClass>
+    <uiIconPath>Yunjianzi/UI/SkyWyvern</uiIconPath>
+    <uiIconScale>1</uiIconScale>
     <statBases>
       <CarryingCapacity>3000</CarryingCapacity>
       <Wildness>0</Wildness>
       <ArmorRating_Sharp>1.5</ArmorRating_Sharp>
       <ArmorRating_Blunt>1.0</ArmorRating_Blunt>
       <ArmorRating_Heat>1.2</ArmorRating_Heat>
+      <!-- The cloud qilin neither creates animal filth nor tracks it indoors. -->
+      <FilthRate>0</FilthRate>
+      <MeatAmount>0</MeatAmount>
+      <LeatherAmount>0</LeatherAmount>
     </statBases>
     <race>
       <body>QuadrupedAnimalWithPawsAndTail</body>
@@ -19,18 +43,32 @@
       <thinkTreeConstant>AnimalConstant</thinkTreeConstant>
       <trainability>Advanced</trainability>
       <hasGenders>false</hasGenders>
+      <canReleaseToWild>false</canReleaseToWild>
+      <hasMeat>false</hasMeat>
+      <hasCorpse>false</hasCorpse>
+      <leatherDef IsNull="True" />
       <herdAnimal>false</herdAnimal>
       <predator>false</predator>
-      <baseHungerRate>0</baseHungerRate>
+      <packAnimal>true</packAnimal>
+      <!-- Match the vanilla thrumbo's maximum food consumption. A zero hunger
+           rate also makes caravan food-day estimation hit an invalid edge case. -->
+      <baseHungerRate>1.75</baseHungerRate>
       <foodType>OmnivoreAnimal</foodType>
       <lifeExpectancy>9999</lifeExpectancy>
       <specialTrainables>
         <li MayRequire="Ludeon.RimWorld.Odyssey">AttackTarget</li>
       </specialTrainables>
       <lifeStageAges Inherit="False">
-        <li><def>AnimalAdult</def><minAge>0</minAge></li>
+        <li><def>AnimalAdult</def><minAge>0</minAge><soundAngry>Pawn_Thrumbo_Angry</soundAngry></li>
       </lifeStageAges>
     </race>
+    <comps>
+      <li Class="Yunjianzi.CompProperties_QilinSaliva">
+        <intervalDays>10</intervalDays>
+        <amount>1</amount>
+        <resourceDef>YJZ_QilinSaliva</resourceDef>
+      </li>
+    </comps>
     <tools>
       <li><label>青雷前爪</label><capacities><li>Scratch</li></capacities><power>30</power><cooldownTime>1.75</cooldownTime></li>
       <li><label>白玉颚</label><capacities><li>Bite</li></capacities><power>24</power><cooldownTime>2.1</cooldownTime></li>
@@ -39,20 +77,20 @@
 
   <ThingDef ParentName="YJZ_SkyWyvern_Base">
     <defName>YJZ_SkyWyvern_Race_Purple</defName>
-    <label>云麒麟·紫府</label>
+    <label>云中灵麟</label>
     <statBases>
       <MoveSpeed>4.14</MoveSpeed><MaxHitPoints>6000</MaxHitPoints><MarketValue>24000</MarketValue>
     </statBases>
     <race><baseBodySize>4</baseBodySize><baseHealthScale>6</baseHealthScale></race>
     <comps>
       <li Class="Yunjianzi.CompProperties_YunjianziSkyWyvern">
-        <stage>3</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedGround</groundTexPath><drawSize>2.8</drawSize>
+        <stage>3</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedGround</groundTexPath><drawSize>1.8</drawSize>
       </li>
     </comps>
   </ThingDef>
   <ThingDef ParentName="YJZ_SkyWyvern_Base">
     <defName>YJZ_SkyWyvern_Race_Golden</defName>
-    <label>云麒麟·金丹</label>
+    <label>负霆瑞兽</label>
     <statBases>
       <MoveSpeed>4.6</MoveSpeed><MaxHitPoints>30000</MaxHitPoints><MarketValue>65000</MarketValue>
       <ArmorRating_Sharp>2.0</ArmorRating_Sharp><ArmorRating_Blunt>1.5</ArmorRating_Blunt><ArmorRating_Heat>1.8</ArmorRating_Heat>
@@ -60,13 +98,13 @@
     <race><baseBodySize>6</baseBodySize><baseHealthScale>9</baseHealthScale></race>
     <comps>
       <li Class="Yunjianzi.CompProperties_YunjianziSkyWyvern">
-        <stage>4</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedGround</groundTexPath><drawSize>3.4</drawSize>
+        <stage>4</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedGround</groundTexPath><drawSize>2.6</drawSize>
       </li>
     </comps>
   </ThingDef>
   <ThingDef ParentName="YJZ_SkyWyvern_Base">
     <defName>YJZ_SkyWyvern_Race_Spirit</defName>
-    <label>云麒麟·化神</label>
+    <label>九天麟主</label>
     <statBases>
       <MoveSpeed>5.98</MoveSpeed><MaxHitPoints>500000</MaxHitPoints><MarketValue>250000</MarketValue>
       <ArmorRating_Sharp>2.8</ArmorRating_Sharp><ArmorRating_Blunt>2.2</ArmorRating_Blunt><ArmorRating_Heat>2.5</ArmorRating_Heat>
@@ -74,24 +112,29 @@
     <race><baseBodySize>12</baseBodySize><baseHealthScale>18</baseHealthScale></race>
     <comps>
       <li Class="Yunjianzi.CompProperties_YunjianziSkyWyvern">
-        <stage>5</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedGround</groundTexPath><drawSize>4.2</drawSize>
+        <stage>5</stage><groundTexPath>Yunjianzi/Pawn/SkyWyvern/UnifiedGround</groundTexPath><drawSize>3.8</drawSize>
       </li>
     </comps>
   </ThingDef>
 
   <PawnKindDef Name="YJZ_SkyWyvernKind_Base" ParentName="AnimalKindBase" Abstract="True">
     <label>云麒麟</label><combatPower>1600</combatPower><weaponMoney>0</weaponMoney><apparelMoney>0</apparelMoney><techHediffsMoney>0</techHediffsMoney>
+    <!-- Its legend may span millennia, but generated pawns must not roll a
+         millennia-old biological age and receive vanilla geriatric diseases. -->
+    <minGenerationAge>30</minGenerationAge>
+    <maxGenerationAge>30</maxGenerationAge>
+    <allowOldAgeInjuries>false</allowOldAgeInjuries>
     <lifeStages>
       <li><bodyGraphicData><texPath>Yunjianzi/Pawn/Shenji/ShenjiTransparentBody</texPath><shaderType>Cutout</shaderType><graphicClass>Graphic_Multi</graphicClass><drawSize>1</drawSize></bodyGraphicData></li>
     </lifeStages>
   </PawnKindDef>
-  <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base"><defName>YJZ_SkyWyvern_Purple</defName><label>云麒麟·紫府</label><race>YJZ_SkyWyvern_Race_Purple</race><combatPower>1800</combatPower></PawnKindDef>
+  <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base"><defName>YJZ_SkyWyvern_Purple</defName><label>云中灵麟</label><race>YJZ_SkyWyvern_Race_Purple</race><combatPower>1800</combatPower></PawnKindDef>
   <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base">
-    <defName>YJZ_SkyWyvern_Golden</defName><label>云麒麟·金丹</label><race>YJZ_SkyWyvern_Race_Golden</race><combatPower>4500</combatPower>
+    <defName>YJZ_SkyWyvern_Golden</defName><label>负霆瑞兽</label><race>YJZ_SkyWyvern_Race_Golden</race><combatPower>4500</combatPower>
     <abilities><li>YJZ_SkyWyvernBreath</li></abilities>
   </PawnKindDef>
   <PawnKindDef ParentName="YJZ_SkyWyvernKind_Base">
-    <defName>YJZ_SkyWyvern_Spirit</defName><label>云麒麟·化神</label><race>YJZ_SkyWyvern_Race_Spirit</race><combatPower>12000</combatPower>
+    <defName>YJZ_SkyWyvern_Spirit</defName><label>九天麟主</label><race>YJZ_SkyWyvern_Race_Spirit</race><combatPower>12000</combatPower>
     <abilities><li>YJZ_SkyWyvernBreath</li></abilities>
   </PawnKindDef>
 
@@ -113,8 +156,8 @@
 
   <AbilityDef>
     <defName>YJZ_SkyWyvernBreath</defName>
-    <label>雷霆吐息</label>
-    <description>吐出汇聚于灵角与经脉中的高密度雷霆，对目标区域造成雷电、EMP与麻痹。云麒麟在袭击中会自主选择密集敌群施放。</description>
+    <label>九霄震息</label>
+    <description>云麒麟昂首引动云中积雷，再将灵角与经脉间的雷光一息吐尽。雷霆落处，血肉为之麻痹，机械亦会失去响应；无人号令时，她也懂得把这道天威留给聚集成群的敌人。</description>
     <iconPath>Yunjianzi/UI/Abilities/SummonSkyWyvern</iconPath>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
     <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
@@ -144,11 +187,41 @@
 
   <HediffDef>
     <defName>YJZ_SkyWyvernAcceleration</defName>
-    <label>云麒麟瑞气</label>
-    <description>云麒麟舒展的护佑瑞气，正在提升友军的移动与操作效率。</description>
+    <label>祥光同庇</label>
+    <description>云麒麟收敛威势，将清明瑞气分予同行之人。身在其中，脚步如踏薄云，心手也随之轻快。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <stages><li><statOffsets><MoveSpeed>0.6</MoveSpeed></statOffsets><capMods><li><capacity>Manipulation</capacity><offset>0.08</offset></li></capMods></li></stages>
     <comps><li Class="HediffCompProperties_Disappears"><disappearsAfterTicks><min>120</min><max>120</max></disappearsAfterTicks></li></comps>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>YJZ_QilinBattleRoar</defName>
+    <label>麟威战吼</label>
+    <description>战吼激起云麒麟的血脉之力，步若奔雷，攻势如潮。移动速度提高50%，近战、雷爪、威压与背部雷矢的攻击频率提高50%，持续15秒。</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <stages>
+      <li>
+        <statFactors>
+          <MoveSpeed>1.5</MoveSpeed>
+          <MeleeCooldownFactor>0.6666667</MeleeCooldownFactor>
+          <RangedCooldownFactor>0.6666667</RangedCooldownFactor>
+        </statFactors>
+      </li>
+    </stages>
+    <comps>
+      <li Class="HediffCompProperties_Disappears">
+        <disappearsAfterTicks><min>900</min><max>900</max></disappearsAfterTicks>
+      </li>
+    </comps>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>YJZ_SkyWyvernRegeneration</defName>
+    <label>生生云息</label>
+    <description>云麒麟吐纳天地清炁，血肉、灵脉乃至残缺肢体都会迅速自行弥合。血脉越接近真形，再生之势便越强。</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
   </HediffDef>
 </Defs>

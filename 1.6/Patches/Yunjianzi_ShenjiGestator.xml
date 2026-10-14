@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ThingDef[defName="Milian_Gestator"]/recipes</xpath>
+    <value>
+      <li>YJZ_Gestate_Qingyu</li><li>YJZ_Gestate_Lingwei</li><li>YJZ_Gestate_Tianjiang</li>
+    </value>
+  </Operation>
+</Patch>

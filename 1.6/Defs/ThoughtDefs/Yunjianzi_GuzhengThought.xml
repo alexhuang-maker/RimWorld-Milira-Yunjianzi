@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThoughtDef>
+    <defName>YJZ_ListeningToGuzheng</defName>
+    <workerClass>Yunjianzi.ThoughtWorker_ListeningToGuzheng</workerClass>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <stages>
+      <li>
+        <label>聆听筝曲</label>
+        <description>弦音清越，余韵如云水回旋，纷乱的思绪也随之徐徐沉静。</description>
+        <baseMoodEffect>4</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+</Defs>

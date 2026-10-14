@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <FleckDef Name="YJZ_ZhuxieSlashBase" ParentName="FleckBase" Abstract="True">
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <fadeInTime>0</fadeInTime>
+    <solidTime>0.03</solidTime>
+    <fadeOutTime>0.15</fadeOutTime>
+    <growthRate>0</growthRate>
+    <graphicData>
+      <shaderType>MoteGlow</shaderType>
+      <drawSize>1</drawSize>
+      <color>(255,255,255)</color>
+    </graphicData>
+  </FleckDef>
+  <FleckDef ParentName="YJZ_ZhuxieSlashBase">
+    <defName>YJZ_Fleck_ZhuxieSlashA</defName>
+    <graphicData><texPath>Yunjianzi/Effects/ZhuxieSlashes/SlashA</texPath></graphicData>
+  </FleckDef>
+  <FleckDef ParentName="YJZ_ZhuxieSlashBase">
+    <defName>YJZ_Fleck_ZhuxieSlashB</defName>
+    <graphicData><texPath>Yunjianzi/Effects/ZhuxieSlashes/SlashB</texPath></graphicData>
+  </FleckDef>
+</Defs>

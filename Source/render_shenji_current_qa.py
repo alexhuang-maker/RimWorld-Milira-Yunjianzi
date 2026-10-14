@@ -51,8 +51,11 @@ def pawn(tier: str, direction: str) -> Image.Image:
             common_head,
             SHENJI / "Pawn" / "Shenji" / f"ShenjiHairBack_{source_direction}.png",
             SHENJI / "Pawn" / "Shenji" / f"ShenjiHairFront_{source_direction}.png",
-            SHENJI / "Apparel" / "Shenji" / f"ShenjiVisor_Female_{source_direction}.png",
         ]
+        if tier == "Intermediate":
+            paths.append(SHENJI / "Apparel" / "Shenji" / f"ShenjiVisor_Female_{source_direction}.png")
+        elif tier == "Final":
+            paths.append(SHENJI / "Apparel" / "Shenji" / f"JiuxiaoImmortalCrown_{source_direction}.png")
     result = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
     for path in paths:
         result = Image.alpha_composite(result, load(path))

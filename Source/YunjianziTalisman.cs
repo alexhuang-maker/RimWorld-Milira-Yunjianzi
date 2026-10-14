@@ -93,7 +93,7 @@ namespace Yunjianzi
         public override AcceptanceReport AvailableReport(Thing thing, BodyPartRecord part = null)
         {
             if (AvailableOnNow(thing, part)) return true;
-            return "需要云间子先在修行面板中参悟对应符咒。";
+            return "需要云间子先在修行面板中参悟对应法门。";
         }
     }
 
@@ -331,6 +331,16 @@ namespace Yunjianzi
         }
 
         internal float TalismanEnergyRecoveryFactor { get { return HasActiveTalisman("YJZ_Talisman_Guihai") ? 3f : 1f; } }
+        public float RobeEnergyRecoveryFactor
+        {
+            get
+            {
+                return Pawn?.apparel?.WornApparel.Any(apparel => apparel.def == YJZDefOf.YJZ_Apparel_YunjianRobe) == true
+                    ? 1.5f
+                    : 1f;
+            }
+        }
+        public float CloudSwordArrayRecoveryFactor { get { return WearingCloudSwordArray ? 1.5f : 1f; } }
         internal float TalismanCooldownFactor { get { return HasActiveTalisman("YJZ_Talisman_Beidou") ? .75f : 1f; } }
 
         internal static bool PawnHasActiveTalisman(Pawn pawn, string defName)
@@ -360,9 +370,9 @@ namespace Yunjianzi
                     slot = capturedSlot,
                     defaultLabel = active == null ? "阳符位·" + (slot + 1) : "阳符位·" + (slot + 1) + "「" + active.LabelCap + "」",
                     defaultDesc = active == null
-                        ? "空置阳符位。右键选择已经参悟并持有的符咒。"
-                        : "当前生效：" + active.LabelCap + "。\n\n" + EffectDescription(active.def.defName) +
-                          "\n\n右键替换或卸下；被替换的实体符咒会返回云间子的物品栏。",
+                        ? "此处尚无符箓镇守。右键可从已经参悟并随身持有的阳符中择取一张。"
+                        : "符意流转：「" + active.LabelCap + "」\n\n" + EffectDescription(active.def.defName) +
+                          "\n\n右键可更易或解下此符；旧符仍会收入随身物品，不致散失。",
                     icon = slotIcon,
                     action = delegate { OpenTalismanMenu(capturedSlot); }
                 };

@@ -167,7 +167,9 @@ namespace Yunjianzi
             Pawn source = caster;
             YangfuCombatSpell castSpell = spell;
             int castRank = rank;
-            FleckMaker.ThrowLightningGlow(DrawPos, map, 2.1f);
+            if (castSpell == YangfuCombatSpell.ThunderWind)
+                YunjianziPurpleLightning.Glow(DrawPos, map, 2.1f);
+            else FleckMaker.ThrowLightningGlow(DrawPos, map, 2.1f);
             for (int i = 0; i < 8; i++)
                 FleckMaker.ThrowMicroSparks(DrawPos + Gen.RandomHorizontalVector(.15f + i * .035f), map);
             Destroy(DestroyMode.Vanish);
@@ -371,6 +373,12 @@ namespace Yunjianzi
             if (ageTicks <= pullTicks)
             {
                 if ((Find.TickManager.TicksGame + thingIDNumber) % 18 == 0) PullEnemies();
+                if (ageTicks > pullTicks - 120 && ageTicks % 24 == 0)
+                {
+                    float angle = ageTicks * .17f + thingIDNumber;
+                    Vector3 rim = DrawPos + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * 2.2f;
+                    YunjianziPurpleLightning.Arc(rim, DrawPos, Map, .65f);
+                }
                 if ((Find.TickManager.TicksGame + thingIDNumber) % 5 == 0)
                 {
                     Vector3 point = Position.ToVector3Shifted() + Vector3Utility.RandomHorizontalOffset(Rand.Range(1f, 9f));
@@ -416,16 +424,17 @@ namespace Yunjianzi
         {
             List<Thing> targets = HostileTargets().OrderBy(_ => Rand.Value).ToList();
             IntVec3 cell = targets.Count > 0 ? targets[boltsRemaining % targets.Count].Position : Position;
-            Map.weatherManager.eventHandler.AddEvent(new WeatherEvent_LightningStrike(Map, cell));
-            FleckMaker.ThrowLightningGlow(cell.ToVector3Shifted(), Map, 2.2f + rank * .18f);
             Thing direct = targets.FirstOrDefault(t => t.Position == cell);
             if (direct != null)
             {
-                direct.TakeDamage(new DamageInfo(DamageDefOf.Flame, 30f + rank * 12f, .42f, -1f, caster));
                 Pawn pawn = direct as Pawn;
                 if (pawn != null) pawn.stances.stunner.StunFor(60 + rank * 30, caster);
             }
-            GenExplosion.DoExplosion(cell, Map, 2.2f + rank * .18f, DamageDefOf.EMP, caster, 12 + rank * 5, .25f);
+            YunjianziPurpleLightning.Strike(cell, Map, 1f + rank * .1f, caster,
+                30f + rank * 12f, .42f,
+                empDamage: 12 + rank * 5, empRadius: 2.2f + rank * .18f);
+            YunjianziCombatEffects.ChargeSwordWardFromLightning(caster);
+            ThunderBeastUtility.TrySummon(caster, cell, Map);
         }
 
         protected override void DrawAt(Vector3 drawLoc, bool flip = false)
@@ -451,6 +460,9 @@ namespace Yunjianzi
 
     public sealed class CompProperties_YangfuBeanSoldier : CompProperties
     {
+        public int defaultRank = 1;
+        public int swordShadowCount;
+
         public CompProperties_YangfuBeanSoldier() { compClass = typeof(CompYangfuBeanSoldier); }
     }
 
@@ -464,6 +476,22 @@ namespace Yunjianzi
 
         private Pawn Pawn { get { return parent as Pawn; } }
 
+        private CompProperties_YangfuBeanSoldier Props
+        {
+            get { return (CompProperties_YangfuBeanSoldier)props; }
+        }
+
+        public int SwordShadowCount { get { return Props.swordShadowCount; } }
+
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            base.PostSpawnSetup(respawningAfterLoad);
+            Pawn pawn = Pawn;
+            if (caster == null) caster = pawn;
+            if (!respawningAfterLoad) rank = Mathf.Clamp(Props.defaultRank, 1, 5);
+            EnsureSwordShadows();
+        }
+
         public void Initialize(Pawn source, int castRank)
         {
             caster = source;
@@ -476,6 +504,7 @@ namespace Yunjianzi
             Pawn pawn = Pawn;
             if (pawn == null || pawn.Dead || !pawn.Spawned) return;
             ageTicks++;
+            if (SwordShadowCount > 0 && pawn.IsHashIntervalTick(30)) EnsureSwordShadows();
             // RimWorld 一小时为 2500 tick；符兵严格存在两小时后消散。
             if (caster == null || caster.Dead || ageTicks >= 5000)
             {
@@ -518,6 +547,39 @@ namespace Yunjianzi
             int damage = Mathf.RoundToInt(50f * (1f + .5f * (rank - 1)));
             pawn.Destroy(DestroyMode.Vanish);
             GenExplosion.DoExplosion(cell, map, 2.9f, DamageDefOf.Bomb, source, damage, .35f);
+        }
+
+        private void EnsureSwordShadows()
+        {
+            Pawn pawn = Pawn;
+            if (SwordShadowCount <= 0 || pawn == null || !pawn.Spawned || pawn.Map == null || pawn.Dead) return;
+            Thing initialTarget = GenRadial.RadialDistinctThingsAround(pawn.Position, pawn.Map, 25.9f, true)
+                .Where(t => t != pawn && t.Spawned && t.HostileTo(pawn) &&
+                    ((t is Pawn targetPawn && !targetPawn.Dead) || t is Building_Turret))
+                .OrderBy(t => t.Position.DistanceToSquared(pawn.Position))
+                .FirstOrDefault();
+            if (initialTarget == null) return;
+
+            for (int index = 0; index < SwordShadowCount; index++)
+            {
+                bool exists = pawn.Map.listerThings.ThingsOfDef(YJZDefOf.YJZ_Projectile_SwordShadow)
+                    .OfType<ThingYunjianziSwordShadow>()
+                    .Any(shadow => shadow.Owner == pawn && shadow.ShadowIndex == index);
+                if (exists) continue;
+                ThingYunjianziSwordShadow shadow = (ThingYunjianziSwordShadow)ThingMaker.MakeThing(YJZDefOf.YJZ_Projectile_SwordShadow);
+                shadow.Initialize(pawn, index, initialTarget);
+                GenSpawn.Spawn(shadow, pawn.Position, pawn.Map);
+            }
+        }
+
+        public void OnSwordShadowHit(Thing hitThing)
+        {
+            Pawn pawn = Pawn;
+            if (hitThing == null || hitThing.Destroyed || pawn == null || pawn.Dead) return;
+            float damage = 16f + 7f * rank;
+            float armorPenetration = .34f + .06f * rank;
+            hitThing.TakeDamage(new DamageInfo(DamageDefOf.Cut, damage, armorPenetration, -1f,
+                pawn, null, null, DamageInfo.SourceCategory.ThingOrUnknown));
         }
 
         public override void PostDestroy(DestroyMode mode, Map previousMap)

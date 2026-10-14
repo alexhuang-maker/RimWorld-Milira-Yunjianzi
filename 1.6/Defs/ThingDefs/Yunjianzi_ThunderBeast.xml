@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BigCatThingBase">
+    <defName>YJZ_ThunderBeastRace</defName>
+    <label>雷兽</label>
+    <description>仙絮借天雷化出的护法雷兽。它不惧烈火，只追逐并撕咬敌人，所有近战攻击均附带EMP，三十秒后随雷光消散。同一地图最多同时存在20只雷兽，所有召唤者共用这一上限。</description>
+    <comps>
+      <li Class="Yunjianzi.CompProperties_ThunderBeast">
+        <lifetimeTicks>1800</lifetimeTicks>
+      </li>
+      <li Class="CompProperties_Glower">
+        <glowRadius>6</glowRadius>
+        <glowColor>(80,190,255,0)</glowColor>
+      </li>
+    </comps>
+    <race>
+      <body>QuadrupedAnimalWithPawsAndTail</body>
+      <predator>true</predator>
+      <baseBodySize>1.4</baseBodySize>
+      <baseHungerRate>0.2</baseHungerRate>
+      <baseHealthScale>1.5</baseHealthScale>
+      <lifeExpectancy>13</lifeExpectancy>
+      <soundMeleeHitPawn>Pawn_Melee_BigBash_HitPawn</soundMeleeHitPawn>
+      <soundMeleeHitBuilding>Pawn_Melee_BigBash_HitBuilding</soundMeleeHitBuilding>
+      <soundMeleeMiss>Pawn_Melee_BigBash_Miss</soundMeleeMiss>
+      <lifeStageAges Inherit="False">
+        <li>
+          <def>AnimalAdult</def>
+          <minAge>0</minAge>
+          <soundWounded>Pawn_Cougar_Injured</soundWounded>
+          <soundDeath>Pawn_Cougar_Death</soundDeath>
+          <soundAngry>Pawn_Cougar_Angry</soundAngry>
+        </li>
+      </lifeStageAges>
+    </race>
+    <statBases>
+      <Mass>60</Mass>
+      <Flammability>0</Flammability>
+      <MoveSpeed>7.8</MoveSpeed>
+      <MarketValue>0</MarketValue>
+      <Wildness>0</Wildness>
+      <ComfyTemperatureMin>-200</ComfyTemperatureMin>
+      <ComfyTemperatureMax>200</ComfyTemperatureMax>
+    </statBases>
+    <tools Inherit="False">
+      <li>
+        <label>左爪</label><labelNoLocation>雷爪</labelNoLocation>
+        <capacities><li>Scratch</li></capacities><power>11</power><cooldownTime>1.5</cooldownTime>
+        <extraMeleeDamages><li><def>EMP</def><amount>6</amount></li></extraMeleeDamages>
+        <linkedBodyPartsGroup>FrontLeftPaw</linkedBodyPartsGroup>
+      </li>
+      <li>
+        <label>右爪</label><labelNoLocation>雷爪</labelNoLocation>
+        <capacities><li>Scratch</li></capacities><power>11</power><cooldownTime>1.5</cooldownTime>
+        <extraMeleeDamages><li><def>EMP</def><amount>6</amount></li></extraMeleeDamages>
+        <linkedBodyPartsGroup>FrontRightPaw</linkedBodyPartsGroup>
+      </li>
+      <li>
+        <label>獠牙</label><labelNoLocation>撕咬</labelNoLocation>
+        <capacities><li>Bite</li></capacities><power>16</power><cooldownTime>2</cooldownTime>
+        <extraMeleeDamages><li><def>EMP</def><amount>6</amount></li></extraMeleeDamages>
+        <linkedBodyPartsGroup>Teeth</linkedBodyPartsGroup><chanceFactor>0.7</chanceFactor>
+      </li>
+      <li>
+        <label>头槌</label><capacities><li>Blunt</li></capacities><power>9</power><cooldownTime>2</cooldownTime>
+        <extraMeleeDamages><li><def>EMP</def><amount>6</amount></li></extraMeleeDamages>
+        <linkedBodyPartsGroup>HeadAttackTool</linkedBodyPartsGroup><ensureLinkedBodyPartsGroupAlwaysUsable>true</ensureLinkedBodyPartsGroupAlwaysUsable><chanceFactor>0.2</chanceFactor>
+      </li>
+    </tools>
+  </ThingDef>
+
+  <PawnKindDef ParentName="BigCatKindBase">
+    <defName>YJZ_ThunderBeast</defName>
+    <label>雷兽</label>
+    <race>YJZ_ThunderBeastRace</race>
+    <combatPower>130</combatPower>
+    <ecoSystemWeight>0</ecoSystemWeight>
+    <minGenerationAge>1</minGenerationAge>
+    <maxGenerationAge>12</maxGenerationAge>
+    <lifeStages Inherit="False">
+      <li>
+        <bodyGraphicData>
+          <texPath>Yunjianzi/Pawns/ThunderBeast/ThunderBeast</texPath>
+          <graphicClass>Graphic_Multi</graphicClass>
+          <shaderType>MoteGlow</shaderType>
+          <drawSize>2.25</drawSize>
+          <shadowData><volume>(0.4, 0.4, 0.4)</volume><offset>(0,0,-0.1)</offset></shadowData>
+        </bodyGraphicData>
+      </li>
+    </lifeStages>
+  </PawnKindDef>
+</Defs>

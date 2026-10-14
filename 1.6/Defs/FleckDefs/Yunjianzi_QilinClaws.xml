@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <FleckDef Name="YJZ_QilinThunderClawBase" ParentName="FleckBase" Abstract="True">
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <fadeInTime>0.025</fadeInTime>
+    <solidTime>0.075</solidTime>
+    <fadeOutTime>0.24</fadeOutTime>
+    <growthRate>0</growthRate>
+    <graphicData>
+      <shaderType>MoteGlow</shaderType>
+      <drawSize>1</drawSize>
+      <color>(255,255,255)</color>
+    </graphicData>
+  </FleckDef>
+  <FleckDef ParentName="YJZ_QilinThunderClawBase">
+    <defName>YJZ_Fleck_QilinThunderClawA</defName>
+    <graphicData><texPath>Yunjianzi/Effects/QilinClaws/ThunderClawA</texPath></graphicData>
+  </FleckDef>
+  <FleckDef ParentName="YJZ_QilinThunderClawBase">
+    <defName>YJZ_Fleck_QilinThunderClawB</defName>
+    <graphicData><texPath>Yunjianzi/Effects/QilinClaws/ThunderClawB</texPath></graphicData>
+  </FleckDef>
+</Defs>

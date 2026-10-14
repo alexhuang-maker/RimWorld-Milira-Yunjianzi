@@ -14,6 +14,21 @@
     </graphicData>
   </FleckDef>
 
+  <FleckDef ParentName="FleckBase_Thrown">
+    <defName>YJZ_Fleck_SwordShadowCloudWake</defName>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <fadeInTime>0.025</fadeInTime>
+    <solidTime>0.035</solidTime>
+    <fadeOutTime>0.34</fadeOutTime>
+    <growthRate>0.22</growthRate>
+    <graphicData>
+      <texPath>Things/Mote/AirPuff</texPath>
+      <shaderType>MoteGlow</shaderType>
+      <color>(205,255,248)</color>
+      <renderInstanced>true</renderInstanced>
+    </graphicData>
+  </FleckDef>
+
   <FleckDef ParentName="FleckBase">
     <defName>YJZ_Fleck_BlinkSlash</defName>
     <altitudeLayer>Projectile</altitudeLayer>
@@ -81,7 +96,7 @@
       <texPath>AriandelLibrary/Effect/WarpLight/WarpLightB</texPath>
       <shaderType>MoteGlow</shaderType>
       <drawSize>2.3</drawSize>
-      <color>(125,205,255)</color>
+      <color>(189,142,255)</color>
     </graphicData>
   </FleckDef>
 </Defs>

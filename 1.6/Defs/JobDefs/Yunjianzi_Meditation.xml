@@ -3,13 +3,13 @@
   <JobDef>
     <defName>YJZ_EquipTalisman</defName>
     <driverClass>Yunjianzi.JobDriver_YunjianziEquipTalisman</driverClass>
-    <reportString>正在佩用TargetA。</reportString>
+    <reportString>正在将TargetA收入阳符位。</reportString>
     <playerInterruptible>true</playerInterruptible>
   </JobDef>
   <JobDef>
     <defName>YJZ_Meditate</defName>
     <driverClass>Yunjianzi.JobDriver_YunjianziMeditate</driverClass>
-    <reportString>在TargetB上打坐修行。</reportString>
+    <reportString>正在TargetB吐纳周天。</reportString>
     <casualInterruptible>true</casualInterruptible>
     <checkOverrideOnDamage>Always</checkOverrideOnDamage>
   </JobDef>
@@ -23,7 +23,7 @@
   <JobDef>
     <defName>YJZ_Breakthrough</defName>
     <driverClass>Yunjianzi.JobDriver_YunjianziBreakthrough</driverClass>
-    <reportString>正在TargetB闭关突破。</reportString>
+    <reportString>正在TargetB闭关叩境。</reportString>
     <casualInterruptible>false</casualInterruptible>
     <playerInterruptible>false</playerInterruptible>
     <checkOverrideOnDamage>Never</checkOverrideOnDamage>

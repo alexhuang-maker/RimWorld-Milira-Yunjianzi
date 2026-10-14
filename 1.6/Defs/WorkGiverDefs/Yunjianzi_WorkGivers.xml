@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <WorkTypeDef>
+    <defName>YJZ_Cultivation</defName>
+    <labelShort>修炼</labelShort>
+    <pawnLabel>修炼者</pawnLabel>
+    <gerundLabel>修炼中</gerundLabel>
+    <verb>修炼</verb>
+    <naturalPriority>15</naturalPriority>
+    <alwaysStartActive>true</alwaysStartActive>
+  </WorkTypeDef>
+
+  <WorkGiverDef>
+    <defName>YJZ_CultivateAtSeat</defName>
+    <label>在修行设施上修炼</label>
+    <giverClass>Yunjianzi.WorkGiver_YunjianziCultivate</giverClass>
+    <workType>YJZ_Cultivation</workType>
+    <priorityInType>100</priorityInType>
+    <verb>修炼于</verb>
+    <gerund>正在修炼于</gerund>
+    <canBeDoneByMechs>false</canBeDoneByMechs>
+    <requiredCapacities>
+      <li>Consciousness</li>
+    </requiredCapacities>
+  </WorkGiverDef>
+
+  <WorkGiverDef>
+    <defName>YJZ_DoBillsTalismanTable</defName>
+    <label>draw talismans</label>
+    <giverClass>WorkGiver_DoBill</giverClass>
+    <workType>Crafting</workType>
+    <priorityInType>100</priorityInType>
+    <fixedBillGiverDefs>
+      <li>YJZ_Building_TalismanTable</li>
+    </fixedBillGiverDefs>
+    <verb>draw at</verb>
+    <gerund>drawing at</gerund>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+    <prioritizeSustains>true</prioritizeSustains>
+  </WorkGiverDef>
+</Defs>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef>
+    <defName>YJZ_Thing_SwordRainEcho</defName>
+    <label>天剑雨·太虚剑影</label>
+    <thingClass>Yunjianzi.ThingYunjianziSwordRainEcho</thingClass>
+    <category>Ethereal</category>
+    <tickerType>Normal</tickerType>
+    <drawerType>RealtimeOnly</drawerType>
+    <drawOffscreen>true</drawOffscreen>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <selectable>false</selectable>
+    <useHitPoints>false</useHitPoints>
+    <!-- Temporary echoes must be allowed to finish their normal Destroy lifecycle. -->
+    <destroyable>true</destroyable>
+    <passability>Standable</passability>
+  </ThingDef>
+  <ThingDef ParentName="PawnFlyerBase">
+    <defName>YJZ_PawnFlyer_SwordRain</defName>
+    <label>天剑雨·腾空</label>
+    <thingClass>Yunjianzi.PawnFlyerYunjianziSwordRain</thingClass>
+    <pawnFlyer Inherit="False">
+      <workerClass>Yunjianzi.PawnFlyerWorkerYunjianziSwordRain</workerClass>
+      <flightDurationMin>1.5</flightDurationMin>
+      <flightSpeed>100</flightSpeed>
+      <heightFactor>3.4</heightFactor>
+      <stunDurationTicksRange>0</stunDurationTicksRange>
+    </pawnFlyer>
+  </ThingDef>
+  <FleckDef ParentName="FleckBase">
+    <defName>YJZ_Fleck_SwordRainAura</defName>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <fadeInTime>0</fadeInTime>
+    <solidTime>0.03</solidTime>
+    <fadeOutTime>0.14</fadeOutTime>
+    <growthRate>0</growthRate>
+    <graphicData>
+      <texPath>Things/Mote/LightningGlow</texPath>
+      <shaderType>MoteGlow</shaderType>
+      <drawSize>1</drawSize>
+      <color>(170,235,255,180)</color>
+    </graphicData>
+  </FleckDef>
+  <!-- Use the approved sword slashes, with thrown flecks for radial travel. -->
+  <FleckDef ParentName="YJZ_ZhuxieSlashBase">
+    <defName>YJZ_Fleck_SwordRainBurstA</defName>
+    <fleckSystemClass>FleckSystemThrown</fleckSystemClass>
+    <graphicData><texPath>Yunjianzi/Effects/ZhuxieSlashes/SlashA</texPath></graphicData>
+  </FleckDef>
+  <FleckDef ParentName="YJZ_ZhuxieSlashBase">
+    <defName>YJZ_Fleck_SwordRainBurstB</defName>
+    <fleckSystemClass>FleckSystemThrown</fleckSystemClass>
+    <graphicData><texPath>Yunjianzi/Effects/ZhuxieSlashes/SlashB</texPath></graphicData>
+  </FleckDef>
+</Defs>

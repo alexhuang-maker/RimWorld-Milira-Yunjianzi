@@ -110,21 +110,24 @@
              race equipment after PawnKind apparel selection. Remove it once,
              at pawn creation, and leave exactly this robe equipped. -->
         <onlyInitialApparel>YJZ_Apparel_YunjianRobe</onlyInitialApparel>
+        <initialApparel>
+          <li>YJZ_Apparel_YunjianRobe</li>
+        </initialApparel>
         <clearInitialEquipment>true</clearInitialEquipment>
         <clearInitialInventory>true</clearInitialInventory>
         <skills>
           <li><skill>Shooting</skill><level>7</level><passion>None</passion></li>
-          <li><skill>Melee</skill><level>19</level><passion>None</passion></li>
+          <li><skill>Melee</skill><level>19</level><passion>Major</passion></li>
           <li><skill>Construction</skill><level>6</level><passion>None</passion></li>
           <li><skill>Mining</skill><level>3</level><passion>None</passion></li>
           <li><skill>Cooking</skill><level>4</level><passion>None</passion></li>
           <li><skill>Plants</skill><level>4</level><passion>None</passion></li>
           <li><skill>Animals</skill><level>4</level><passion>None</passion></li>
-          <li><skill>Crafting</skill><level>19</level><passion>None</passion></li>
+          <li><skill>Crafting</skill><level>19</level><passion>Major</passion></li>
           <li><skill>Artistic</skill><level>5</level><passion>None</passion></li>
           <li><skill>Medicine</skill><level>5</level><passion>None</passion></li>
           <li><skill>Social</skill><level>7</level><passion>None</passion></li>
-          <li><skill>Intellectual</skill><level>20</level><passion>None</passion></li>
+          <li><skill>Intellectual</skill><level>20</level><passion>Major</passion></li>
         </skills>
       </li>
       <li Class="AriandelLibrary.NPCKindTag">

@@ -1,0 +1,14 @@
+# 纯元素仙絮·舒展曲线
+
+内置 imagegen 编辑模式。减少正面和侧面的反复回折及卷曲尾端，保留头顶拱形、青白雷电与紫色光晕。打包只进行透明边界裁切、缩放、镜像与既有分层，未绘制替代素材。
+
+最终项目素材：Elemental_South_Source.png、Elemental_East_Source.png；四方向预览：FourDirections_QA.png；运行时素材位于 ../../Content/Textures/Yunjianzi/Apparel/JiuxiaoXianxu。修改前素材及设置在 before/。
+
+## 正面提示词
+
+Use case: precise-object-edit. Refine the attached PURE ELEMENTAL lightning scarf game sprite. The user wants MUCH FEWER FOLDS AND BENDS. It is not cloth at all. Simplify the silhouette from repeated accordion-like S curls into TWO graceful long flowing trails with only ONE broad shallow S sweep on each side and gently tapered ends. Each side should feel long, airy, smooth and relaxed rather than crumpled, ruffled, zigzagging or snake-coiled. Remove the little hooks, tightly rolled ends, repeated inward/outward waves, and loop-like bulges along each side. Preserve the RAISED CENTRAL ARCH above the empty wearer's head: smooth rounded inverted-U summit at x50%, y5%, gently descending toward outer shoulders x22%/78%, y27%. Simplify the shoulders too, no secondary horns, no loops. From those shoulders the trails descend along outer quarters in one restrained long curve toward y92%, ending in simple fine lightning wisps, no curled spiral tips. STRICT perfect LEFT-RIGHT MIRROR SYMMETRY. Keep center head and torso completely transparent. Material remains entirely cyan-white electrical filaments and translucent blue-violet aura, NO physical substrate, NO fabric, NO metallic trim, NO embroidery or decorations. Use fewer clean flowing bright core strands instead of tangled lines. Maintain same overall proportions, square canvas, original palette, genuine transparent alpha background, no character, no text. Thin luminous cores with soft restrained glow, subtle tiny electrical branches. Keep all edges/glow inside canvas. Overall effect: a majestic calm, smooth pure-electric pibo with a high arch and two long gently flowing tails, NOT a wrinkled or coiled scarf.
+
+## 侧面提示词
+
+Use case: precise-object-edit. Image 1 is the old side-view lightning accessory to simplify; image 2 is the new front-view material and linework reference. Edit the SIDE VIEW into one slender, long, airy pure-electric cyan-white stream with a soft violet aura. Far fewer folds: only one broad relaxed shallow S curve, no repeated serpentine loops, no accordion folds, no tightly curled tips. Top starts slightly left of center and bends smoothly toward center; middle almost straight flowing downward; lower end drifts gently right and tapers into a fine simple wisp. Keep narrow side-view footprint and vertical proportions matching image 1. Use luminous clean electrical filaments and delicate lightning branches consistent with image 2, no opaque physical ribbon, no fabric, no gold, no metal, no cloth creases. True transparent alpha background, entire glow inside square canvas with margin, no character, no text. One single trail only, not the two-sided front arch.
+

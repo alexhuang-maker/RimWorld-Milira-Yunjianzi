@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="Milira_OnSkinBase">
+    <defName>YJZ_Apparel_YunjianRobe</defName>
+    <label>云间道袍</label>
+    <description>“被褐怀玉。”——《道德经》
+
+道书卷首绘着上一代云间子的旧衣：珠白外袍仍守道衣之形，青玉灵路却与异世能源回路一同呼吸。现任云间子依图裁成此袍，也由此明白，继承古法不必舍弃自己的故乡。
+
+效果：云间子的专属常驻道袍，不会损坏，并能保护全身、抵御伤害与严酷温度。</description>
+    <techLevel>Ultra</techLevel>
+    <smeltable>false</smeltable>
+    <burnableByRecipe>false</burnableByRecipe>
+    <useHitPoints>false</useHitPoints>
+    <recipeMaker Inherit="False" IsNull="True" />
+    <graphicData>
+      <texPath>Yunjianzi/UI/YunjianziRobe</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <uiIconPath>Yunjianzi/UI/YunjianziRobe</uiIconPath>
+    <statBases>
+      <Mass>1.2</Mass>
+      <DeteriorationRate>0</DeteriorationRate>
+      <!-- Final values of legendary Milira_DaedalusArmor made from
+           Milira_SunPlateSteel: (base + stuff * 0.35) * 1.8.  The robe has no
+           quality or stuff comps, so the reference result is stored directly. -->
+      <ArmorRating_Sharp>1.5075</ArmorRating_Sharp>
+      <ArmorRating_Blunt>1.1925</ArmorRating_Blunt>
+      <ArmorRating_Heat>1.1475</ArmorRating_Heat>
+      <Insulation_Cold>40</Insulation_Cold>
+      <Insulation_Heat>20</Insulation_Heat>
+    </statBases>
+    <apparel>
+      <useWornGraphicMask>false</useWornGraphicMask>
+      <developmentalStageFilter>Adult</developmentalStageFilter>
+      <bodyPartGroups Inherit="False">
+        <li>Torso</li>
+        <li>Legs</li>
+        <li>Arms</li>
+        <li>Neck</li>
+        <li>Shoulders</li>
+        <li>Feet</li>
+        <li>Hands</li>
+        <li>Milira_Wings</li>
+        <li>FullHead</li>
+      </bodyPartGroups>
+      <wornGraphicPath>Yunjianzi/Apparel/YunjianziRobe</wornGraphicPath>
+      <tags Inherit="False">
+        <li>YJZ_YunjianRobe</li>
+      </tags>
+      <layers Inherit="False">
+        <li>Shell</li>
+      </layers>
+      <shellRenderedBehindHead>true</shellRenderedBehindHead>
+    </apparel>
+    <equippedStatOffsets>
+      <ResearchSpeed>0.20</ResearchSpeed>
+    </equippedStatOffsets>
+  </ThingDef>
+  <ThingDef ParentName="ApparelNoQualityBase">
+    <defName>YJZ_Apparel_CloudSwordArray</defName>
+    <label>云海剑轮</label>
+    <description>云间子以诛邪剑意温养的一匣灵剑。平日收敛无形，临战时六剑自匣中飞出，在主人背后结成扇形剑阵。\n\n效果：使灵气周流、步履与出手更为迅捷，并为分光剑术添入六柄常随灵剑；征召或锁定敌人时，剑轮会在背后显形。</description>
+    <techLevel>Ultra</techLevel>
+    <smeltable>false</smeltable>
+    <burnableByRecipe>false</burnableByRecipe>
+    <useHitPoints>false</useHitPoints>
+    <recipeMaker Inherit="False" IsNull="True" />
+    <graphicData>
+      <texPath>Yunjianzi/Apparel/CloudSwordArray/CloudSwordArrayV2</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>0.75</drawSize>
+    </graphicData>
+    <uiIconPath>Yunjianzi/Apparel/CloudSwordArray/CloudSwordArrayV2</uiIconPath>
+    <statBases><Mass>0.8</Mass><DeteriorationRate>0</DeteriorationRate><Flammability>0</Flammability></statBases>
+    <equippedStatOffsets>
+      <MoveSpeed>0.5</MoveSpeed>
+      <!-- ThingDef has no equippedStatFactors field in RimWorld 1.6.  Both
+           cooldown stats have a base value of 1, so an equipped offset of
+           -0.2 preserves the intended 20% reduction without an XML error. -->
+      <MeleeCooldownFactor>-0.2</MeleeCooldownFactor>
+      <RangedCooldownFactor>-0.2</RangedCooldownFactor>
+    </equippedStatOffsets>
+    <thingCategories><li>ApparelUtility</li></thingCategories>
+    <tradeability>None</tradeability>
+    <apparel>
+      <countsAsClothingForNudity>false</countsAsClothingForNudity>
+      <careIfWornByCorpse>false</careIfWornByCorpse>
+      <wearPerDay>0</wearPerDay>
+      <bodyPartGroups><li>Torso</li></bodyPartGroups>
+      <layers><li>YJZ_SwordArtifact</li></layers>
+      <!-- The visible sword wheel is rendered by CompCloudSwordArray.  HAR still
+           asks for a body-type Multi graphic, so reuse the bundled transparent
+           four-direction placeholder instead of probing nonexistent V2_Female files. -->
+      <wornGraphicPath>Yunjianzi/Apparel/JiuxiaoXianxu/JiuxiaoXianxu</wornGraphicPath>
+      <wornGraphicData><renderUtilityAsPack>true</renderUtilityAsPack></wornGraphicData>
+      <drawData><scale>0</scale></drawData>
+    </apparel>
+    <comps>
+      <li Class="Yunjianzi.CompProperties_CloudSwordArray">
+        <swordCount>6</swordCount><radius>1.22</radius>
+      </li>
+    </comps>
+  </ThingDef>
+  <ThingDef ParentName="ApparelNoQualityBase">
+    <defName>YJZ_Apparel_JiuxiaoXianxu</defName>
+    <label>九霄仙絮</label>
+    <description>“云为衣兮风为马，长风引絮接九霄。”
+
+以化神元神将雷霆织入无形天丝炼成的披帛法器。仙絮不凭风而动，两端绕身舒卷，既为仙阵接引九霄雷炁，也在来袭之力触身前将其层层卸去。
+
+效果：仙阵落雷间隔减半、每轮最多轰击六个目标；云间子造成的神霄雷电伤害翻倍；受到的一切伤害降低50%。可与云海剑轮同时佩用。</description>
+    <techLevel>Ultra</techLevel>
+    <smeltable>false</smeltable>
+    <burnableByRecipe>false</burnableByRecipe>
+    <useHitPoints>false</useHitPoints>
+    <recipeMaker Inherit="False" IsNull="True" />
+    <graphicData>
+      <texPath>Yunjianzi/Apparel/JiuxiaoXianxu/JiuxiaoXianxu</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>1.8</drawSize>
+    </graphicData>
+    <uiIconPath>Yunjianzi/Apparel/JiuxiaoXianxu/JiuxiaoXianxu</uiIconPath>
+    <statBases><Mass>0.4</Mass><DeteriorationRate>0</DeteriorationRate><Flammability>0</Flammability><MarketValue>12000</MarketValue></statBases>
+    <thingCategories><li>ApparelUtility</li></thingCategories>
+    <tradeability>None</tradeability>
+    <apparel>
+      <countsAsClothingForNudity>false</countsAsClothingForNudity>
+      <careIfWornByCorpse>false</careIfWornByCorpse>
+      <wearPerDay>0</wearPerDay>
+      <bodyPartGroups Inherit="False"><li>Milira_Wings</li></bodyPartGroups>
+      <layers Inherit="False"><li>YJZ_CelestialSilk</li></layers>
+      <wornGraphicPath>Yunjianzi/Apparel/JiuxiaoXianxu/JiuxiaoXianxu</wornGraphicPath>
+      <wornGraphicData><renderUtilityAsPack>true</renderUtilityAsPack></wornGraphicData>
+      <drawData><scale>0</scale></drawData>
+    </apparel>
+    <comps>
+      <li Class="Yunjianzi.CompProperties_JiuxiaoXianxu">
+        <drawScale>1.50</drawScale>
+        <drawOffsetZ>-0.08</drawOffsetZ>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>

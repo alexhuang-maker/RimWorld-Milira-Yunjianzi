@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>YJZ_Make_CloudSwordArray</defName>
+    <label>炼制云海剑轮</label>
+    <description>以日盘钢锻成六柄飞剑，以青玉与太阳水晶刻入御剑灵路，炼成云间子的云海剑轮。</description>
+    <jobString>正在炼制云海剑轮。</jobString>
+    <workerClass>Yunjianzi.RecipeWorker_YunjianziTalisman</workerClass>
+    <workAmount>18000</workAmount>
+    <workSkill>Crafting</workSkill>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    <effectWorking>Smith</effectWorking>
+    <soundWorking>Recipe_Smith</soundWorking>
+    <skillRequirements>
+      <Crafting>10</Crafting>
+    </skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Milira_SunPlateSteel</li></thingDefs></filter><count>60</count></li>
+      <li><filter><thingDefs><li>Jade</li></thingDefs></filter><count>40</count></li>
+      <li><filter><thingDefs><li>Milira_SolarCrystal</li></thingDefs></filter><count>12</count></li>
+      <li><filter><thingDefs><li>ComponentIndustrial</li></thingDefs></filter><count>4</count></li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>Milira_SunPlateSteel</li>
+        <li>Jade</li>
+        <li>Milira_SolarCrystal</li>
+        <li>ComponentIndustrial</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+    <products>
+      <YJZ_Apparel_CloudSwordArray>1</YJZ_Apparel_CloudSwordArray>
+    </products>
+    <recipeUsers>
+      <li>YJZ_Building_TalismanTable</li>
+    </recipeUsers>
+    <modExtensions>
+      <li Class="Yunjianzi.YunjianziTalismanRecipeExtension">
+        <skillId>sword.cloudarray</skillId>
+      </li>
+    </modExtensions>
+  </RecipeDef>
+</Defs>

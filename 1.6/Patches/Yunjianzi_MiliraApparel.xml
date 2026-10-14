@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- Milira is an HAR race with a strict apparel whitelist.  The robe inherits
+       a Milira apparel base, but the standalone sword array must be admitted
+       explicitly or Pawn_ApparelTracker.Wear rejects it. -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/AlienRace.ThingDef_AlienRace[defName="Milira_Race"]/alienRace/raceRestriction/whiteApparelList</xpath>
+    <value>
+      <li>YJZ_Apparel_CloudSwordArray</li>
+      <li>YJZ_Apparel_JiuxiaoXianxu</li>
+    </value>
+  </Operation>
+</Patch>

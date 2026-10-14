@@ -7,6 +7,8 @@
 
 诛邪的剑图藏在道书封底。上一代云间子留下的不是一柄已经无敌的神兵，而是一道未曾替继承者作答的剑胚：所谓诛邪，先诛世间之敌，还是先斩心中妄念？此后剑不更名，也不另铸，只随继承者一同成长。
 
+剑纹与镶饰随云间子的修行逐渐明亮：练气时含蓄如道袍灵纹，筑基、紫府、金丹逐级增强，化神时明耀如激活的紫电仙絮。
+
 效果：云间子的唯一仙剑，威力、穿透、剑影与附魔都会随修行境界成长。</description>
     <thingClass>ThingWithComps</thingClass>
     <rotatable>true</rotatable>
@@ -15,6 +17,8 @@
     <recipeMaker Inherit="False" IsNull="True" />
     <smeltable>false</smeltable>
     <burnableByRecipe>false</burnableByRecipe>
+    <tradeability>None</tradeability>
+    <generateCommonality>0</generateCommonality>
     <techLevel>Ultra</techLevel>
     <weaponTags><li>YJZ_Zhuxie</li></weaponTags>
     <weaponClasses><li>MeleePiercer</li></weaponClasses>

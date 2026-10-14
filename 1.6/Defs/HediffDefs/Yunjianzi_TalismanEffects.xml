@@ -9,54 +9,54 @@
   </HediffDef>
 
   <HediffDef ParentName="YJZ_TalismanEffectBase">
-    <defName>YJZ_TalismanEffect_Shenjie</defName><label>神截符·截秘</label>
-    <description>截取天地神妙秘藏，研究速度提高100%。</description>
+    <defName>YJZ_TalismanEffect_Shenjie</defName><label>截真符·格物</label>
+    <description>纷杂表象被符意层层削去，未知之中已有一线真意可循。</description>
     <stages><li><statOffsets><ResearchSpeed>1</ResearchSpeed></statOffsets></li></stages>
   </HediffDef>
   <HediffDef ParentName="YJZ_TalismanEffectBase">
     <defName>YJZ_TalismanEffect_Shenxing</defName><label>神行符·轻身</label>
-    <description>引轻灵之气入体，移动速度提高2格/秒。</description>
+    <description>轻灵之气行于足下，每一步都像云影越过山脊。</description>
     <stages><li><statOffsets><MoveSpeed>2</MoveSpeed></statOffsets></li></stages>
   </HediffDef>
   <HediffDef ParentName="YJZ_TalismanEffectBase">
     <defName>YJZ_TalismanEffect_Jiqing</defName><label>寄情符·澄怀</label>
-    <description>寄情山水草木，社交影响提高25%，精神崩溃阈值降低10%；所在环境越华丽，额外心情越高。</description>
+    <description>山水草木之意寄于心间；所处之地越清雅，心神便越舒展。</description>
     <stages><li><statOffsets><SocialImpact>0.25</SocialImpact><MentalBreakThreshold>-0.10</MentalBreakThreshold></statOffsets></li></stages>
   </HediffDef>
   <HediffDef ParentName="YJZ_TalismanEffectBase">
     <defName>YJZ_TalismanEffect_Baicao</defName><label>百草符·通医</label>
-    <description>医疗质量与手术成功率提高50%；主刀时不会发生手术失败。</description>
+    <description>百草医理映照病机，运针下刀皆能看清那一线生机。</description>
     <stages><li><statOffsets><MedicalTendQuality>0.50</MedicalTendQuality><MedicalSurgerySuccessChance>0.50</MedicalSurgerySuccessChance></statOffsets></li></stages>
   </HediffDef>
   <HediffDef ParentName="YJZ_TalismanEffectBase">
     <defName>YJZ_TalismanEffect_Xinjian</defName><label>心剑符·察心</label>
-    <description>洞彻人心，贸易价格改善20%，社交影响提高10%。</description>
+    <description>心剑斩去言语中的虚声，使迟疑、渴求与底线清晰可辨。</description>
     <stages><li><statOffsets><TradePriceImprovement>0.20</TradePriceImprovement><SocialImpact>0.10</SocialImpact></statOffsets></li></stages>
   </HediffDef>
 
   <HediffDef ParentName="YJZ_TalismanEffectBase">
-    <defName>YJZ_TalismanEffect_Beidou</defName><label>北斗符·御器</label>
-    <description>接引北斗星辉，远近攻击、瞄准与御剑特效冷却缩短25%。</description>
+    <defName>YJZ_TalismanEffect_Beidou</defName><label>斗转符·御器</label>
+    <description>斗柄流转不息，持符者的出手、瞄准与御剑也随之更为迅捷。</description>
     <stages><li><statFactors><MeleeCooldownFactor>0.75</MeleeCooldownFactor><RangedCooldownFactor>0.75</RangedCooldownFactor><AimingDelayFactor>0.75</AimingDelayFactor></statFactors></li></stages>
   </HediffDef>
   <HediffDef ParentName="YJZ_TalismanEffectBase">
     <defName>YJZ_TalismanEffect_Shenlian</defName><label>神炼符·御工</label>
-    <description>以神念御器，全局工作速度提高75%。</description>
+    <description>器物尚未成形，神念已先见过它完成后的模样。</description>
     <stages><li><statOffsets><WorkSpeedGlobal>0.75</WorkSpeedGlobal></statOffsets></li></stages>
   </HediffDef>
   <HediffDef ParentName="YJZ_TalismanEffectBase">
-    <defName>YJZ_TalismanEffect_Huijian</defName><label>惠剑斩念符·无扰</label>
-    <description>斩却心灵低语，心灵敏感度降至零，精神崩溃阈值降低25%。</description>
+    <defName>YJZ_TalismanEffect_Huijian</defName><label>慧剑斩念符·无扰</label>
+    <description>一线慧剑横过灵台，外来低语与自生妄念至此而止。</description>
     <stages><li><statOffsets><PsychicSensitivity>-1</PsychicSensitivity><MentalBreakThreshold>-0.25</MentalBreakThreshold></statOffsets></li></stages>
   </HediffDef>
   <HediffDef ParentName="YJZ_TalismanEffectBase">
     <defName>YJZ_TalismanEffect_Bumei</defName><label>不昧真灵符·明心</label>
-    <description>心境通明，学习速度提高100%，并免疫由心情引发的精神崩溃。</description>
+    <description>真灵历劫而不昧，所学所见皆能归入一颗澄明本心。</description>
     <stages><li><statOffsets><GlobalLearningFactor>1</GlobalLearningFactor><MentalBreakThreshold>-0.20</MentalBreakThreshold></statOffsets></li></stages>
   </HediffDef>
   <HediffDef ParentName="YJZ_TalismanEffectBase">
     <defName>YJZ_TalismanEffect_Jiexin</defName><label>劫心符·淬体</label>
-    <description>消耗本源淬炼肉身，使移动、工作、战斗与医疗能力全面提高。</description>
+    <description>本源如火淬过筋骨，强盛由此而生，也由此带着一分劫意。</description>
     <stages><li>
       <statFactors><IncomingDamageFactor>0.80</IncomingDamageFactor></statFactors>
       <statOffsets><MoveSpeed>1</MoveSpeed><WorkSpeedGlobal>0.35</WorkSpeedGlobal><MeleeHitChance>4</MeleeHitChance><ShootingAccuracyPawn>4</ShootingAccuracyPawn><MedicalTendQuality>0.20</MedicalTendQuality></statOffsets>
@@ -65,7 +65,7 @@
   </HediffDef>
   <HediffDef ParentName="YJZ_TalismanEffectBase">
     <defName>YJZ_TalismanEffect_Liuyang</defName><label>六阳真形符·躁阳</label>
-    <description>射击与格斗固定20级、艺术固定0级；精神崩溃阈值提高25%。</description>
+    <description>六阳灌体，争斗之术臻于极境；阴阳失和，文思与心境也随之枯灼。</description>
     <stages><li><statOffsets><MeleeHitChance>6</MeleeHitChance><ShootingAccuracyPawn>6</ShootingAccuracyPawn><MentalBreakThreshold>0.25</MentalBreakThreshold></statOffsets></li></stages>
   </HediffDef>
 </Defs>

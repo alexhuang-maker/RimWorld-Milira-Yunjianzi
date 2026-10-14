@@ -10,378 +10,120 @@ using Verse.AI;
 namespace Yunjianzi
 {
     [StaticConstructorOnStartup]
-    public sealed class ThingYunjianziSwordShadow : Thing
+    public sealed class ThingYunjianziLightningChain : Thing
     {
-        private enum FlightState
+        // Retained for old saves / callers. New chains are purely transient map VFX.
+        private bool visualRegistered;
+        private List<Vector3> points = new List<Vector3>();
+        private int expireTick;
+
+        public void Initialize(List<Vector3> sourcePoints)
         {
-            Approach,
-            Windup,
-            Charge,
-            Idle
-        }
-
-        private Pawn owner;
-        private Thing target;
-        private Thing previousTarget;
-        private int shadowIndex;
-        private Vector3 exactPosition;
-        private float facingAngle;
-        private FlightState flightState;
-        private Vector3 approachStart;
-        private Vector3 approachControl;
-        private Vector3 stagingPoint;
-        private Vector3 exitPoint;
-        private float approachProgress;
-        private int windupUntilTick;
-        private int nextChargeTick;
-        private bool routePrepared;
-        private List<Thing> hitThisRun = new List<Thing>();
-        private Material cachedMaterial;
-        private Material cachedGlowMaterial;
-
-        public Pawn Owner { get { return owner; } }
-        public int ShadowIndex { get { return shadowIndex; } }
-
-        private Material SwordMaterial
-        {
-            get
-            {
-                if (cachedMaterial == null)
-                    cachedMaterial = MaterialPool.MatFrom(def.graphicData.texPath, ShaderDatabase.TransparentPostLight);
-                return cachedMaterial;
-            }
-        }
-
-        private Material GlowMaterial
-        {
-            get
-            {
-                if (cachedGlowMaterial == null)
-                    cachedGlowMaterial = MaterialPool.MatFrom(def.graphicData.texPath, ShaderDatabase.MoteGlow);
-                return cachedGlowMaterial;
-            }
-        }
-
-        public void Initialize(Pawn pawn, int index, Thing initialTarget)
-        {
-            owner = pawn;
-            shadowIndex = index;
-            target = initialTarget;
-            exactPosition = pawn.DrawPos;
-            exactPosition.y = Altitudes.AltitudeFor(AltitudeLayer.Projectile);
-            nextChargeTick = Find.TickManager.TicksGame;
-            routePrepared = false;
+            points = sourcePoints == null ? new List<Vector3>() : sourcePoints.ToList();
+            expireTick = Find.TickManager.TicksGame + 24;
         }
 
         protected override void Tick()
         {
             base.Tick();
-            CompYunjianziCultivation comp = owner == null ? null : owner.TryGetComp<CompYunjianziCultivation>();
-            if (!Spawned || Map == null || owner == null || owner.Dead || !owner.Spawned || owner.Map != Map ||
-                comp == null || !comp.HasSkill(YunjianziSkills.SwordShadowsI) || shadowIndex >= comp.ShadowCount)
-            {
-                if (!Destroyed) Destroy(DestroyMode.Vanish);
-                return;
-            }
-
-            int now = Find.TickManager.TicksGame;
-            if (!routePrepared && !(now >= nextChargeTick ? PrepareChargeRun(true) : PrepareIdleMove()))
-            {
-                Destroy(DestroyMode.Vanish);
-                return;
-            }
-
-            if (!ValidTarget(target) && !PrepareIdleMove())
-            {
-                Destroy(DestroyMode.Vanish);
-                return;
-            }
-
-            Vector3 before = exactPosition;
-            switch (flightState)
-            {
-                case FlightState.Idle:
-                    TickIdle(now);
-                    break;
-                case FlightState.Approach:
-                    TickApproach(now);
-                    break;
-                case FlightState.Windup:
-                    TickWindup(now);
-                    break;
-                case FlightState.Charge:
-                    TickCharge(now, comp);
-                    break;
-            }
-
-            Vector3 movement = exactPosition - before;
-            if (movement.sqrMagnitude > .0001f)
-                facingAngle = Mathf.Atan2(movement.x, movement.z) * Mathf.Rad2Deg;
-            IntVec3 cell = exactPosition.ToIntVec3();
-            if (cell.InBounds(Map)) Position = cell;
-
-            int trailInterval = flightState == FlightState.Charge ? 1 : 3;
-            if (!Destroyed && this.IsHashIntervalTick(trailInterval))
-            {
-                FleckCreationData trail = FleckMaker.GetDataStatic(exactPosition, Map, YJZDefOf.YJZ_Fleck_SwordShadowAfterimage,
-                    flightState == FlightState.Charge ? 1.38f : .88f);
-                trail.rotation = facingAngle;
-                Map.flecks.CreateFleck(trail);
-            }
-        }
-
-        // Keter-style idle travel: cooldown is spent crossing the hostile
-        // formation between 7-11 cell waypoints, never waiting at one point.
-        private void TickIdle(int now)
-        {
-            float length = Mathf.Max(1f, Vector3.Distance(approachStart, stagingPoint));
-            approachProgress = Mathf.Min(1f, approachProgress + .8f / length);
-            float eased = Mathf.SmoothStep(0f, 1f, approachProgress);
-            exactPosition = Vector3.Lerp(approachStart, stagingPoint, eased);
-            exactPosition.y = Altitudes.AltitudeFor(AltitudeLayer.Projectile);
-            if (approachProgress < .999f) return;
-
-            exactPosition = stagingPoint;
-            if (now >= nextChargeTick)
-            {
-                if (!PrepareChargeRun(false)) Destroy(DestroyMode.Vanish);
-            }
-            else if (!PrepareIdleMove())
-            {
-                Destroy(DestroyMode.Vanish);
-            }
-        }
-
-        private void TickApproach(int now)
-        {
-            float length = Mathf.Max(1f, Vector3.Distance(approachStart, stagingPoint));
-            approachProgress = Mathf.Min(1f, approachProgress + .55f / length);
-            float eased = Mathf.SmoothStep(0f, 1f, approachProgress);
-            float inverse = 1f - eased;
-            exactPosition = inverse * inverse * approachStart + 2f * inverse * eased * approachControl + eased * eased * stagingPoint;
-            exactPosition.y = Altitudes.AltitudeFor(AltitudeLayer.Projectile);
-            if (approachProgress >= .999f)
-            {
-                exactPosition = stagingPoint;
-                flightState = FlightState.Windup;
-                // Match Keter's chargeWaitTicks: only the short aiming beat is
-                // stationary. The long attack interval is consumed in Idle.
-                windupUntilTick = now + 8;
-            }
-        }
-
-        private void TickWindup(int now)
-        {
-            // Old saves may contain the former full-cooldown timestamp.
-            if (windupUntilTick - now > 8) windupUntilTick = now + 8;
-            if (now < windupUntilTick)
-            {
-                // A very small lateral drift keeps the sword visibly alive
-                // while it decelerates and aligns for the charge.
-                Vector3 chargeDirection = exitPoint - stagingPoint;
-                chargeDirection.y = 0f;
-                if (chargeDirection.sqrMagnitude > .001f)
-                {
-                    chargeDirection.Normalize();
-                    Vector3 tangent = new Vector3(-chargeDirection.z, 0f, chargeDirection.x);
-                    exactPosition += tangent * (((shadowIndex & 1) == 0) ? .018f : -.018f);
-                }
-                return;
-            }
-            flightState = FlightState.Charge;
-            hitThisRun.Clear();
-            if (Map != null) FleckMaker.ThrowMicroSparks(exactPosition, Map);
-        }
-
-        private void TickCharge(int now, CompYunjianziCultivation comp)
-        {
-            Vector3 before = exactPosition;
-            exactPosition = Vector3.MoveTowards(exactPosition, exitPoint, .9f);
-            HitAlongSegment(before, exactPosition, comp);
-            if (Vector3.SqrMagnitude(exactPosition - exitPoint) > .01f) return;
-
-            previousTarget = target;
-            nextChargeTick = now + Mathf.Max(90, comp.ShadowCount * 30);
-            if (!PrepareIdleMove())
-                Destroy(DestroyMode.Vanish);
-        }
-
-        private bool PrepareIdleMove()
-        {
-            target = FindBestChargeTarget();
-            if (!ValidTarget(target)) return false;
-
-            List<Thing> formation = GenRadial.RadialDistinctThingsAround(owner.Position, owner.Map, 25.9f, true)
-                .Where(ValidTarget)
-                .ToList();
-            Vector3 center = formation.Count == 0
-                ? target.DrawPos
-                : new Vector3((float)formation.Average(t => t.DrawPos.x), 0f,
-                    (float)formation.Average(t => t.DrawPos.z));
-            center.y = Altitudes.AltitudeFor(AltitudeLayer.Projectile);
-
-            float angle = (shadowIndex * 137.5f + Find.TickManager.TicksGame * 2.17f) * Mathf.Deg2Rad;
-            Vector3 direction = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
-            float distance = 7f + ((shadowIndex * 17 + Find.TickManager.TicksGame) % 41) / 10f;
-            Vector3 destination = ClampToMap(center + direction * distance);
-            if (Vector3.Distance(exactPosition, destination) < 5f)
-                destination = ClampToMap(center - direction * distance);
-
-            approachStart = exactPosition;
-            stagingPoint = destination;
-            approachProgress = 0f;
-            flightState = FlightState.Idle;
-            routePrepared = true;
-            return true;
-        }
-
-        private void HitAlongSegment(Vector3 from, Vector3 to, CompYunjianziCultivation comp)
-        {
-            Vector3 midpoint = (from + to) * .5f;
-            float radius = Vector3.Distance(from, to) * .5f + 1.35f;
-            foreach (Thing thing in GenRadial.RadialDistinctThingsAround(midpoint.ToIntVec3(), Map, radius, true))
-            {
-                if (!ValidTarget(thing) || hitThisRun.Contains(thing)) continue;
-                if (DistanceToSegment(thing.DrawPos, from, to) > 1.05f) continue;
-                hitThisRun.Add(thing);
-                comp.OnShadowProjectileHit(thing, shadowIndex);
-                if (Map != null) FleckMaker.ThrowMicroSparks(thing.DrawPos, Map);
-            }
-        }
-
-        private bool PrepareChargeRun(bool keepInitialTarget)
-        {
-            if (!keepInitialTarget || !ValidTarget(target)) target = FindBestChargeTarget();
-            if (!ValidTarget(target)) return false;
-
-            Vector3 targetCenter = target.DrawPos;
-            targetCenter.y = Altitudes.AltitudeFor(AltitudeLayer.Projectile);
-            Vector3 direction = targetCenter - exactPosition;
-            direction.y = 0f;
-            if (direction.sqrMagnitude < .04f)
-            {
-                float angle = (shadowIndex * 137.5f + Find.TickManager.TicksGame * .37f) * Mathf.Deg2Rad;
-                direction = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
-            }
-            direction.Normalize();
-
-            approachStart = exactPosition;
-            stagingPoint = ClampToMap(targetCenter - direction * 8f);
-            exitPoint = ClampToMap(targetCenter + direction * 8f);
-            Vector3 perpendicular = new Vector3(-direction.z, 0f, direction.x);
-            float curveSide = ((shadowIndex & 1) == 0 ? 1f : -1f) * (1.5f + .15f * (shadowIndex % 3));
-            approachControl = (approachStart + stagingPoint) * .5f + perpendicular * curveSide;
-            approachControl.y = Altitudes.AltitudeFor(AltitudeLayer.Projectile);
-            approachProgress = 0f;
-            hitThisRun.Clear();
-            flightState = FlightState.Approach;
-            routePrepared = true;
-            return true;
-        }
-
-        private bool ValidTarget(Thing thing)
-        {
-            return thing != null && !thing.Destroyed && thing.Spawned && thing.Map == Map && thing.HostileTo(owner) &&
-                ((thing is Pawn && !((Pawn)thing).Dead) || thing is Building_Turret) &&
-                thing.Position.DistanceTo(owner.Position) <= 25.9f;
-        }
-
-        private Thing FindBestChargeTarget()
-        {
-            if (owner == null || owner.Map == null) return null;
-            List<Thing> candidates = GenRadial.RadialDistinctThingsAround(owner.Position, owner.Map, 25.9f, true)
-                .Where(ValidTarget)
-                .Where(t => GenSight.LineOfSight(owner.Position, t.Position, owner.Map))
-                .ToList();
-            if (candidates.Count == 0) return null;
-            return candidates
-                .OrderByDescending(candidate => ChargeLineScore(candidate, candidates))
-                .ThenBy(candidate => candidate == previousTarget ? 1 : 0)
-                .ThenBy(candidate => candidate.Position.DistanceToSquared(exactPosition.ToIntVec3()))
-                .FirstOrDefault();
-        }
-
-        private float ChargeLineScore(Thing candidate, List<Thing> candidates)
-        {
-            Vector3 center = candidate.DrawPos;
-            Vector3 direction = center - exactPosition;
-            direction.y = 0f;
-            if (direction.sqrMagnitude < .04f) return 0f;
-            direction.Normalize();
-            Vector3 start = center - direction * 8f;
-            Vector3 end = center + direction * 8f;
-            int intercepts = candidates.Count(other => DistanceToSegment(other.DrawPos, start, end) <= 1.05f);
-            return intercepts * 100f - Vector3.Distance(exactPosition, center) - (candidate == previousTarget ? 35f : 0f);
-        }
-
-        private Vector3 ClampToMap(Vector3 point)
-        {
-            if (Map == null) return point;
-            point.x = Mathf.Clamp(point.x, .5f, Map.Size.x - 1.5f);
-            point.z = Mathf.Clamp(point.z, .5f, Map.Size.z - 1.5f);
-            point.y = Altitudes.AltitudeFor(AltitudeLayer.Projectile);
-            return point;
-        }
-
-        private static float DistanceToSegment(Vector3 point, Vector3 start, Vector3 end)
-        {
-            point.y = start.y = end.y = 0f;
-            Vector3 segment = end - start;
-            float lengthSquared = segment.sqrMagnitude;
-            if (lengthSquared < .0001f) return Vector3.Distance(point, start);
-            float t = Mathf.Clamp01(Vector3.Dot(point - start, segment) / lengthSquared);
-            return Vector3.Distance(point, start + segment * t);
+            if (Find.TickManager.TicksGame >= expireTick && !Destroyed) Destroy(DestroyMode.Vanish);
         }
 
         protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
-            Vector2 size = def.graphicData.drawSize;
-            Vector3 loc = exactPosition == Vector3.zero ? drawLoc : exactPosition;
-            Quaternion rotation = Quaternion.AngleAxis(facingAngle, Vector3.up);
-            Matrix4x4 glow = Matrix4x4.TRS(loc - new Vector3(0f, .002f, 0f), rotation, new Vector3(size.x * 1.22f, 1f, size.y * 1.12f));
-            Matrix4x4 body = Matrix4x4.TRS(loc, rotation, new Vector3(size.x * 1.12f, 1f, size.y));
-            Graphics.DrawMesh(MeshPool.plane10, glow, GlowMaterial, 0);
-            Graphics.DrawMesh(MeshPool.plane10, body, SwordMaterial, 0);
+            if (visualRegistered || points == null || points.Count < 2 || Map != Find.CurrentMap ||
+                Find.TickManager.TicksGame >= expireTick) return;
+            visualRegistered = true;
+            YunjianziPurpleLightning.Chain(points, Map);
         }
 
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_References.Look(ref owner, "yjz_shadowOwner");
-            Scribe_References.Look(ref target, "yjz_shadowTarget");
-            Scribe_References.Look(ref previousTarget, "yjz_shadowPreviousTarget");
-            Scribe_Values.Look(ref shadowIndex, "yjz_shadowIndex", 0);
-            Scribe_Values.Look(ref exactPosition, "yjz_shadowPosition");
-            Scribe_Values.Look(ref facingAngle, "yjz_shadowAngle", 0f);
-            Scribe_Values.Look(ref flightState, "yjz_shadowFlightState", FlightState.Approach);
-            Scribe_Values.Look(ref approachStart, "yjz_shadowApproachStart");
-            Scribe_Values.Look(ref approachControl, "yjz_shadowApproachControl");
-            Scribe_Values.Look(ref stagingPoint, "yjz_shadowStagingPoint");
-            Scribe_Values.Look(ref exitPoint, "yjz_shadowExitPoint");
-            Scribe_Values.Look(ref approachProgress, "yjz_shadowApproachProgress", 0f);
-            Scribe_Values.Look(ref windupUntilTick, "yjz_shadowWindupUntil", 0);
-            Scribe_Values.Look(ref nextChargeTick, "yjz_shadowNextCharge", 0);
-            Scribe_Values.Look(ref routePrepared, "yjz_shadowRoutePrepared", false);
-            Scribe_Collections.Look(ref hitThisRun, "yjz_shadowHitThisRun", LookMode.Reference);
-            if (Scribe.mode == LoadSaveMode.PostLoadInit && hitThisRun == null) hitThisRun = new List<Thing>();
+            Scribe_Collections.Look(ref points, "yjz_chainPoints", LookMode.Value);
+            Scribe_Values.Look(ref expireTick, "yjz_chainExpireTick", 0);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit && points == null) points = new List<Vector3>();
+        }
+    }
+
+    [StaticConstructorOnStartup]
+    public sealed class ThingYunjianziThunderSpearAnchor : Thing
+    {
+        private static readonly Material LeftMaterial = MaterialPool.MatFrom(
+            "Yunjianzi/Effects/ThunderSpear/ThunderSpear_PlantedLeft", ShaderDatabase.MoteGlow);
+        private static readonly Material RightMaterial = MaterialPool.MatFrom(
+            "Yunjianzi/Effects/ThunderSpear/ThunderSpear_PlantedRight", ShaderDatabase.MoteGlow);
+        private bool pointsRight;
+        private int expireTick;
+
+        public void Initialize(bool spearPointsRight, int durationTicks)
+        {
+            pointsRight = spearPointsRight;
+            expireTick = Find.TickManager.TicksGame + durationTicks;
+        }
+
+        protected override void Tick()
+        {
+            base.Tick();
+            if (Find.TickManager.TicksGame >= expireTick && !Destroyed) Destroy(DestroyMode.Vanish);
+            else if (Spawned)
+            {
+                // Keep the planted weapon itself rigid.  Motion comes from
+                // short-lived electrical particles around the impact point.
+                if (this.IsHashIntervalTick(20))
+                    YunjianziPurpleLightning.Glow(DrawPos, Map, .72f);
+                if (this.IsHashIntervalTick(13))
+                {
+                    Vector3 outer = DrawPos + Vector3Utility.RandomHorizontalOffset(Rand.Range(.35f, 1.15f));
+                    YunjianziPurpleLightning.Arc(outer, DrawPos, Map, .42f);
+                }
+                if (this.IsHashIntervalTick(9))
+                    FleckMaker.ThrowMicroSparks(DrawPos + Vector3Utility.RandomHorizontalOffset(.28f), Map);
+                if (this.IsHashIntervalTick(47))
+                    YunjianziPurpleLightning.Burst(DrawPos, Map, .38f);
+            }
+        }
+
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
+        {
+            drawLoc.y = Altitudes.AltitudeFor(AltitudeLayer.ItemImportant);
+            float size = 3.4f * ThunderSpearGlow.ChargeAndAnchorScale;
+            Matrix4x4 matrix = Matrix4x4.TRS(drawLoc, Quaternion.identity, new Vector3(size, 1f, size));
+            Graphics.DrawMesh(MeshPool.plane10, matrix, pointsRight ? RightMaterial : LeftMaterial, 0, null, 0, ThunderSpearGlow.Properties);
+        }
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Values.Look(ref pointsRight, "yjz_thunderSpearPointsRight", false);
+            Scribe_Values.Look(ref expireTick, "yjz_thunderSpearAnchorExpireTick", 0);
         }
     }
 
     public sealed class ThingYunjianziSwordRain : Thing
     {
-        private Pawn owner;
+        private Thing instigator;
         private int realmAtCast;
         private int startTick;
         private int wavesReleased;
         private int waveCount = 2;
         private float blastRadius = 3.9f;
+        private int damagePerWave = 42;
+        private float armorPenetration = .62f;
 
         public void Initialize(Pawn caster, int realm, int waves, float radius)
         {
-            owner = caster;
+            Initialize((Thing)caster, realm, waves, radius, 42, .62f);
+        }
+
+        public void Initialize(Thing caster, int realm, int waves, float radius, int damagePerWave, float armorPenetration)
+        {
+            instigator = caster;
             realmAtCast = realm;
             waveCount = Mathf.Max(2, waves);
             blastRadius = Mathf.Max(1f, radius);
+            this.damagePerWave = Mathf.Max(1, damagePerWave);
+            this.armorPenetration = Mathf.Max(0f, armorPenetration);
             startTick = Find.TickManager.TicksGame;
         }
 
@@ -434,20 +176,23 @@ namespace Yunjianzi
             FleckMaker.ThrowLightningGlow(Position.ToVector3Shifted(), Map, 3.2f);
             FleckMaker.ThrowMicroSparks(Position.ToVector3Shifted(), Map);
 
-            // Two restrained 42-damage waves: useful area damage at Purple
-            // Palace, but intentionally below a high-tier screen wipe.
-            GenExplosion.DoExplosion(Position, Map, blastRadius, DamageDefOf.Cut, owner, 42, .62f);
+            GenExplosion.DoExplosion(Position, Map, blastRadius, DamageDefOf.Cut, instigator,
+                damagePerWave, armorPenetration, SoundDefOf.BulletImpact_Ground);
         }
 
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_References.Look(ref owner, "yjz_swordRainOwner");
+            // Keep the original save key so pre-turret saves continue to load.
+            // Pawn references written by older versions are valid Thing refs.
+            Scribe_References.Look(ref instigator, "yjz_swordRainOwner");
             Scribe_Values.Look(ref realmAtCast, "yjz_swordRainRealm", 3);
             Scribe_Values.Look(ref startTick, "yjz_swordRainStartTick", 0);
             Scribe_Values.Look(ref wavesReleased, "yjz_swordRainWaves", 0);
             Scribe_Values.Look(ref waveCount, "yjz_swordRainWaveCount", 2);
             Scribe_Values.Look(ref blastRadius, "yjz_swordRainRadius", 3.9f);
+            Scribe_Values.Look(ref damagePerWave, "yjz_swordRainDamage", 42);
+            Scribe_Values.Look(ref armorPenetration, "yjz_swordRainArmorPenetration", .62f);
         }
     }
 
@@ -481,18 +226,9 @@ namespace Yunjianzi
             CompYunjianziCultivation comp = OwnerComp;
             return comp != null && comp.HasSkill(id);
         }
-        // The original 5-9 cell progression was too cramped in actual combat.
-        // Keep the same realm scaling while enlarging every gameplay and visual
-        // use of the field by one third through this single authoritative value.
-        public float Radius { get { return (4f + realmAtCast) * (4f / 3f); } }
-        private bool HasFollowingField
-        {
-            get
-            {
-                return !followsOwner && OwnerHasSkill(YunjianziSkills.MovingArray) && owner != null &&
-                    owner.Spawned && owner.Map == Map;
-            }
-        }
+        // Radius is authoritative for drawing, coverage, edge control and
+        // lightning targeting. Every realm uses 1.5x the previous radius.
+        public float Radius { get { return (4f + realmAtCast) * 3f; } }
         public IntVec3 EffectCenter
         {
             get { return followsOwner && owner != null && owner.Spawned && owner.Map == Map ? owner.Position : Position; }
@@ -504,7 +240,8 @@ namespace Yunjianzi
                 Vector3 result = followsOwner && owner != null && owner.Spawned && owner.Map == Map
                     ? owner.DrawPos
                     : Position.ToVector3Shifted();
-                result.y = Altitudes.AltitudeFor(AltitudeLayer.FloorEmplacement);
+                // Keep the magical boundary above building tops but below pawns.
+                result.y = Altitudes.AltitudeFor(AltitudeLayer.ItemImportant);
                 return result;
             }
         }
@@ -512,8 +249,7 @@ namespace Yunjianzi
 
         private IEnumerable<IntVec3> CoverageCenters()
         {
-            yield return Position;
-            if (HasFollowingField && owner.Position != Position) yield return owner.Position;
+            yield return EffectCenter;
         }
 
         public bool Covers(IntVec3 cell)
@@ -536,32 +272,44 @@ namespace Yunjianzi
             get
             {
                 if (!OwnerHasSkill(YunjianziSkills.ArrayLightning)) return int.MaxValue;
-                if (OwnerHasSkill(YunjianziSkills.ArrayStorm)) return 300;
-                return realmAtCast >= 3 ? 480 : 600;
+                int[] intervalByRealm = { 600, 360, 300, 240, 180, 150 };
+                int interval = OwnerHasSkill(YunjianziSkills.ArrayStorm)
+                    ? 120
+                    : intervalByRealm[Mathf.Clamp(realmAtCast, 0, intervalByRealm.Length - 1)];
+                return OwnerWearingJiuxiaoXianxu() ? Mathf.Max(60, interval / 2) : interval;
             }
+        }
+
+        private int LightningTargetCount { get { return Mathf.Clamp(realmAtCast + 1, 3, 6); } }
+        private float LightningDamage { get { return new[] { 0f, 20f, 32f, 42f, 54f, 68f }[Mathf.Clamp(realmAtCast, 0, 5)]; } }
+        private float LightningRadius { get { return new[] { 0f, .45f, .7f, .95f, 1.2f, 1.5f }[Mathf.Clamp(realmAtCast, 0, 5)]; } }
+        private float LightningArmorPenetration { get { return .25f + realmAtCast * .18f; } }
+
+        private bool OwnerWearingJiuxiaoXianxu()
+        {
+            CompYunjianziCultivation comp = owner == null ? null : owner.TryGetComp<CompYunjianziCultivation>();
+            return comp != null && comp.WearingJiuxiaoXianxu;
         }
 
         protected override void Tick()
         {
             base.Tick();
-            if (followsOwner && Map != null)
-            {
-                ThingYunjianziArrayCore fixedCore = ActiveOn(Map).FirstOrDefault(c => c != this && c.owner == owner && !c.followsOwner);
-                if (fixedCore != null)
-                {
-                    Destroy(DestroyMode.Vanish);
-                    return;
-                }
-                // Save migration: a surviving legacy follower becomes the fixed
-                // core. MovingArray is now a second field owned by this one core.
-                followsOwner = false;
-            }
+            // Realtime drawing is culled against Thing.Position.  A pawn-bound
+            // array therefore has to move its hidden core as well as its visual
+            // center, otherwise the field vanishes once its original map section
+            // leaves the camera. Thing.Position safely refreshes ThingGrid,
+            // cover and region registrations for a spawned thing.
+            if (followsOwner && owner != null && owner.Spawned && owner.Map == Map && Position != owner.Position)
+                Position = owner.Position;
             if (!Active)
             {
                 if (!Destroyed) Destroy(DestroyMode.Vanish);
                 return;
             }
             if (this.IsHashIntervalTick(30) && TryMigrateRealmDef()) return;
+            // Save migration: arrays cast before this update become the single
+            // pawn-bound field as soon as 身载周天 is known.
+            followsOwner = OwnerHasSkill(YunjianziSkills.MovingArray);
             if (OwnerHasSkill(YunjianziSkills.ArrayEdgeSlow) && this.IsHashIntervalTick(5)) ApplyEdgeControl();
             if (this.IsHashIntervalTick(60)) ApplyFriendlyEffects();
             if (this.IsHashIntervalTick(90)) ApplyTaunt();
@@ -649,6 +397,9 @@ namespace Yunjianzi
                 bool touchesEdge = CoverageCenters().Any(center => Mathf.Abs(pawn.Position.DistanceTo(center) - Radius) <= 1.1f);
                 if (!touchesEdge || pawn.health.hediffSet.HasHediff(YJZDefOf.YJZ_ArrayEdgeControlImmunity)) continue;
 
+                CompYunjianziCultivation cultivation = OwnerComp;
+                bool paidForBoundaryLightning = cultivation != null && cultivation.TrySpend(10f, false);
+
                 Hediff slow = HediffMaker.MakeHediff(YJZDefOf.YJZ_ArrayEdgeSlow, pawn);
                 pawn.health.AddHediff(slow);
                 HediffComp_Disappears slowTimer = slow.TryGetComp<HediffComp_Disappears>();
@@ -658,6 +409,8 @@ namespace Yunjianzi
                 pawn.health.AddHediff(immunity);
                 if (OwnerHasSkill(YunjianziSkills.ArrayEdgeStun) && pawn.stances != null && pawn.stances.stunner != null)
                     pawn.stances.stunner.StunFor(180, owner);
+                if (paidForBoundaryLightning)
+                    StrikeCell(pawn.Position, 10f, 1.5f);
                 FleckMaker.Static(pawn.Position, Map, FleckDefOf.PsycastAreaEffect, .55f);
             }
         }
@@ -679,16 +432,16 @@ namespace Yunjianzi
             }
         }
 
-        private void RefreshArrayShield(Pawn pawn)
+        private void RefreshArrayShield(Pawn pawn, float amount = 1f, bool fullOnCreate = true)
         {
             Hediff shield = pawn.health.hediffSet.GetFirstHediffOfDef(YJZDefOf.YJZ_ArrayShield);
             if (shield == null)
             {
                 shield = HediffMaker.MakeHediff(YJZDefOf.YJZ_ArrayShield, pawn);
-                shield.Severity = 35f;
+                shield.Severity = fullOnCreate ? 35f : amount;
                 pawn.health.AddHediff(shield);
             }
-            else shield.Severity = Mathf.Min(35f, shield.Severity + 1f);
+            else shield.Severity = Mathf.Min(35f, shield.Severity + amount);
             HediffComp_Disappears disappears = shield.TryGetComp<HediffComp_Disappears>();
             if (disappears != null) disappears.SetDuration(120);
         }
@@ -700,14 +453,45 @@ namespace Yunjianzi
                 .Where(t => t != null && t.Spawned && t.HostileTo(owner) &&
                     ((t is Pawn && !((Pawn)t).Dead) || t is Building_Turret))
                 .Distinct()
-                .OrderBy(t => CoverageCenters().Min(center => t.Position.DistanceToSquared(center))).Take(2).ToList();
-            foreach (Thing enemy in enemies)
+                .OrderBy(t => CoverageCenters().Min(center => t.Position.DistanceToSquared(center)))
+                .Take(LightningTargetCount).ToList();
+            if (enemies.Count == 0) return;
+
+            Dictionary<Thing, int> hitsByTarget = new Dictionary<Thing, int>();
+            for (int strikeIndex = 0; strikeIndex < LightningTargetCount; strikeIndex++)
             {
-                bool storm = OwnerHasSkill(YunjianziSkills.ArrayStorm);
-                DamageInfo info = new DamageInfo(DamageDefOf.Burn, storm ? 22f : 16f, storm ? .9f : .55f, -1f, owner);
-                enemy.TakeDamage(info);
-                YunjianziCombatEffects.ShowLightning(enemy);
+                Thing enemy = enemies[strikeIndex % enemies.Count];
+                if (enemy == null || enemy.Destroyed || !enemy.Spawned || !enemy.HostileTo(owner)) continue;
+                CompYunjianziCultivation cultivation = OwnerComp;
+                if (cultivation == null || !cultivation.TrySpend(10f, false)) break;
+                int previousHits;
+                hitsByTarget.TryGetValue(enemy, out previousHits);
+                float repeatMultiplier = Mathf.Max(.5f, 1f - previousHits * .1f);
+                StrikeCell(enemy.Position, 10f, repeatMultiplier);
+                hitsByTarget[enemy] = previousHits + 1;
             }
+        }
+
+        public void StrikeCell(IntVec3 cell, float paidLightningCost, float strengthMultiplier = 1f)
+        {
+            if (Map == null || owner == null || !cell.InBounds(Map)) return;
+            float radius = Mathf.Max(YunjianziLightningDamage.MinimumRadius,
+                LightningRadius * Mathf.Sqrt(Mathf.Max(.25f, strengthMultiplier)));
+            float damage = LightningDamage * strengthMultiplier;
+            List<Thing> things = GenRadial.RadialDistinctThingsAround(cell, Map, radius, true).ToList();
+            foreach (Thing thing in things)
+            {
+                Pawn pawn = thing as Pawn;
+                if (pawn != null && !pawn.Dead && Friendly(pawn))
+                {
+                    if (OwnerHasSkill(YunjianziSkills.AllyArrayShield))
+                        RefreshArrayShield(pawn, 4f + realmAtCast * 2f, false);
+                    continue;
+                }
+            }
+            YunjianziCombatEffects.ShowLightningAt(cell, Map, owner, paidLightningCost,
+                Mathf.Clamp(.85f + realmAtCast * .09f + (strengthMultiplier - 1f) * .3f, .8f, 1.5f),
+                damage, LightningArmorPenetration, radius);
         }
 
         protected override void DrawAt(Vector3 drawLoc, bool flip = false)
@@ -716,13 +500,14 @@ namespace Yunjianzi
             {
                 if (fieldPropertyBlock == null) fieldPropertyBlock = new MaterialPropertyBlock();
                 Color fieldColor = realmAtCast >= 5
-                    ? new Color(.75f, .96f, 1f, .30f)
-                    : new Color(.58f, .90f, .95f, .22f);
+                    ? new Color(.90f, .98f, 1f, .62f)
+                    : new Color(.72f, .94f, 1f, .48f);
                 fieldPropertyBlock.SetColor(ShaderPropertyIDs.Color, fieldColor);
-                DrawField(Position.ToVector3Shifted());
-                if (HasFollowingField && owner.Position != Position) DrawField(owner.DrawPos);
+                DrawField(EffectDrawCenter);
             }
-            base.DrawAt(drawLoc, flip);
+            // A pawn-bound formation has no stationary array eye at its old
+            // spawn cell; the persistent Thing exists only to own saved state.
+            if (!followsOwner) base.DrawAt(drawLoc, flip);
             if (Active && Find.Selector.IsSelected(this))
             {
                 Color color = realmAtCast >= 5 ? new Color(.72f, .95f, 1f) : new Color(.35f, .85f, .92f);
@@ -732,19 +517,19 @@ namespace Yunjianzi
 
         private void DrawField(Vector3 center)
         {
-            center.y = Altitudes.AltitudeFor(AltitudeLayer.FloorEmplacement);
+            center.y = Altitudes.AltitudeFor(AltitudeLayer.ItemImportant);
             Matrix4x4 matrix = Matrix4x4.TRS(center, Quaternion.identity, new Vector3(Radius * 2f, 1f, Radius * 2f));
             Graphics.DrawMesh(MeshPool.plane10, matrix, ArrayFieldMaterial, 0, null, 0, fieldPropertyBlock);
         }
 
         public override string GetInspectString()
         {
-            string duration = OwnerHasSkill(YunjianziSkills.ArrayBarrier) ? "持续维持：每秒消耗5灵力" : "剩余时间：" + Math.Max(0, expireTick - Find.TickManager.TicksGame).ToStringTicksToPeriod();
+            string duration = OwnerHasSkill(YunjianziSkills.ArrayBarrier) ? "阵势长存：持续牵引云间子的灵力" : "阵势将散：" + Math.Max(0, expireTick - Find.TickManager.TicksGame).ToStringTicksToPeriod();
             return "境界：" + new[] { "未定", "练气", "筑基", "紫府", "金丹", "化神" }[Mathf.Clamp(realmAtCast, 0, 5)] +
                 "\n耐久：" + HitPoints + " / " + MaxHitPoints +
                 "\n嘲讽半径：" + (Radius + 6f).ToString("0") + "格" +
                 "\n仙阵半径：" + Radius.ToString("0") + "格" +
-                (HasFollowingField ? "\n随身阵：已展开（固定阵眼仍保留）" : "") + "\n" + duration;
+                (followsOwner ? "\n身载周天：阵域随身" : "") + "\n" + duration;
         }
 
         public override void ExposeData()
@@ -797,6 +582,8 @@ namespace Yunjianzi
                 if (!core.Covers(current) || core.Covers(origin)) continue;
                 Thing launcher = projectileLauncher;
                 if (launcher != null && core.owner != null && !launcher.HostileTo(core.owner)) continue;
+                CompYunjianziCultivation cultivation = core.OwnerComp;
+                if (cultivation == null || !cultivation.TrySpend(10f, false)) continue;
                 ThingDef projectileDef = projectile.def;
                 bool reflect = core.OwnerHasSkill(YunjianziSkills.ArrayReflect) && launcher != null && launcher.Spawned && launcher.Map == map;
                 projectile.Destroy(DestroyMode.Vanish);
@@ -814,7 +601,15 @@ namespace Yunjianzi
 
     public sealed partial class CompYunjianziCultivation
     {
+        private static readonly Material ThunderSpearChargeMaterial = MaterialPool.MatFrom(
+            "Yunjianzi/Effects/ThunderSpear/ThunderSpear", ShaderDatabase.MoteGlow);
         private int arrayBlinkReadyTick;
+        private int arrayStormReadyTick;
+        private int arrayStormEndTick;
+        private int arrayStormNextStrikeTick;
+        private IntVec3 arrayStormTarget = IntVec3.Invalid;
+        private int thunderSpearChargeEndTick;
+        private IntVec3 thunderSpearChargeTarget = IntVec3.Invalid;
 
         private IEnumerable<ThingYunjianziArrayCore> ActiveArrays()
         {
@@ -832,41 +627,71 @@ namespace Yunjianzi
                     if (Pawn.Faction == Faction.OfPlayer) Messages.Message("灵力耗尽，仙阵自行消散。", Pawn, MessageTypeDefOf.NegativeEvent);
                 }
             }
+            TickArrayStormBarrage();
         }
 
         private IEnumerable<Gizmo> GetArrayGizmos()
         {
             bool active = ActiveArrays().Any();
+            bool follows = HasSkill(YunjianziSkills.MovingArray);
+            bool sustained = HasSkill(YunjianziSkills.ArrayBarrier);
+            string deployDescription = follows
+                ? "身载周天，阵随身行。阵眼隐入周天，唯一阵域随云间子行止而移，无须在原地留驻琉璃阵眼。"
+                : "以灵力凝成琉璃阵眼，在脚下展开驻留原地的雷阵。悟得身载周天后，阵眼隐去，唯一阵域将随步而移。";
+            deployDescription += sustained
+                ? "\n\n展开不消耗灵力；维持每秒消耗5点灵力，直到主动收阵或灵力耗尽。"
+                : "\n\n布阵消耗" + (follows ? "100" : "50") + "点灵力，持续60秒。再次运诀即可收阵。";
             yield return new Command_Action
             {
-                defaultLabel = active && HasSkill(YunjianziSkills.ArrayBarrier) ? "仙阵诀·收阵" : "仙阵诀·布阵",
-                defaultDesc = HasSkill(YunjianziSkills.ArrayBarrier) ? "开启或主动取消固定阵与随身阵。维持时整套阵法每秒消耗5点灵力。" : "消耗灵力在脚下布置持续60秒的仙阵。学习随身阵后同时生成跟随领域。",
+                defaultLabel = active ? "仙阵诀·收阵" : "仙阵诀·布阵",
+                defaultDesc = active
+                    ? "收束雷旗与阵纹，立即撤去当前仙阵并停止一切维持消耗。"
+                    : deployDescription,
                 icon = YunjianziAbilityTextures.ImmortalArray,
-                action = active && HasSkill(YunjianziSkills.ArrayBarrier) ? (Action)CancelArrays : ActivateArrays
+                action = active ? (Action)CancelArrays : ActivateArrays
             };
             if (active && HasSkill(YunjianziSkills.ArrayTeleport))
             {
                 Command_Action blink = new Command_Action
                 {
-                    defaultLabel = "仙阵诀·紫电阵遁",
-                    defaultDesc = "无论当前身在阵内或阵外，都可闪现到任一琉璃阵眼覆盖范围内的可站立位置。冷却20秒。紫府起，落点会击退附近敌人；境界越高，范围与距离越大。",
+                    defaultLabel = "仙阵诀·循纹神行",
+                    defaultDesc = "借阵纹移形，可一步踏入仙阵覆盖之处。紫府之后，落足时震雷外荡，逼退近敌；修为愈深，雷势越盛。\n\n消耗100点灵力，冷却20秒。",
                     icon = YunjianziAbilityTextures.ArrayTeleport,
                     action = BeginArrayBlink
                 };
                 int remaining = arrayBlinkReadyTick - Find.TickManager.TicksGame;
                 if (remaining > 0) blink.Disable("冷却中：" + (remaining / 60f).ToString("0.0") + "秒");
+                else if (Energy + .001f < 100f) blink.Disable("灵力不足：需要100点。");
                 yield return blink;
+            }
+            if (active && HasSkill(YunjianziSkills.ArrayStorm))
+            {
+                Command_Action storm = new Command_Action
+                {
+                    defaultLabel = "仙阵诀·万钧天狱",
+                    defaultDesc = "在手中凝聚紫电雷枪并直线掷向阵内目标。沿途半径3格贯穿、落点半径7.5格爆发，每段基础伤害" + ThingYunjianziThunderSpear.DamageAtRealm(Realm).ToString("0") + "、穿甲1000%，可伤及敌方建筑；同一目标沿途只命中一次，落点独立结算。九霄仙墟的雷伤加成仍然生效。随后枪尖斜插入地，持续20秒引动天雷轰击。\n\n蓄力不超过2秒，消耗500点灵力，冷却10秒。",
+                    icon = YunjianziAbilityTextures.ImmortalArray,
+                    action = BeginArrayStormBarrage
+                };
+                int remaining = arrayStormReadyTick - Find.TickManager.TicksGame;
+                if (remaining > 0) storm.Disable("冷却中：" + (remaining / 60f).ToString("0.0") + "秒");
+                else if (Energy + .001f < 500f) storm.Disable("灵力不足：需要500点。");
+                yield return storm;
             }
         }
 
         private void ActivateArrays()
         {
             if (Realm <= 0 || !Pawn.Spawned) return;
-            int cost = HasSkill(YunjianziSkills.ArrayBarrier) ? 0 : HasSkill(YunjianziSkills.MovingArray) ? 100 : 50;
+            bool follows = HasSkill(YunjianziSkills.MovingArray);
+            bool sustained = HasSkill(YunjianziSkills.ArrayBarrier);
+            int cost = sustained ? 0 : follows ? 100 : 50;
             if (cost > 0 && !TrySpend(cost)) return;
             CancelArrays();
-            SpawnArray(false, HasSkill(YunjianziSkills.ArrayBarrier) ? -1 : 3600);
-            Messages.Message(HasSkill(YunjianziSkills.ArrayBarrier) ? "仙阵展开。阵法将持续消耗灵力。" : "琉璃阵眼落定，仙阵展开。", Pawn, MessageTypeDefOf.PositiveEvent);
+            SpawnArray(follows, sustained ? -1 : 3600);
+            string message = follows ? "阵眼隐入周天，仙阵随身展开。" : "琉璃阵眼落定，仙阵展开。";
+            if (sustained) message += "阵法将持续消耗灵力。";
+            Messages.Message(message, Pawn, MessageTypeDefOf.PositiveEvent);
         }
 
         private void SpawnArray(bool follows, int duration)
@@ -900,14 +725,136 @@ namespace Yunjianzi
                 Messages.Message("目标必须是任一仙阵内部的可站立位置。", Pawn, MessageTypeDefOf.RejectInput);
                 return;
             }
+            if (!TrySpend(100f)) return;
             Map map = Pawn.Map;
+            IntVec3 originCell = Pawn.Position;
             Vector3 origin = Pawn.DrawPos;
             Pawn.pather.StopDead();
             Pawn.Position = cell;
             Pawn.Notify_Teleported(false, true);
             arrayBlinkReadyTick = Find.TickManager.TicksGame + 1200;
             YunjianziCombatEffects.ShowArrayTeleport(origin, Pawn.DrawPos, map);
-            if (HasSkill(YunjianziSkills.ArrayTeleportShock)) ApplyArrayBlinkKnockback(cell, map);
+            ThunderBeastUtility.TrySummon(Pawn, originCell, map, true);
+            ThunderBeastUtility.TrySummon(Pawn, cell, map, true);
+            if (HasSkill(YunjianziSkills.ArrayTeleportShock))
+            {
+                YunjianziPurpleLightning.Burst(Pawn.DrawPos, map, 1.5f);
+                ApplyArrayBlinkKnockback(cell, map);
+            }
+        }
+
+        private void BeginArrayStormBarrage()
+        {
+            if (Find.TickManager.TicksGame < arrayStormReadyTick || Energy + .001f < 500f) return;
+            TargetingParameters parms = new TargetingParameters();
+            parms.canTargetLocations = true;
+            parms.canTargetPawns = true;
+            Find.Targeter.BeginTargeting(parms, delegate(LocalTargetInfo target) { TryStartArrayStormBarrage(target.Cell); });
+        }
+
+        private void TryStartArrayStormBarrage(IntVec3 cell)
+        {
+            if (Pawn == null || Pawn.Map == null || !cell.InBounds(Pawn.Map) || !ActiveArrays().Any(c => c.Covers(cell)))
+            {
+                Messages.Message("目标地点必须位于仙阵覆盖范围内。", Pawn, MessageTypeDefOf.RejectInput);
+                return;
+            }
+            if (!TrySpend(500f)) return;
+            thunderSpearChargeTarget = cell;
+            thunderSpearChargeEndTick = Find.TickManager.TicksGame + 120;
+            arrayStormTarget = IntVec3.Invalid;
+            arrayStormEndTick = 0;
+            arrayStormReadyTick = Find.TickManager.TicksGame + 600;
+            Messages.Message("紫电聚形，万钧雷枪正在凝成。", Pawn, MessageTypeDefOf.ThreatBig, false);
+        }
+
+        private void TickArrayStormBarrage()
+        {
+            if (thunderSpearChargeEndTick > 0)
+            {
+                if (Pawn == null || Pawn.Map == null || !Pawn.Spawned || Pawn.Dead)
+                {
+                    thunderSpearChargeEndTick = 0;
+                    thunderSpearChargeTarget = IntVec3.Invalid;
+                    return;
+                }
+                if (Find.TickManager.TicksGame < thunderSpearChargeEndTick)
+                {
+                    if (Find.TickManager.TicksGame % 18 == 0)
+                    {
+                        Vector3 hand = Pawn.DrawPos + new Vector3(.3f, 0f, .4f);
+                        YunjianziPurpleLightning.Arc(hand, hand + new Vector3(.15f, 0f, 1.35f), Pawn.Map, .6f);
+                    }
+                    return;
+                }
+                ThingYunjianziThunderSpear spear = (ThingYunjianziThunderSpear)ThingMaker.MakeThing(YJZDefOf.YJZ_Projectile_ThunderSpear);
+                GenSpawn.Spawn(spear, Pawn.Position, Pawn.Map);
+                spear.Initialize(Pawn, thunderSpearChargeTarget, Realm);
+                thunderSpearChargeEndTick = 0;
+                thunderSpearChargeTarget = IntVec3.Invalid;
+                return;
+            }
+            if (arrayStormEndTick <= Find.TickManager.TicksGame || !arrayStormTarget.IsValid ||
+                Pawn == null || Pawn.Map == null || !Pawn.Spawned) return;
+            if (Find.TickManager.TicksGame < arrayStormNextStrikeTick) return;
+            ThingYunjianziArrayCore core = ActiveArrays().FirstOrDefault();
+            if (core == null)
+            {
+                arrayStormEndTick = 0;
+                arrayStormTarget = IntVec3.Invalid;
+                return;
+            }
+
+            float bombardRadius = 2.5f + Realm * .5f;
+            List<Thing> enemies = GenRadial.RadialDistinctThingsAround(arrayStormTarget, Pawn.Map, bombardRadius, true)
+                .Where(t => t != null && t.Spawned && t.HostileTo(Pawn) &&
+                    ((t is Pawn && !((Pawn)t).Dead) || t is Building_Turret)).ToList();
+            IntVec3 strikeCell;
+            if (enemies.Count > 0)
+                strikeCell = enemies.RandomElement().Position;
+            else
+            {
+                List<IntVec3> cells = GenRadial.RadialCellsAround(arrayStormTarget, bombardRadius, true)
+                    .Where(c => c.InBounds(Pawn.Map)).ToList();
+                strikeCell = cells.Count > 0 ? cells.RandomElement() : arrayStormTarget;
+            }
+            core.StrikeCell(strikeCell, 5f, 1.15f);
+            arrayStormNextStrikeTick += 60;
+        }
+
+        internal void NotifyThunderSpearImpact(IntVec3 cell, bool arrivedFromLeft)
+        {
+            if (Pawn == null || Pawn.Map == null || !cell.InBounds(Pawn.Map)) return;
+            arrayStormTarget = cell;
+            arrayStormNextStrikeTick = Find.TickManager.TicksGame;
+            arrayStormEndTick = Find.TickManager.TicksGame + 1200;
+            ThingYunjianziThunderSpearAnchor anchor =
+                (ThingYunjianziThunderSpearAnchor)ThingMaker.MakeThing(YJZDefOf.YJZ_Effect_ThunderSpearAnchor);
+            GenSpawn.Spawn(anchor, cell, Pawn.Map);
+            // A spear arriving from the left keeps its tail to the upper-left,
+            // while its spearhead is buried toward the lower-right.
+            anchor.Initialize(arrivedFromLeft, 1200);
+            Messages.Message("雷枪镇地，万钧天狱展开。", new TargetInfo(cell, Pawn.Map), MessageTypeDefOf.ThreatBig, false);
+        }
+
+        private void DrawThunderSpearCharge(Vector3 pawnDrawPos)
+        {
+            if (thunderSpearChargeEndTick <= Find.TickManager.TicksGame || !thunderSpearChargeTarget.IsValid ||
+                Pawn == null || Pawn.Map == null || !Pawn.Spawned) return;
+            float progress = 1f - Mathf.Clamp01((thunderSpearChargeEndTick - Find.TickManager.TicksGame) / 120f);
+            float eased = Mathf.SmoothStep(.18f, 1f, progress);
+            Vector3 direction = thunderSpearChargeTarget.ToVector3Shifted() - pawnDrawPos;
+            direction.y = 0f;
+            if (direction.sqrMagnitude < .001f) direction = Vector3.forward;
+            direction.Normalize();
+            Vector3 loc = pawnDrawPos + direction * .58f;
+            loc.y = Altitudes.AltitudeFor(AltitudeLayer.MoteOverhead);
+            float angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+            float pulse = 1f + Mathf.Sin(Find.TickManager.TicksGame * .36f) * .07f;
+            float scale = eased * pulse * ThunderSpearGlow.ChargeAndAnchorScale;
+            Matrix4x4 matrix = Matrix4x4.TRS(loc, Quaternion.AngleAxis(angle, Vector3.up),
+                new Vector3(1.55f * scale, 1f, 3.1f * scale));
+            Graphics.DrawMesh(MeshPool.plane10, matrix, ThunderSpearChargeMaterial, 0, null, 0, ThunderSpearGlow.Properties);
         }
 
         private void ApplyArrayBlinkKnockback(IntVec3 center, Map map)
@@ -915,6 +862,7 @@ namespace Yunjianzi
             int effectiveRealm = HasSkill(YunjianziSkills.ArrayTeleportMastery) ? 5 : Mathf.Min(Realm, 4);
             int radius = Mathf.Clamp(effectiveRealm - 2, 1, 3);
             int distance = Mathf.Clamp(effectiveRealm - 1, 2, 4);
+            YunjianziLightningDamage.ApplyEmpArea(center, map, Pawn, radius);
             List<Pawn> enemies = GenRadial.RadialDistinctThingsAround(center, map, radius, true)
                 .OfType<Pawn>()
                 .Where(p => p != Pawn && !p.Dead && p.Spawned && p.HostileTo(Pawn))
@@ -950,6 +898,12 @@ namespace Yunjianzi
         private void ExposeArrayData()
         {
             Scribe_Values.Look(ref arrayBlinkReadyTick, "yjz_arrayBlinkReadyTick", 0);
+            Scribe_Values.Look(ref arrayStormReadyTick, "yjz_arrayStormReadyTick", 0);
+            Scribe_Values.Look(ref arrayStormEndTick, "yjz_arrayStormEndTick", 0);
+            Scribe_Values.Look(ref arrayStormNextStrikeTick, "yjz_arrayStormNextStrikeTick", 0);
+            Scribe_Values.Look(ref arrayStormTarget, "yjz_arrayStormTarget", IntVec3.Invalid);
+            Scribe_Values.Look(ref thunderSpearChargeEndTick, "yjz_thunderSpearChargeEndTick", 0);
+            Scribe_Values.Look(ref thunderSpearChargeTarget, "yjz_thunderSpearChargeTarget", IntVec3.Invalid);
         }
     }
 

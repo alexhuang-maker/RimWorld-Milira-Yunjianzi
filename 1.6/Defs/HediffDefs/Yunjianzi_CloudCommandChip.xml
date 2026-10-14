@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Follow Milian Modification's native chain exactly:
+       MilianComponentDef -> installed Milian implant Hediff -> AbilityDef. -->
+  <MilianModification.MilianComponentDef ParentName="MilianComponentBase_Head">
+    <defName>YJZ_MilianFitting_CloudCommandChip</defName>
+    <label>灵术演算芯片</label>
+    <description>将《神机篇》记载的灵术结构编译为米莉安能够执行的战术协议。仅九霄天将能够安装。安装后显现云间子同式光环，并可部署四台各自搭载双剑影的金丹级灵兵构装体；护盾破碎时还会释放青色灵气脉冲，推开近敌并立即重聚护盾。</description>
+    <descriptionHyperlinks>
+      <HediffDef>YJZ_Hediff_CloudCommandChip</HediffDef>
+    </descriptionHyperlinks>
+    <hiddenWhileUndiscovered>false</hiddenWhileUndiscovered>
+    <graphicData>
+      <texPath>Yunjianzi/Items/Components/SpiritArtProcessorChip</texPath>
+    </graphicData>
+    <costList>
+      <Milira_SunPlateSteel>30</Milira_SunPlateSteel>
+      <ComponentIndustrial>6</ComponentIndustrial>
+      <ComponentSpacer>2</ComponentSpacer>
+      <Milira_SolarCrystal>6</Milira_SolarCrystal>
+    </costList>
+    <milianComponent>
+      <installHediff>YJZ_Hediff_CloudCommandChip</installHediff>
+      <bodyPart Inherit="false"><li>Milian_Brain</li></bodyPart>
+      <supportMilianKind Inherit="false"><li>YJZ_Shenji_Tianjiang</li></supportMilianKind>
+    </milianComponent>
+  </MilianModification.MilianComponentDef>
+
+  <HediffDef ParentName="Milian_ImplantHediffBase">
+    <defName>YJZ_Hediff_CloudCommandChip</defName>
+    <label>灵术演算芯片</label>
+    <description>九霄天将已接入灵术演算芯片。</description>
+    <descriptionHyperlinks>
+      <ThingDef>YJZ_MilianFitting_CloudCommandChip</ThingDef>
+    </descriptionHyperlinks>
+    <spawnThingOnRemoved>YJZ_MilianFitting_CloudCommandChip</spawnThingOnRemoved>
+    <abilities><li>YJZ_Ability_ReleaseCloudCommandSoldiers</li></abilities>
+    <renderNodeProperties>
+      <li>
+        <debugLabel>YJZ_CloudCommandHalo</debugLabel>
+        <workerClass>PawnRenderNodeWorker</workerClass>
+        <pawnType>Any</pawnType>
+        <texPath>Yunjianzi/Pawn/Halo/YunjianziHalo</texPath>
+        <shaderTypeDef>MoteGlow</shaderTypeDef>
+        <drawSize>(1,1)</drawSize>
+        <baseLayer>100</baseLayer>
+        <parentTagDef>Body</parentTagDef>
+      </li>
+    </renderNodeProperties>
+  </HediffDef>
+
+  <AbilityDef ParentName="MilianModifyAbility_Base">
+    <defName>YJZ_Ability_ReleaseCloudCommandSoldiers</defName>
+    <label>灵兵部署</label>
+    <description>部署四台各自搭载两柄剑影的金丹级灵兵构装体。每小时恢复一次使用次数，最多储存两次。</description>
+    <iconPath>Yunjianzi/UI/Abilities/BeanSoldiers</iconPath>
+    <jobDef>CastAbilityOnThingWithoutWeaponInterruptible</jobDef>
+    <cooldownTicksRange>2500</cooldownTicksRange>
+    <cooldownPerCharge>true</cooldownPerCharge>
+    <charges>2</charges>
+    <hostile>false</hostile>
+    <hotKey>Misc1</hotKey>
+    <aiCanUse>true</aiCanUse>
+    <targetRequired>false</targetRequired>
+    <verbProperties>
+      <verbClass>Verb_CastAbility</verbClass>
+      <warmupTime>0.1</warmupTime>
+      <range>0.4</range>
+      <drawAimPie>false</drawAimPie>
+      <targetParams><canTargetSelf>true</canTargetSelf></targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="AncotLibrary.CompProperties_AbilitySpawnPawn">
+        <pawnKind>YJZ_BeanSoldier_CloudCommand</pawnKind>
+        <spawnCount>4</spawnCount>
+        <effect>Milian_ReleaseUnits</effect>
+      </li>
+    </comps>
+  </AbilityDef>
+</Defs>

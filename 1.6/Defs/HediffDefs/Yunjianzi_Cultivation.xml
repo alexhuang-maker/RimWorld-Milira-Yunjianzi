@@ -3,7 +3,7 @@
   <HediffDef>
     <defName>YJZ_CultivationRealm</defName>
     <label>云间灵脉</label>
-    <description>云间子将天空精灵科技与古修仙法相合后形成的灵脉。其严重度整数对应当前境界，并决定灵力上限与御剑诀阶段。</description>
+    <description>依照道书所载周天之法开辟的灵脉，其中既有古修真炁，也有天空精灵能源回路留下的清光。随着境界精进，它会承载更多灵力，并逐步唤醒诛邪与诸篇传承。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <tendable>false</tendable>
@@ -117,7 +117,7 @@
   <HediffDef>
     <defName>YJZ_SwordControlImmunity</defName>
     <label>剑意适应</label>
-    <description>刚刚承受过诛邪的镇压，短时间内不会再次被同一附魔连续控制。</description>
+    <description>诛邪剑意尚留在神魂之中，相同的镇压一时难以再次奏效。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <tendable>false</tendable>
@@ -149,8 +149,8 @@
 
   <HediffDef>
     <defName>YJZ_ArrayShield</defName>
-    <label>仙阵剑罡</label>
-    <description>金丹境以上的仙阵为阵内友方人员与机械提供的弱型灵力护盾。离开阵法后会迅速消散。</description>
+    <label>众生同庇</label>
+    <description>仙阵分出一缕剑罡护住阵中同伴；一旦离开阵域，这层庇护便会迅速散去。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <tendable>false</tendable>
@@ -165,7 +165,7 @@
 
   <HediffDef>
     <defName>YJZ_ArrayEdgeSlow</defName>
-    <label>迟滞阵纹</label>
+    <label>缚形界纹</label>
     <description>触碰仙阵边界后，周身气机被阵纹牵引，移动速度暂时降低。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>true</isBad>
@@ -186,7 +186,7 @@
   <HediffDef>
     <defName>YJZ_ArrayEdgeControlImmunity</defName>
     <label>阵纹适应</label>
-    <description>刚刚触发过仙阵边界，短时间内不会再次受到同一边界控制。</description>
+    <description>身体尚记得方才阵纹牵引的方向，相同边界一时难以再次困住脚步。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <tendable>false</tendable>

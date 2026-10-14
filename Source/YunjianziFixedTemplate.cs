@@ -18,6 +18,7 @@ namespace Yunjianzi
     {
         public List<FixedSkillSpec> skills = new List<FixedSkillSpec>();
         public ThingDef onlyInitialApparel;
+        public List<ThingDef> initialApparel = new List<ThingDef>();
         public bool clearInitialEquipment;
         public bool clearInitialInventory;
     }
@@ -27,6 +28,15 @@ namespace Yunjianzi
     {
         static YunjianziBootstrap()
         {
+            // This is a fixed unique outfit rather than a generated item.  Its
+            // protection is stored directly on the Def, so quality must neither
+            // appear in the UI nor scale those values a second time.
+            ThingDef robe = DefDatabase<ThingDef>.GetNamedSilentFail("YJZ_Apparel_YunjianRobe");
+            if (robe != null && robe.comps != null)
+            {
+                robe.comps.RemoveAll(comp => comp != null && comp.compClass == typeof(CompQuality));
+            }
+
             // Patch the assembly exactly once.  A second PatchAll used to live in
             // the optional facial-animation integration and installed every
             // postfix/prefix twice when that integration was present.
@@ -74,12 +84,15 @@ namespace Yunjianzi
 
         private static void NormalizeInitialGear(Pawn pawn, FixedPawnTemplateExtension extension)
         {
-            if (pawn.apparel != null && extension.onlyInitialApparel != null)
+            if (pawn.apparel != null && (extension.onlyInitialApparel != null || extension.initialApparel.Any()))
             {
+                List<ThingDef> required = extension.initialApparel.Where(def => def != null).ToList();
+                if (extension.onlyInitialApparel != null && !required.Contains(extension.onlyInitialApparel))
+                    required.Insert(0, extension.onlyInitialApparel);
                 List<Apparel> worn = pawn.apparel.WornApparel.ToList();
                 foreach (Apparel apparel in worn)
                 {
-                    if (apparel.def == extension.onlyInitialApparel)
+                    if (required.Contains(apparel.def))
                     {
                         continue;
                     }
@@ -88,17 +101,13 @@ namespace Yunjianzi
                     apparel.Destroy(DestroyMode.Vanish);
                 }
 
-                if (!pawn.apparel.WornApparel.Any(apparel => apparel.def == extension.onlyInitialApparel))
+                foreach (ThingDef apparelDef in required)
                 {
-                    Apparel robe = ThingMaker.MakeThing(extension.onlyInitialApparel) as Apparel;
-                    if (robe != null)
+                    if (pawn.apparel.WornApparel.Any(apparel => apparel.def == apparelDef)) continue;
+                    Apparel apparel = ThingMaker.MakeThing(apparelDef) as Apparel;
+                    if (apparel != null)
                     {
-                        CompQuality quality = robe.TryGetComp<CompQuality>();
-                        if (quality != null)
-                        {
-                            quality.SetQuality(QualityCategory.Excellent, ArtGenerationContext.Outsider);
-                        }
-                        pawn.apparel.Wear(robe, false);
+                        pawn.apparel.Wear(apparel, false);
                     }
                 }
             }

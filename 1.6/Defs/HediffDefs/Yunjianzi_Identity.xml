@@ -4,7 +4,7 @@
   <HediffDef>
     <defName>YJZ_Identity_Yunjianzi</defName>
     <label>ID: Yunjianzi</label>
-    <description>Internal marker for Yunjianzi special-pawn registration.</description>
+    <description>云间子道统的无形印记。它不显于形貌，只用来辨认传承所归。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <tendable>false</tendable>
@@ -33,7 +33,7 @@
   <HediffDef>
     <defName>YJZ_ForceWear_YunjianziRobe</defName>
     <label>云间道袍装束校准</label>
-    <description>用于确保云间子的专属服装在生成后正确穿戴。</description>
+    <description>道袍灵路正在与云间子的形体重新校准。</description>
     <hediffClass>Verse.HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <tendable>false</tendable>

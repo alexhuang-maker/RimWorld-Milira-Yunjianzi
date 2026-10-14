@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="MusicalInstrumentBase">
+    <defName>YJZ_Building_Guzheng</defName>
+    <label>云间玉筝</label>
+    <description>一架以共鸣木、辉钢与青玉制成的二十一弦古筝。细密雁柱将琴弦分为按弦区与弹弦区，清越余音经由青玉共鸣座传入室内。\n\n演奏者应坐在琴身长边中央，面向琴弦：右手在雁柱右侧拨弦，左手在另一侧按、滑、吟、颤，而非站在琴头或琴尾演奏。\n\n效果：可供殖民者弹奏以获得高雅娱乐，并使同室一定范围内的人聆听筝乐。</description>
+    <thingClass>Building_MusicalInstrument</thingClass>
+    <designationCategory>YJZ_QinglingJade</designationCategory>
+    <size>(3,1)</size>
+    <defaultPlacingRot>South</defaultPlacingRot>
+    <rotatable>true</rotatable>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/Recreation/Guzheng</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(3.25,1.25)</drawSize>
+      <damageData><rect>(0.12,0.15,0.76,0.70)</rect></damageData>
+    </graphicData>
+    <interactionCellOffset>(0,0,-1)</interactionCellOffset>
+    <building>
+      <joyKind>HighCulture</joyKind>
+      <instrumentRange>16</instrumentRange>
+      <isEdifice>false</isEdifice>
+      <paintable>false</paintable>
+    </building>
+    <recipeMaker IsNull="True" />
+    <costList>
+      <WoodLog>110</WoodLog>
+      <Milira_SplendidSteel>55</Milira_SplendidSteel>
+      <Jade>25</Jade>
+    </costList>
+    <statBases>
+      <MaxHitPoints>320</MaxHitPoints>
+      <WorkToBuild>4200</WorkToBuild>
+      <Mass>38</Mass>
+      <JoyGainFactor>1.15</JoyGainFactor>
+      <Beauty>30</Beauty>
+      <Flammability>0.25</Flammability>
+    </statBases>
+    <constructionSkillPrerequisite>5</constructionSkillPrerequisite>
+    <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
+    <fillPercent>0.35</fillPercent>
+    <soundPlayInstrument>Harp_Play</soundPlayInstrument>
+    <uiIconScale>0.92</uiIconScale>
+    <uiOrder>3990</uiOrder>
+  </ThingDef>
+</Defs>

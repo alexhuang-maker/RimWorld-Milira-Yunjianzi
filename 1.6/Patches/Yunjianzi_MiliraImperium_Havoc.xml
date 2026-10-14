@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Patch>
-  <!-- When Milira Imperium is present, reuse its HAVOC beam shader/mote while
-       keeping Shenji damage, chaining and weapon ownership inside this mod. -->
+  <!-- Route Shenji beams to this mod's cyan-white motes. The shared HAVOC
+       mote remains untouched; Shenji damage and chaining are unchanged. -->
   <Operation Class="PatchOperationFindMod">
     <mods>
       <li>Milira Faction: Milira Imperium</li>
@@ -10,11 +10,11 @@
       <operations>
         <li Class="PatchOperationAdd">
           <xpath>Defs/ThingDef[defName="YJZ_Projectile_ShenjiLaser"]/projectile</xpath>
-          <value><beamMoteDef>MI_Mote_LaserPulse_HAVOC</beamMoteDef></value>
+          <value><beamMoteDef>YJZ_Mote_ShenjiBeam</beamMoteDef></value>
         </li>
         <li Class="PatchOperationAdd">
           <xpath>Defs/ThingDef[defName="YJZ_Projectile_ShenjiChainLaser"]/projectile</xpath>
-          <value><beamMoteDef>MI_Mote_LaserPulse_HAVOC</beamMoteDef></value>
+          <value><beamMoteDef>YJZ_Mote_ShenjiChainBeam</beamMoteDef></value>
         </li>
       </operations>
     </match>

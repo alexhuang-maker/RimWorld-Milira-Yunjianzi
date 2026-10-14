@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ScenPartDef>
+    <defName>YJZ_SoleColonistRule</defName>
+    <label>云间子独行</label>
+    <description>除云间子以外，任何人类都不能永久加入玩家殖民地；以增加殖民人口为结果的事件与任务不会触发。</description>
+    <category>Rule</category>
+    <scenPartClass>Yunjianzi.ScenPart_YunjianziSoleColonist</scenPartClass>
+    <selectionWeight>0</selectionWeight>
+    <summaryPriority>520</summaryPriority>
+    <maxUses>1</maxUses>
+  </ScenPartDef>
+
+  <ScenPartDef>
+    <defName>YJZ_UnlockBaseMiliraResearch</defName>
+    <label>解锁米莉拉本体科技</label>
+    <description>开局时完成由“Milira Race”本体定义的全部研究，不包含其他米莉拉拓展 Mod 的研究。</description>
+    <category>Rule</category>
+    <scenPartClass>Yunjianzi.ScenPart_UnlockBaseMiliraResearch</scenPartClass>
+    <selectionWeight>0</selectionWeight>
+    <summaryPriority>510</summaryPriority>
+    <maxUses>1</maxUses>
+  </ScenPartDef>
+
+  <ScenPartDef>
+    <defName>YJZ_StartingShenji</defName>
+    <label>随行青羽机侍</label>
+    <description>开局获得一台已绑定云间子的低级神机，配备普通品质青羽玉甲、青芒灵铳和羽仿布内衬。未学神机诀亦可控制，制造仍需学习对应技能。</description>
+    <category>Rule</category>
+    <scenPartClass>Yunjianzi.ScenPart_YunjianziStartingShenji</scenPartClass>
+    <selectionWeight>0</selectionWeight>
+    <summaryPriority>515</summaryPriority>
+    <maxUses>1</maxUses>
+  </ScenPartDef>
+
+  <ScenarioDef ParentName="ScenarioBase" MayRequire="Ludeon.RimWorld.Anomaly">
+    <defName>YJZ_YunjianziAnomalyStart</defName>
+    <label>云间子·孤云异象</label>
+    <description>云间子循着异常的灵机降临地表，一台配齐普通品质青羽玉甲、青芒灵铳与羽仿布内衬的青羽机侍随她同行。她尚未参悟神机诀，也能维系这位不占带宽的旧伴；新造神机仍需习得灵机启明，并受神机额度限制。一座远古虚空巨石已经苏醒，而她的命数拒绝任何新的永久殖民者加入；以人口加入为结果的事件与任务也不会出现。神机、云麒麟、符兵与临时来客不受此约束。</description>
+    <scenario>
+      <summary>云间子与一台普通品质全套装备的青羽机侍开局；异象立即激活，其他殖民者无法永久加入。</summary>
+      <playerFaction Inherit="false">
+        <def>PlayerFaction</def>
+        <factionDef>Milira_PlayerFaction</factionDef>
+      </playerFaction>
+      <standardAnomalyPlaystyleOnly>true</standardAnomalyPlaystyleOnly>
+      <parts>
+        <li Class="ScenPart_ConfigPage_ConfigureStartingPawns_KindDefs">
+          <def>ConfigurePawnsKindDefs</def>
+          <pawnChoiceCount>1</pawnChoiceCount>
+          <leftBehindPawnKind>YJZ_Yunjianzi</leftBehindPawnKind>
+          <kindCounts>
+            <li>
+              <kindDef>YJZ_Yunjianzi</kindDef>
+              <count>1</count>
+              <requiredAtStart>true</requiredAtStart>
+            </li>
+          </kindCounts>
+        </li>
+
+        <li Class="ScenPart_PlayerPawnsArriveMethod">
+          <def>PlayerPawnsArriveMethod</def>
+          <method>Standing</method>
+        </li>
+
+        <li Class="Yunjianzi.ScenPart_YunjianziStartingShenji">
+          <def>YJZ_StartingShenji</def>
+        </li>
+
+        <!-- Keep the complete RimWorld 1.6 Milira ordinary-start inventory. -->
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Milian_Recharger</thingDef>
+          <count>1</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Milira_UniversalBench</thingDef>
+          <count>1</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Milira_SunPlateSteel</thingDef>
+          <count>150</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Milira_SolarCrystal</thingDef>
+          <count>25</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>ComponentIndustrial</thingDef>
+          <count>25</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Milira_SunLightFuel</thingDef>
+          <count>100</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Milira_TravellerFood</thingDef>
+          <count>40</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>MedicineIndustrial</thingDef>
+          <count>20</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Bedroll</thingDef>
+          <stuff>Cloth</stuff>
+          <count>1</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Jade</thingDef>
+          <count>200</count>
+        </li>
+
+        <li Class="ScenPart_ScatterThingsNearPlayerStart">
+          <def>ScatterThingsNearPlayerStart</def>
+          <thingDef>Steel</thingDef>
+          <count>320</count>
+        </li>
+        <li Class="ScenPart_ScatterThingsNearPlayerStart">
+          <def>ScatterThingsNearPlayerStart</def>
+          <thingDef>WoodLog</thingDef>
+          <count>500</count>
+        </li>
+        <li Class="ScenPart_ScatterThingsNearPlayerStart">
+          <def>ScatterThingsNearPlayerStart</def>
+          <thingDef>Plasteel</thingDef>
+          <count>240</count>
+        </li>
+
+        <li Class="ScenPart_ScatterThingsAnywhere">
+          <def>ScatterThingsAnywhere</def>
+          <thingDef>ShipChunk</thingDef>
+          <allowRoofed>false</allowRoofed>
+          <count>8</count>
+        </li>
+        <li Class="ScenPart_ScatterThingsAnywhere">
+          <def>ScatterThingsAnywhere</def>
+          <thingDef>Steel</thingDef>
+          <count>220</count>
+        </li>
+
+        <li Class="ScenPart_DisableMapGen">
+          <def>DisableExostriderRemains</def>
+        </li>
+
+        <!-- Prevent the standard storytellers from offering direct permanent
+             joiners. The C# scenario rule remains the final safety net for
+             recruitment, quests and joiners created by other mods. -->
+        <li Class="ScenPart_DisableIncident">
+          <def>DisableIncident</def>
+          <incident>WandererJoin</incident>
+        </li>
+        <li Class="ScenPart_DisableIncident">
+          <def>DisableIncident</def>
+          <incident>StrangerInBlackJoin</incident>
+        </li>
+        <li Class="ScenPart_DisableIncident">
+          <def>DisableIncident</def>
+          <incident>GameEndedWanderersJoin</incident>
+        </li>
+        <li Class="ScenPart_DisableIncident">
+          <def>DisableIncident</def>
+          <incident>CreepJoinerJoin</incident>
+        </li>
+        <li Class="ScenPart_DisableIncident">
+          <def>DisableIncident</def>
+          <incident>CreepJoinerJoin_Metalhorror</incident>
+        </li>
+
+        <!-- Vanilla Anomaly 1.6 scenario parts. A zero delay means the
+             generated monolith is activated as soon as the game starts. -->
+        <li Class="ScenPart_MonolithGeneration">
+          <def>ScenPart_MonolithGeneration</def>
+          <method>NearColonists</method>
+        </li>
+        <li Class="ScenPart_AutoActivateMonolith">
+          <def>AutoActivateMonolith</def>
+          <delayTicks>0</delayTicks>
+        </li>
+
+        <li Class="Yunjianzi.ScenPart_YunjianziSoleColonist">
+          <def>YJZ_SoleColonistRule</def>
+        </li>
+        <li Class="Yunjianzi.ScenPart_UnlockBaseMiliraResearch">
+          <def>YJZ_UnlockBaseMiliraResearch</def>
+        </li>
+      </parts>
+    </scenario>
+  </ScenarioDef>
+</Defs>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- Follow Milira's native MilianConstant auto-combat path. Temporary
+       abilities granted by installed fittings are discovered explicitly, then
+       cast on self through Ancot Library's standard Milian AI job giver. -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ThinkTreeDef[defName="MilianConstant"]/thinkRoot/subNodes/li[@Class="AncotLibrary.ThinkNode_ConditionalNonPlayerMechOrAutoFight"]/subNodes/li[@Class="ThinkNode_ConditionalCanDoConstantThinkTreeJobNow"]/subNodes</xpath>
+    <value>
+      <li Class="AncotLibrary.ThinkNode_ConditionalHasAbility">
+        <ability>YJZ_Ability_ReleaseCloudCommandSoldiers</ability>
+        <includeTemporary>true</includeTemporary>
+        <subNodes>
+          <li Class="ThinkNode_ConditionalHashIntervalTick">
+            <interval>120</interval>
+            <subNodes>
+              <li Class="AncotLibrary.ThinkNode_ConditionalEnemyInMap">
+                <subNodes>
+                  <li Class="AncotLibrary.JobGiver_AICastAbilityOnSelf">
+                    <ability>YJZ_Ability_ReleaseCloudCommandSoldiers</ability>
+                    <includeTemporary>true</includeTemporary>
+                  </li>
+                </subNodes>
+              </li>
+            </subNodes>
+          </li>
+        </subNodes>
+      </li>
+    </value>
+  </Operation>
+</Patch>

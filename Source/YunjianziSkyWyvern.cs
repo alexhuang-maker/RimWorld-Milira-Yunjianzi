@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.AI;
+using Verse.Sound;
 
 namespace Yunjianzi
 {
@@ -26,29 +28,39 @@ namespace Yunjianzi
     /// grounded and uses one coherent directional form; combat state affects
     /// abilities, not art.
     /// </summary>
-    public sealed class CompYunjianziSkyWyvern : ThingComp
+    [StaticConstructorOnStartup]
+    public sealed partial class CompYunjianziSkyWyvern : ThingComp
     {
+        private static readonly Material ShieldMaterial = MaterialPool.MatFrom(
+            "Yunjianzi/Effects/SwordWardShield", ShaderDatabase.Transparent);
+
         private static readonly Dictionary<Map, HashSet<CompYunjianziSkyWyvern>> SpawnedByMap =
             new Dictionary<Map, HashSet<CompYunjianziSkyWyvern>>();
 
         private int ownerThingId = -1;
         private int combatUntilTick;
+        private readonly QilinBattleRoarState battleRoar = new QilinBattleRoarState();
         private float shield;
         private int shieldBrokenUntil;
         private int clawReadyTick;
+        private int lastClawVariant = -1;
         private int missileReadyTick;
+        private int crushingFieldReadyTick;
         private int breathCharges;
         private int nextBreathChargeTick;
         private bool animalBonded;
         private bool raidReleased;
+        private bool legacyAgeHealthRepaired;
         // Kept only so old saves containing the former mech-control state can
         // be read. Runtime control is now entirely animal-based.
         private bool nativeControlBound;
         private int nextNativeControlAttemptTick;
         private Pawn ownerCache;
-        private Graphic groundGraphic;
-        private static Material shieldMaterial;
-        private MaterialPropertyBlock shieldPropertyBlock;
+        private Graphic groundNorthGraphic;
+        private Graphic groundEastGraphic;
+        private Graphic groundSouthGraphic;
+        private Graphic groundWestGraphic;
+        private Material sleepingMaterial;
 
         private CompProperties_YunjianziSkyWyvern Props => (CompProperties_YunjianziSkyWyvern)props;
         public Pawn Pawn => parent as Pawn;
@@ -83,19 +95,10 @@ namespace Yunjianzi
             {
                 Pawn pawn = Pawn;
                 if (pawn == null || !CanProjectShield) return false;
-                int now = Find.TickManager.TicksGame;
-                return raidReleased || pawn.Drafted || pawn.mindState?.enemyTarget != null || now < combatUntilTick;
-            }
-        }
-
-        private static Material ShieldMaterial
-        {
-            get
-            {
-                if (shieldMaterial == null)
-                    shieldMaterial = MaterialPool.MatFrom("Yunjianzi/Effects/SwordWardShield",
-                        ShaderDatabase.TransparentPostLight);
-                return shieldMaterial;
+                // Following, hauling and other ordinary movement must not
+                // display the combat field.  The raid state covers autonomous
+                // fighting; Drafted covers direct player combat control.
+                return raidReleased || pawn.Drafted;
             }
         }
 
@@ -120,7 +123,12 @@ namespace Yunjianzi
                 breathCharges = BreathMax;
                 nextBreathChargeTick = Find.TickManager.TicksGame + BreathRecharge;
             }
+            RepairLegacyGeneratedAgeAndHealth();
+            ClearCarriedFilth();
+            RemoveLegacyBorrowedRegeneration();
+            EnsureCloudQilinRegeneration();
             EnsureAnimalBond();
+            CloudQilinUtility.ClearLivestockDesignations(Pawn);
         }
 
         public override void PostDeSpawn(Map map, DestroyMode mode = DestroyMode.Vanish)
@@ -135,11 +143,29 @@ namespace Yunjianzi
             Pawn pawn = Pawn;
             if (pawn == null || pawn.Dead || !pawn.Spawned) return;
 
+            if (!legacyAgeHealthRepaired) RepairLegacyGeneratedAgeAndHealth();
             if (!animalBonded && pawn.IsHashIntervalTick(600)) EnsureAnimalBond();
+            if (pawn.IsHashIntervalTick(600))
+            {
+                EnsureCloudQilinRegeneration();
+                CloudQilinUtility.ClearLivestockDesignations(pawn);
+            }
             if (pawn.IsHashIntervalTick(60))
             {
-                DrawMovementEffects();
                 UpdateRaidReleaseState();
+            }
+            if (pawn.IsHashIntervalTick(15)) TickCloudQilinRegeneration();
+            if (pawn.IsHashIntervalTick(30)) UpdateBattleRoar();
+            // Five-tick resolution keeps 50% haste accurate for the custom
+            // attacks (70/50-tick claws, 120-tick missiles, 20-tick pressure).
+            if (!pawn.Downed && battleRoar.WasInCombat && pawn.IsHashIntervalTick(5))
+            {
+                TryClawSweep();
+                if (Stage >= 5)
+                {
+                    TryCrushingField();
+                    TryBackMissile();
+                }
             }
             if (!pawn.IsHashIntervalTick(30)) return;
 
@@ -147,11 +173,33 @@ namespace Yunjianzi
                 shield = Mathf.Min(ShieldMax, shield + ShieldMax / 600f);
             RechargeBreath();
             ApplyAccelerationAura();
-            TryClawSweep();
-            if (Stage >= 5)
+        }
+
+        private bool BattleRoarActive => Pawn.health.hediffSet.HasHediff(YJZDefOf.YJZ_QilinBattleRoar);
+
+        private void UpdateBattleRoar()
+        {
+            Pawn pawn = Pawn;
+            int now = Find.TickManager.TicksGame;
+            if (!battleRoar.TryEnterCombat(now, IsInCombat(), !pawn.Downed)) return;
+
+            Hediff buff = pawn.health.hediffSet.GetFirstHediffOfDef(YJZDefOf.YJZ_QilinBattleRoar)
+                ?? pawn.health.AddHediff(YJZDefOf.YJZ_QilinBattleRoar);
+            buff.TryGetComp<HediffComp_Disappears>().ticksToDisappear = QilinBattleRoarState.DurationTicks;
+
+            // Match vanilla CompAbilityEffect_AnimalRoar. The life-stage angry
+            // sound is available without Odyssey; its extra roar FX are optional.
+            pawn.caller?.DoCall(forceAggressive: true);
+            DefDatabase<SoundDef>.GetNamedSilentFail("Ability_TerrorRoar")?.PlayOneShot(new TargetInfo(pawn));
+            EffecterDef roarEffect = DefDatabase<EffecterDef>.GetNamedSilentFail("TerrorRoar");
+            if (roarEffect != null)
             {
-                TryCrushingField();
-                TryBackMissile();
+                Effecter effecter = roarEffect.Spawn(pawn, pawn.Map);
+                pawn.Map.effecterMaintainer.AddEffecterToMaintain(effecter, new TargetInfo(pawn), pawn, 20);
+            }
+            else
+            {
+                FleckMaker.Static(pawn.Position, pawn.Map, FleckDefOf.PsycastAreaEffect, 3f);
             }
         }
 
@@ -177,12 +225,86 @@ namespace Yunjianzi
             }
         }
 
-        private void DrawMovementEffects()
+        private void ClearCarriedFilth()
         {
             Pawn pawn = Pawn;
-            if (pawn == null || !pawn.pather.Moving) return;
-            if (Rand.Chance(.3f))
-                FleckMaker.ThrowDustPuff(pawn.Position, pawn.Map, .3f + Props.drawSize * .03f);
+            pawn?.filth?.CarriedFilthListForReading?.Clear();
+        }
+
+        private void RemoveLegacyBorrowedRegeneration()
+        {
+            Pawn pawn = Pawn;
+            if (pawn?.health == null) return;
+            Hediff legacy = pawn.health.hediffSet.hediffs.FirstOrDefault(h => h.def.defName == "Regeneration");
+            if (legacy != null) pawn.health.RemoveHediff(legacy);
+        }
+
+        private void EnsureCloudQilinRegeneration()
+        {
+            Pawn pawn = Pawn;
+            if (pawn?.health == null || YJZDefOf.YJZ_SkyWyvernRegeneration == null ||
+                pawn.health.hediffSet.HasHediff(YJZDefOf.YJZ_SkyWyvernRegeneration)) return;
+
+            pawn.health.AddHediff(YJZDefOf.YJZ_SkyWyvernRegeneration);
+        }
+
+        private void TickCloudQilinRegeneration()
+        {
+            Pawn pawn = Pawn;
+            if (pawn?.health == null || pawn.Dead) return;
+
+            float healingPerDay = Stage >= 5 ? 5000f : Stage >= 4 ? 1500f : 500f;
+            float remaining = healingPerDay * 15f / GenDate.TicksPerDay;
+            List<Hediff_Injury> injuries = pawn.health.hediffSet.hediffs
+                .OfType<Hediff_Injury>()
+                .OrderByDescending(h => h.IsPermanent())
+                .ThenByDescending(h => h.Severity)
+                .ToList();
+            foreach (Hediff_Injury injury in injuries)
+            {
+                float healed = Mathf.Min(remaining, injury.Severity);
+                injury.Heal(healed);
+                remaining -= healed;
+                if (remaining <= 0f) return;
+            }
+
+            Hediff_MissingPart missing = pawn.health.hediffSet.hediffs
+                .OfType<Hediff_MissingPart>()
+                .FirstOrDefault(h => h.Part?.parent != null &&
+                    pawn.health.hediffSet.GetFirstHediffMatchingPart<Hediff_MissingPart>(h.Part.parent) == null &&
+                    pawn.health.hediffSet.GetFirstHediffMatchingPart<Hediff_AddedPart>(h.Part.parent) == null);
+            if (missing == null) return;
+
+            BodyPartRecord part = missing.Part;
+            pawn.health.RestorePart(part);
+            Hediff regrowingPart = pawn.health.AddHediff(HediffDefOf.Misc, part);
+            if (regrowingPart != null)
+            {
+                float partHealth = pawn.health.hediffSet.GetPartHealth(part);
+                regrowingPart.Severity = Mathf.Max(partHealth - 1f, partHealth * .9f);
+            }
+        }
+
+        private void RepairLegacyGeneratedAgeAndHealth()
+        {
+            Pawn pawn = Pawn;
+            if (legacyAgeHealthRepaired || pawn?.ageTracker == null || pawn.health == null) return;
+
+            // Old versions let PawnGenerator choose an age across the 9999-year
+            // lifespan. Only migrate those impossible biological ages; normal
+            // injuries and diseases remain untouched.
+            if (pawn.ageTracker.AgeBiologicalYears >= 100)
+            {
+                pawn.ageTracker.AgeBiologicalTicks = 30L * GenDate.TicksPerYear;
+                HediffDef asthma = DefDatabase<HediffDef>.GetNamedSilentFail("Asthma");
+                HediffDef arteryBlockage = DefDatabase<HediffDef>.GetNamedSilentFail("HeartArteryBlockage");
+                List<Hediff> generatedOldAgeHediffs = pawn.health.hediffSet.hediffs
+                    .Where(h => h.def == asthma || h.def == arteryBlockage)
+                    .ToList();
+                foreach (Hediff hediff in generatedOldAgeHediffs)
+                    pawn.health.RemoveHediff(hediff);
+            }
+            legacyAgeHealthRepaired = true;
         }
 
         private void ApplyAccelerationAura()
@@ -212,31 +334,30 @@ namespace Yunjianzi
         private void TryClawSweep()
         {
             int now = Find.TickManager.TicksGame;
-            if (!IsInCombat() || now < clawReadyTick) return;
+            if (now < clawReadyTick) return;
             Thing target = HostilesInRadius(Pawn.Position, 2.8f).OrderBy(t => t.Position.DistanceToSquared(Pawn.Position)).FirstOrDefault();
-            if (target == null) return;
-            clawReadyTick = now + (Stage >= 5 ? 75 : 105);
-            int traces = Stage >= 5 ? 5 : 3;
+            if (target == null) { clawReadyTick = now + 15; return; }
+            clawReadyTick = now + QilinBattleRoarState.AttackInterval(Stage >= 5 ? 75 : 105, BattleRoarActive);
             float damage = Stage >= 5 ? 58f : Stage >= 4 ? 42f : 30f;
+            // Capture the impact before damage can destroy/despawn the target.
+            YunjianziQilinClawEffects.Play(Pawn, target.DrawPos, Stage, ref lastClawVariant);
+            if (Stage >= 5) YunjianziPurpleLightning.EmpPulse(target.DrawPos, Pawn.Map, 3.2f);
             foreach (Thing victim in HostilesInRadius(target.Position, Stage >= 5 ? 3.2f : 2.2f).ToList())
             {
                 victim.TakeDamage(new DamageInfo(DamageDefOf.Cut, damage, Stage >= 5 ? 2f : .8f, -1f, Pawn));
                 if (Stage >= 5)
                 {
-                    victim.TakeDamage(new DamageInfo(DamageDefOf.EMP, 18f, 1f, -1f, Pawn));
+                    YunjianziEmp.Apply(victim, Pawn, 18f);
                     if (victim is Pawn p && p.stances != null) p.stances.stunner.StunFor(75, Pawn);
                 }
-            }
-            for (int i = 0; i < traces; i++)
-            {
-                Vector3 offset = new Vector3((i - (traces - 1) * .5f) * .16f, 0f, (i % 2 == 0 ? -.12f : .12f));
-                GenDraw.DrawLineBetween(Pawn.DrawPos + offset, target.DrawPos + offset, SimpleColor.Cyan);
-                FleckMaker.ThrowLightningGlow(target.DrawPos + offset, Pawn.Map, .8f);
             }
         }
 
         private void TryCrushingField()
         {
+            int now = Find.TickManager.TicksGame;
+            if (now < crushingFieldReadyTick) return;
+            crushingFieldReadyTick = now + QilinBattleRoarState.AttackInterval(30, BattleRoarActive);
             foreach (Thing victim in HostilesInRadius(Pawn.Position, 2.8f).ToList())
             {
                 victim.TakeDamage(new DamageInfo(DamageDefOf.Blunt, 12f, 1.2f, -1f, Pawn));
@@ -247,11 +368,11 @@ namespace Yunjianzi
         private void TryBackMissile()
         {
             int now = Find.TickManager.TicksGame;
-            if (!IsInCombat() || now < missileReadyTick) return;
+            if (now < missileReadyTick) return;
             Thing target = HostilesInRadius(Pawn.Position, 32f).OrderBy(t => t.Position.DistanceToSquared(Pawn.Position)).FirstOrDefault();
-            if (target == null) return;
-            missileReadyTick = now + 180;
-            FleckMaker.ThrowLightningGlow(Pawn.DrawPos + new Vector3(0f, 0f, .65f), Pawn.Map, 1.4f);
+            if (target == null) { missileReadyTick = now + 15; return; }
+            missileReadyTick = now + QilinBattleRoarState.AttackInterval(180, BattleRoarActive);
+            YunjianziPurpleLightning.Glow(Pawn.DrawPos + new Vector3(0f, 0f, .65f), Pawn.Map, 1.4f);
             GenExplosion.DoExplosion(target.Position, Pawn.Map, 2.4f, DamageDefOf.Bomb, Pawn, 32, .55f);
         }
 
@@ -274,7 +395,7 @@ namespace Yunjianzi
                 shield = 0f;
                 shieldBrokenUntil = Find.TickManager.TicksGame + 1800;
             }
-            if (Pawn?.Spawned == true) FleckMaker.ThrowLightningGlow(Pawn.DrawPos, Pawn.Map, 1.2f + ShieldRadius * .06f);
+            if (Pawn?.Spawned == true) YunjianziPurpleLightning.Glow(Pawn.DrawPos, Pawn.Map, 1.2f + ShieldRadius * .06f);
         }
 
         public bool TryInterceptProjectile(Projectile projectile)
@@ -287,9 +408,9 @@ namespace Yunjianzi
             delta.y = 0f;
             if (delta.sqrMagnitude > ShieldRadius * ShieldRadius) return false;
             combatUntilTick = Find.TickManager.TicksGame + 600;
-            float cost = Mathf.Max(12f, projectile.DamageAmount * (Stage >= 4 ? .6f : 1f));
+            float cost = YunjianziProjectileShieldUtility.InterceptionCost(projectile, Stage);
             shield -= cost;
-            FleckMaker.ThrowLightningGlow(projectile.ExactPosition, pawn.Map, 1f);
+            YunjianziPurpleLightning.Glow(projectile.ExactPosition, pawn.Map, 1f);
             if (shield <= 0f)
             {
                 shield = 0f;
@@ -309,7 +430,7 @@ namespace Yunjianzi
             Command_Action breath = new Command_Action
             {
                 defaultLabel = "雷霆龙息",
-                defaultDesc = $"向十五格内喷吐高密度雷霆，造成迫击炮范围的雷电、EMP与麻痹。\n当前充能：{breathCharges}/{BreathMax}",
+                defaultDesc = $"云麒麟引来云中积雷，自灵角一息吐尽。雷光会麻痹血肉、扰乱机械，并席卷落点周围。\n\n当前蓄雷：{breathCharges}/{BreathMax}",
                 icon = YunjianziAbilityTextures.SummonSkyWyvern,
                 action = BeginBreathTargeting
             };
@@ -328,7 +449,7 @@ namespace Yunjianzi
                 validator = t => t.IsValid && t.Cell.InBounds(Pawn.Map) && t.Cell.DistanceTo(Pawn.Position) <= 15.9f
             };
             Find.Targeter.BeginTargeting(parms, t => CastBreath(t.Cell),
-                t => GenDraw.DrawRadiusRing(t.Cell, 3.9f, new Color(.35f, .92f, 1f)), null, Pawn, null,
+                t => GenDraw.DrawRadiusRing(t.Cell, 3.9f, new Color(.72f, .4f, 1f)), null, Pawn, null,
                 YunjianziAbilityTextures.SummonSkyWyvern, true);
         }
 
@@ -338,20 +459,21 @@ namespace Yunjianzi
             breathCharges--;
             if (breathCharges < BreathMax && nextBreathChargeTick <= Find.TickManager.TicksGame)
                 nextBreathChargeTick = Find.TickManager.TicksGame + BreathRecharge;
-            GenDraw.DrawLineBetween(Pawn.DrawPos, cell.ToVector3Shifted(), SimpleColor.Cyan);
+            YunjianziPurpleLightning.Arc(Pawn.DrawPos, cell.ToVector3Shifted(), Pawn.Map, 1.6f);
             int bolts = Stage >= 5 ? 7 : 4;
             for (int i = 0; i < bolts; i++)
             {
                 IntVec3 strike = CellFinder.RandomClosewalkCellNear(cell, Pawn.Map, 4);
                 if (!strike.IsValid) strike = cell;
-                Pawn.Map.weatherManager.eventHandler.AddEvent(new WeatherEvent_LightningStrike(Pawn.Map, strike));
-                FleckMaker.ThrowLightningGlow(strike.ToVector3Shifted(), Pawn.Map, 2.4f);
+                YunjianziPurpleLightning.Strike(strike, Pawn.Map, Stage >= 5 ? 1.6f : 1.3f, Pawn);
+                YunjianziCombatEffects.ChargeSwordWardFromLightning(Owner);
             }
             float damage = Stage >= 5 ? 120f : 72f;
+            YunjianziPurpleLightning.EmpPulse(cell.ToVector3Shifted(), Pawn.Map, 3.9f);
             foreach (Thing victim in HostilesInRadius(cell, 3.9f).ToList())
             {
                 victim.TakeDamage(new DamageInfo(DamageDefOf.Burn, damage, Stage >= 5 ? 2.2f : 1.1f, -1f, Pawn));
-                victim.TakeDamage(new DamageInfo(DamageDefOf.EMP, damage * .5f, 1f, -1f, Pawn));
+                YunjianziEmp.Apply(victim, Pawn, damage * .5f);
                 if (victim is Pawn p && p.stances != null) p.stances.stunner.StunFor(Stage >= 5 ? 240 : 150, Pawn);
             }
         }
@@ -369,9 +491,17 @@ namespace Yunjianzi
             base.PostDraw();
             Pawn pawn = Pawn;
             if (pawn == null) return;
-            if (groundGraphic == null)
-                groundGraphic = GraphicDatabase.Get<Graphic_Multi>(Props.groundTexPath, ShaderDatabase.Cutout,
-                    new Vector2(Props.drawSize, Props.drawSize), Color.white);
+            // Our side art is already horizontal. Vanilla's animal resting
+            // angle would turn it head-first into the bed instead of lying down.
+            bool resting = pawn.GetPosture() != PawnPosture.Standing
+                && !pawn.Downed && !pawn.Dead && pawn.Spawned;
+            if (resting)
+            {
+                DrawSleepingBody(pawn);
+                if (CombatShieldVisible) DrawCombatShield(pawn);
+                return;
+            }
+            Graphic groundGraphic = GroundGraphicFor(pawn.Rotation);
             Vector3 drawPos = pawn.DrawPos;
             if (pawn.pather != null && pawn.pather.Moving)
             {
@@ -383,36 +513,68 @@ namespace Yunjianzi
                 Vector3 lateral = pawn.Rotation.AsIntVec3.ToVector3().RotatedBy(90f) * (Mathf.Sin(phase * .5f) * .018f);
                 drawPos += lateral;
             }
-            groundGraphic.Draw(drawPos, pawn.Rotation, pawn);
+            // Healthy rest was drawn above; retain vanilla downed/dead angles.
+            float bodyAngle = pawn.Drawer?.renderer?.BodyAngle(PawnRenderFlags.None) ?? 0f;
+            // Every direction is already authored in its final orientation.
+            // Drawing the selected Graphic_Single on an unrotated mesh also
+            // permits the side sprites to use a wide canvas: the long tail can
+            // extend horizontally without shrinking the torso and neck.
+            groundGraphic.DrawWorker(drawPos, Rot4.North, pawn.def, pawn, bodyAngle);
             if (CombatShieldVisible) DrawCombatShield(pawn);
+        }
+
+        private Graphic GroundGraphicFor(Rot4 rotation)
+        {
+            if (rotation == Rot4.North)
+                return groundNorthGraphic ?? (groundNorthGraphic = LoadGroundGraphic("north", false));
+            if (rotation == Rot4.East)
+                return groundEastGraphic ?? (groundEastGraphic = LoadGroundGraphic("east", true));
+            if (rotation == Rot4.West)
+                return groundWestGraphic ?? (groundWestGraphic = LoadGroundGraphic("west", true));
+            return groundSouthGraphic ?? (groundSouthGraphic = LoadGroundGraphic("south", false));
+        }
+
+        private void DrawSleepingBody(Pawn pawn)
+        {
+            if (sleepingMaterial == null)
+                sleepingMaterial = MaterialPool.MatFrom(
+                    "Yunjianzi/Pawn/SkyWyvern/Sleeping", ShaderDatabase.Cutout);
+            // The approved alpha texture is 2:1 and tightly framed. Match its
+            // visible width to the standing animal, not the padded ground canvas.
+            // Mirror UVs via vanilla MeshPool instead of rotating the sleeping body.
+            Matrix4x4 matrix = Matrix4x4.TRS(pawn.DrawPos, Quaternion.identity,
+                new Vector3(Props.drawSize * 1.12f, 1f, Props.drawSize * .56f));
+            Graphics.DrawMesh(pawn.Rotation == Rot4.West ? MeshPool.plane10Flip : MeshPool.plane10,
+                matrix, sleepingMaterial, 0);
+        }
+
+        private Graphic LoadGroundGraphic(string direction, bool wide)
+        {
+            // Runtime PNGs are 1536x512 for sides and 768x512 for front/back.
+            // Matching those aspect ratios preserves the same vertical scale
+            // while retaining transparent space for the perspective tail.
+            Vector2 size = new Vector2(
+                Props.drawSize * (wide ? 3f : 1.5f),
+                Props.drawSize);
+            return GraphicDatabase.Get<Graphic_Single>(
+                Props.groundTexPath + "_" + direction,
+                ShaderDatabase.Cutout,
+                size,
+                Color.white);
         }
 
         private void DrawCombatShield(Pawn pawn)
         {
-            if (shieldPropertyBlock == null) shieldPropertyBlock = new MaterialPropertyBlock();
             float ratio = Mathf.Clamp01(shield / Mathf.Max(1f, ShieldMax));
-            float phase = (Find.TickManager.TicksGame + pawn.thingIDNumber * 19) * .018f;
-            float pulse = Mathf.Sin(phase) * .018f;
-            float diameter = ShieldRadius * (2.02f + pulse);
-            float alpha = Mathf.Lerp(.22f, .46f, Mathf.Sqrt(ratio));
-
-            shieldPropertyBlock.SetColor(ShaderPropertyIDs.Color,
-                new Color(.62f, .98f, 1f, alpha));
-            Vector3 center = pawn.DrawPos;
-            center.y = Altitudes.AltitudeFor(AltitudeLayer.MoteOverhead);
-            Matrix4x4 matrix = Matrix4x4.TRS(center,
-                Quaternion.AngleAxis((Find.TickManager.TicksGame * .045f + pawn.thingIDNumber * 13f) % 360f,
-                    Vector3.up),
+            float pulse = 1f + Mathf.Sin((Find.TickManager.TicksGame + pawn.thingIDNumber) * .035f) * .018f;
+            float diameter = ShieldRadius * 2f * pulse * Mathf.Lerp(.96f, 1f, ratio);
+            Vector3 drawPos = pawn.DrawPos;
+            drawPos.y = AltitudeLayer.MoteOverhead.AltitudeFor();
+            float angle = (Find.TickManager.TicksGame * .08f + pawn.thingIDNumber * 17f) % 360f;
+            Matrix4x4 matrix = default(Matrix4x4);
+            matrix.SetTRS(drawPos, Quaternion.AngleAxis(angle, Vector3.up),
                 new Vector3(diameter, 1f, diameter));
-            Graphics.DrawMesh(MeshPool.plane10, matrix, ShieldMaterial, 0, null, 0, shieldPropertyBlock);
-
-            // The double rim makes the field read as a dense, rounded barrier
-            // rather than the old single debug-radius outline. The patterned
-            // plane above supplies the cloud-and-sword qi tracery.
-            GenDraw.DrawRadiusRing(pawn.Position, ShieldRadius,
-                new Color(.58f, .96f, 1f, Mathf.Lerp(.38f, .72f, ratio)));
-            GenDraw.DrawRadiusRing(pawn.Position, ShieldRadius * .92f,
-                new Color(.28f, .84f, 1f, Mathf.Lerp(.18f, .42f, ratio)));
+            Graphics.DrawMesh(MeshPool.plane10, matrix, ShieldMaterial, 0);
         }
 
         private bool EnsureAnimalBond()
@@ -432,10 +594,6 @@ namespace Yunjianzi
                 if (pawn.Faction != Faction.OfPlayer) pawn.SetFaction(Faction.OfPlayer);
                 if (pawn.playerSettings == null) pawn.playerSettings = new Pawn_PlayerSettings(pawn);
                 if (pawn.training == null) pawn.training = new Pawn_TrainingTracker(pawn);
-                pawn.playerSettings.Master = owner;
-                pawn.playerSettings.followDrafted = true;
-                pawn.playerSettings.followFieldwork = true;
-
                 TrainableDef[] essentials =
                 {
                     TrainableDefOf.Tameness,
@@ -451,6 +609,16 @@ namespace Yunjianzi
                 TrainableDef attack = DefDatabase<TrainableDef>.GetNamedSilentFail("AttackTarget");
                 if (attack != null && !pawn.training.HasLearned(attack))
                     pawn.training.Train(attack, owner, true);
+
+                // Vanilla Pawn_PlayerSettings.Master rejects a non-obedient
+                // animal. Completing Obedience above normally assigns the
+                // trainer automatically; retain this guarded assignment for
+                // migrated saves whose existing Master points elsewhere.
+                if (pawn.training.HasLearned(TrainableDefOf.Obedience) &&
+                    pawn.playerSettings.Master != owner)
+                    pawn.playerSettings.Master = owner;
+                pawn.playerSettings.followDrafted = true;
+                pawn.playerSettings.followFieldwork = true;
 
                 animalBonded = true;
                 return true;
@@ -518,18 +686,24 @@ namespace Yunjianzi
         {
             base.PostExposeData();
             Scribe_Values.Look(ref ownerThingId, "yjz_wyvernOwner", -1);
+            ExposeQilinLossData();
             bool legacyFlying = false;
             Scribe_Values.Look(ref legacyFlying, "yjz_wyvernFlying", false);
             Scribe_Values.Look(ref combatUntilTick, "yjz_wyvernCombatUntil", 0);
+            Scribe_Values.Look(ref battleRoar.WasInCombat, "yjz_qilinRoarWasInCombat", false);
+            Scribe_Values.Look(ref battleRoar.ReadyTick, "yjz_qilinRoarReadyTick", 0);
             Scribe_Values.Look(ref shield, "yjz_wyvernShield", 0f);
             Scribe_Values.Look(ref shieldBrokenUntil, "yjz_wyvernShieldBrokenUntil", 0);
             Scribe_Values.Look(ref clawReadyTick, "yjz_wyvernClawReady", 0);
+            Scribe_Values.Look(ref lastClawVariant, "yjz_wyvernLastClawVariant", -1);
             Scribe_Values.Look(ref missileReadyTick, "yjz_wyvernMissileReady", 0);
+            Scribe_Values.Look(ref crushingFieldReadyTick, "yjz_wyvernCrushingFieldReady", 0);
             Scribe_Values.Look(ref breathCharges, "yjz_wyvernBreathCharges", 0);
             Scribe_Values.Look(ref nextBreathChargeTick, "yjz_wyvernNextBreath", 0);
             Scribe_Values.Look(ref nativeControlBound, "yjz_wyvernNativeControl", false);
             Scribe_Values.Look(ref animalBonded, "yjz_wyvernAnimalBonded", false);
             Scribe_Values.Look(ref raidReleased, "yjz_wyvernRaidReleased", false);
+            Scribe_Values.Look(ref legacyAgeHealthRepaired, "yjz_wyvernAgeHealthRepaired", false);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 ownerCache = null;
@@ -565,6 +739,19 @@ namespace Yunjianzi
     }
 
     /// <summary>
+    /// FilthRate=0 prevents newly generated animal filth, while this prefix also
+    /// prevents the vanilla tracker from picking up and later dropping filth.
+    /// </summary>
+    [HarmonyPatch(typeof(Pawn_FilthTracker), nameof(Pawn_FilthTracker.Notify_EnteredNewCell))]
+    internal static class Patch_SkyWyvernNeverTracksFilth
+    {
+        private static bool Prefix(Pawn ___pawn)
+        {
+            return ___pawn?.TryGetComp<CompYunjianziSkyWyvern>() == null;
+        }
+    }
+
+    /// <summary>
     /// Vanilla Animal_PreMain insertion. It stays dormant outside an active
     /// home-map threat, then uses the standard enemy acquisition and attack
     /// job machinery (including AI-castable abilities) for the released dragon.
@@ -581,7 +768,12 @@ namespace Yunjianzi
         {
             if (!base.ExtraTargetValidator(pawn, target) || target is not IAttackTarget attackTarget)
                 return false;
-            return GenHostility.IsActiveThreatToPlayer(attackTarget);
+            // A home-map threat can be sealed behind walls or live in a
+            // disconnected pocket.  Reject it here instead of repeatedly
+            // issuing an attack job which the animal pather cannot start.
+            return GenHostility.IsActiveThreatToPlayer(attackTarget) &&
+                target.Spawned && target.Map == pawn.Map &&
+                pawn.CanReach(target, PathEndMode.Touch, Danger.Deadly);
         }
     }
 
@@ -633,7 +825,7 @@ namespace Yunjianzi
 
         public override void DrawEffectPreview(LocalTargetInfo target)
         {
-            if (target.IsValid) GenDraw.DrawRadiusRing(target.Cell, 3.9f, new Color(.35f, .92f, 1f));
+            if (target.IsValid) GenDraw.DrawRadiusRing(target.Cell, 3.9f, new Color(.72f, .4f, 1f));
         }
 
         private bool CanTarget(LocalTargetInfo target, bool hostileOnly)
@@ -652,14 +844,19 @@ namespace Yunjianzi
     {
         private IEnumerable<Gizmo> GetSkyWyvernGizmos()
         {
+            if (!CanCreateOrAscendSkyWyvern(BoundSkyWyverns())) yield break;
+            int cooldown = SkyWyvernCooldownRemaining;
             Command_Action summon = new Command_Action
             {
-                defaultLabel = "神机诀·唤云麒麟",
-                defaultDesc = "消耗100点灵力，唤来或召回世界中唯一的云麒麟。她曾是上一代云间子的坐骑，如今认可新一代传人并守护在侧。更高境界会唤醒她更完整的力量。",
+                defaultLabel = "瑞麟践约",
+                defaultDesc = "循着道书末页的旧约，呼唤世间唯一的云麒麟。形态按当前境界决定：紫府为云中灵麟，金丹为负霆瑞兽，化神为九天麟主；突破后可再次施展使其进阶。已有当前境界的麒麟时隐藏此技能。\n\n麒麟被消灭时散为云气，不留下尸体或死亡产物；此技能重新显示并进入10天冷却，冷却结束后可再次呼唤。正常进阶不触发冷却。\n\n消耗100点灵力。" +
+                    (cooldown > 0 ? "\n当前冷却：" + SkyWyvernCooldownText : ""),
                 icon = YunjianziAbilityTextures.SummonSkyWyvern,
                 action = SummonSkyWyvern
             };
-            if (SummoningBlockedByCombat)
+            if (cooldown > 0)
+                summon.Disable("瑞麟正在重聚云气，还需" + SkyWyvernCooldownText + "。");
+            else if (SummoningBlockedByCombat)
                 summon.Disable("战斗中无法唤起云麒麟。请先解除征召并脱离交战。");
             else if (Energy < 100f)
                 summon.Disable("灵力不足：需要100点。");
@@ -668,57 +865,68 @@ namespace Yunjianzi
 
         private List<Pawn> BoundSkyWyverns()
         {
-            List<Pawn> result = new List<Pawn>();
+            // Include caravans, transporters and nested holders: leaving the
+            // current map does not free the world's unique companion slot.
+            HashSet<Pawn> result = new HashSet<Pawn>();
+            List<Thing> held = new List<Thing>();
             foreach (Map map in Find.Maps)
-                result.AddRange(map.mapPawns.AllPawns.Where(p => p.TryGetComp<CompYunjianziSkyWyvern>() != null && !p.Dead));
+            {
+                foreach (Pawn pawn in map.mapPawns.AllPawns) result.Add(pawn);
+                ThingOwnerUtility.GetAllThingsRecursively(map, held, true);
+                foreach (Pawn pawn in held.OfType<Pawn>()) result.Add(pawn);
+            }
+            if (Find.World != null)
+            {
+                ThingOwnerUtility.GetAllThingsRecursively(Find.World, held, true);
+                foreach (Pawn pawn in held.OfType<Pawn>()) result.Add(pawn);
+            }
             if (Find.WorldPawns != null)
-                result.AddRange(Find.WorldPawns.AllPawnsAlive.Where(p => p.TryGetComp<CompYunjianziSkyWyvern>() != null && !result.Contains(p)));
-            return result;
+                foreach (Pawn pawn in Find.WorldPawns.AllPawnsAlive) result.Add(pawn);
+            return result.Where(p => !p.Dead && !p.Destroyed && p.TryGetComp<CompYunjianziSkyWyvern>() != null).ToList();
         }
 
         private PawnKindDef DesiredSkyWyvernKind()
         {
-            if (HasSkill(YunjianziSkills.ShenjiWyvernAscension)) return YJZDefOf.YJZ_SkyWyvern_Spirit;
-            if (HasSkill(YunjianziSkills.ShenjiWyvernAdaptiveShield)) return YJZDefOf.YJZ_SkyWyvern_Golden;
+            if (Realm >= 5) return YJZDefOf.YJZ_SkyWyvern_Spirit;
+            if (Realm >= 4) return YJZDefOf.YJZ_SkyWyvern_Golden;
             return YJZDefOf.YJZ_SkyWyvern_Purple;
         }
 
         private void SummonSkyWyvern()
         {
-            if (Pawn == null || !Pawn.Spawned || RejectSummoningDuringCombat() || !TrySpend(100f)) return;
-            PawnKindDef desired = DesiredSkyWyvernKind();
+            if (Pawn == null || !Pawn.Spawned) return;
             List<Pawn> existing = BoundSkyWyverns();
-            Pawn same = existing.FirstOrDefault(p => p.kindDef == desired && p.TryGetComp<CompYunjianziSkyWyvern>()?.IsBoundTo(Pawn) == true);
-            if (same != null)
-            {
-                same.TryGetComp<CompYunjianziSkyWyvern>()?.BindTo(Pawn);
-                if (same.Spawned && same.Map != Pawn.Map) same.DeSpawn();
-                if (!same.Spawned) GenSpawn.Spawn(same, Pawn.Position, Pawn.Map);
-                same.Position = CellFinder.RandomClosewalkCellNear(Pawn.Position, Pawn.Map, 4);
-                same.Notify_Teleported(false, true);
-                FleckMaker.Static(same.Position, same.Map, FleckDefOf.PsycastSkipOuterRingExit, 2f);
-                return;
-            }
+            // Recheck at activation so an old command cannot bypass quota/CD.
+            if (!CanCreateOrAscendSkyWyvern(existing) || SkyWyvernCooldownRemaining > 0 ||
+                RejectSummoningDuringCombat() || !TrySpend(100f)) return;
+            PawnKindDef desired = DesiredSkyWyvernKind();
 
-            foreach (Pawn old in existing.ToList())
-            {
-                if (old.Spawned) FleckMaker.Static(old.Position, old.Map, FleckDefOf.PsycastSkipFlashEntry, 2f);
-                old.Destroy(DestroyMode.Vanish);
-            }
+            // Ascension replaces the pawn. Preserve the gathered-resource cycle
+            // just as recalling the same pawn preserves it.
+            float salivaFullness = existing.Where(p => p.TryGetComp<CompYunjianziSkyWyvern>()?.IsBoundTo(Pawn) == true)
+                .Select(p => p.TryGetComp<CompQilinSaliva>()?.Fullness ?? 0f).DefaultIfEmpty(0f).Max();
             Pawn wyvern = PawnGenerator.GeneratePawn(desired, Faction.OfPlayer);
+            wyvern.TryGetComp<CompQilinSaliva>()?.RestoreFullness(salivaFullness);
             IntVec3 cell = CellFinder.RandomClosewalkCellNear(Pawn.Position, Pawn.Map, 4);
             if (!cell.IsValid) cell = Pawn.Position;
             GenSpawn.Spawn(wyvern, cell, Pawn.Map);
             CompYunjianziSkyWyvern comp = wyvern.TryGetComp<CompYunjianziSkyWyvern>();
             if (comp == null || !comp.BindTo(Pawn))
             {
-                wyvern.Destroy(DestroyMode.Vanish);
+                if (comp != null) comp.DismissWithoutLossCooldown();
+                else wyvern.Destroy(DestroyMode.Vanish);
                 Energy += 100f;
-                Messages.Message("未能与云麒麟建立羁绊，召唤已回滚并返还灵力。", Pawn, MessageTypeDefOf.RejectInput, false);
+                Messages.Message("旧约未能应声，散去的灵力已复归经脉。", Pawn, MessageTypeDefOf.RejectInput, false);
                 return;
             }
+            // Retire the old form only after the replacement is fully bound.
+            foreach (Pawn old in existing)
+            {
+                if (old.Spawned) FleckMaker.Static(old.Position, old.Map, FleckDefOf.PsycastSkipFlashEntry, 2f);
+                old.TryGetComp<CompYunjianziSkyWyvern>()?.DismissWithoutLossCooldown();
+            }
             FleckMaker.Static(cell, Pawn.Map, FleckDefOf.PsycastSkipOuterRingExit, 2.4f);
-            Messages.Message("云气汇聚，云麒麟循着旧约来到新一代云间子身旁。", wyvern, MessageTypeDefOf.PositiveEvent, false);
+            Messages.Message("云气自四野归来。云麒麟踏出云门，将额角轻抵在新传人的掌中。旧约已续。", wyvern, MessageTypeDefOf.PositiveEvent, false);
         }
     }
 
@@ -729,6 +937,25 @@ namespace Yunjianzi
         {
             if (__instance?.Spawned != true || __instance.Map == null) return true;
             return !CompYunjianziSkyWyvern.TryInterceptOnMap(__instance);
+        }
+    }
+
+    [HarmonyPatch(typeof(MassUtility), nameof(MassUtility.Capacity))]
+    internal static class Patch_MassUtility_Capacity_YunjianziSkyWyvern
+    {
+        private const float CaravanCapacity = 1000f;
+
+        private static bool Prefix(Pawn p, StringBuilder explanation, ref float __result)
+        {
+            if (p?.TryGetComp<CompYunjianziSkyWyvern>() == null) return true;
+
+            __result = CaravanCapacity;
+            if (explanation != null)
+            {
+                if (explanation.Length > 0) explanation.AppendLine();
+                explanation.Append("  - " + p.LabelShortCap + ": " + CaravanCapacity.ToStringMassOffset());
+            }
+            return false;
         }
     }
 }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>YJZ_Make_JiuxiaoXianxu</defName>
+    <label>炼制九霄仙絮</label>
+    <description>以化神元神梳理天丝，将日棱晶与白玉中的灵机织成接引雷霆的九霄仙絮。</description>
+    <jobString>正在炼制九霄仙絮。</jobString>
+    <workerClass>Yunjianzi.RecipeWorker_YunjianziTalisman</workerClass>
+    <workAmount>48000</workAmount>
+    <workSkill>Crafting</workSkill>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    <effectWorking>Tailor</effectWorking>
+    <soundWorking>Recipe_Tailor</soundWorking>
+    <skillRequirements><Crafting>15</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><categories><li>Textiles</li></categories></filter><count>100</count></li>
+      <li><filter><thingDefs><li>Milira_SunPlateSteel</li></thingDefs></filter><count>95</count></li>
+      <li><filter><thingDefs><li>Jade</li></thingDefs></filter><count>100</count></li>
+      <li><filter><thingDefs><li>Milira_SolarCrystal</li></thingDefs></filter><count>70</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>8</count></li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <categories><li>Textiles</li></categories>
+      <thingDefs>
+        <li>Milira_SunPlateSteel</li><li>Jade</li><li>Milira_SolarCrystal</li><li>ComponentSpacer</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+    <products><YJZ_Apparel_JiuxiaoXianxu>1</YJZ_Apparel_JiuxiaoXianxu></products>
+    <recipeUsers><li>YJZ_Building_TalismanTable</li></recipeUsers>
+    <modExtensions>
+      <li Class="Yunjianzi.YunjianziTalismanRecipeExtension"><skillId>array.jiuxiao.xianxu</skillId></li>
+    </modExtensions>
+  </RecipeDef>
+</Defs>

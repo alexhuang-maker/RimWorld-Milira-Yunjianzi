@@ -22,6 +22,55 @@
   </ThingDef>
 
   <ThingDef>
+    <defName>YJZ_Effect_LightningChain</defName>
+    <label>游霆电弧</label>
+    <thingClass>Yunjianzi.ThingYunjianziLightningChain</thingClass>
+    <category>Ethereal</category>
+    <tickerType>Normal</tickerType>
+    <drawerType>RealtimeOnly</drawerType>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <selectable>false</selectable>
+    <useHitPoints>false</useHitPoints>
+    <destroyable>true</destroyable>
+    <passability>Standable</passability>
+    <pathCost>0</pathCost>
+  </ThingDef>
+
+  <ThingDef>
+    <defName>YJZ_Projectile_ThunderSpear</defName>
+    <label>万钧雷枪</label>
+    <thingClass>Yunjianzi.ThingYunjianziThunderSpear</thingClass>
+    <category>Ethereal</category>
+    <tickerType>Normal</tickerType>
+    <drawerType>RealtimeOnly</drawerType>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <selectable>false</selectable>
+    <useHitPoints>false</useHitPoints>
+    <destroyable>true</destroyable>
+    <passability>Standable</passability>
+    <graphicData>
+      <texPath>Yunjianzi/Effects/ThunderSpear/ThunderSpear</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>MoteGlow</shaderType>
+      <drawSize>(2.4,4.8)</drawSize>
+    </graphicData>
+  </ThingDef>
+
+  <ThingDef>
+    <defName>YJZ_Effect_ThunderSpearAnchor</defName>
+    <label>万钧雷枪</label>
+    <thingClass>Yunjianzi.ThingYunjianziThunderSpearAnchor</thingClass>
+    <category>Ethereal</category>
+    <tickerType>Normal</tickerType>
+    <drawerType>RealtimeOnly</drawerType>
+    <altitudeLayer>ItemImportant</altitudeLayer>
+    <selectable>false</selectable>
+    <useHitPoints>false</useHitPoints>
+    <destroyable>true</destroyable>
+    <passability>Standable</passability>
+  </ThingDef>
+
+  <ThingDef>
     <defName>YJZ_Thing_SwordRain</defName>
     <label>天剑雨</label>
     <description>“一气分而为阴阳，判而为天地。”
@@ -43,7 +92,7 @@
 
   <ThingDef ParentName="BuildingBase" Name="YJZ_ArrayCoreBase" Abstract="True">
     <label>琉璃阵眼</label>
-    <description>“八剑定八方，一念镇中央。”
+    <description>“八旗引紫电，一念镇周天。”
 
 道书阵图特意让琉璃玉珠显形，使无形阵法留下一处可守、也可被敌人攻破的枢机。它并非仙阵最华丽之处，却承受着每一条阵纹回流的压力。
 

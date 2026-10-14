@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <ThingDef ParentName="BuildingBase">
+<ThingDef ParentName="BuildingBase">
     <defName>YJZ_Building_TalismanTable</defName>
     <label>云间画符台</label>
     <description>“以心为砚，以气为墨。”
@@ -34,13 +34,13 @@
       <Milira_SunPlateSteel>20</Milira_SunPlateSteel>
     </costList>
     <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
-    <designationCategory>Ideology</designationCategory>
+    <designationCategory>YJZ_QinglingJade</designationCategory>
     <uiOrder>3950</uiOrder>
     <passability>PassThroughOnly</passability>
     <pathCost>35</pathCost>
     <hasInteractionCell>true</hasInteractionCell>
     <!-- 纸张位于台面南侧；操作员应站在纸前，而不是绕到背后的玉珠旁。 -->
-    <interactionCellOffset>(0,0,1)</interactionCellOffset>
+    <interactionCellOffset>(0,0,-1)</interactionCellOffset>
     <surfaceType>Item</surfaceType>
     <minifiedDef>MinifiedThing</minifiedDef>
     <thingCategories><li>BuildingsMisc</li></thingCategories>
@@ -58,7 +58,7 @@
       </li>
       <li Class="CompProperties_Glower">
         <glowRadius>3.2</glowRadius>
-        <glowColor>(120,235,245,0)</glowColor>
+        <glowColor>(255,255,255,0)</glowColor>
       </li>
     </comps>
     <placeWorkers>
@@ -71,7 +71,8 @@
     <thingClass>ThingWithComps</thingClass>
     <description>以灵力绘成、可供云间子佩用的阳符。</description>
     <stackLimit>10</stackLimit>
-    <tradeability>All</tradeability>
+    <tradeability>None</tradeability>
+    <generateCommonality>0</generateCommonality>
     <thingCategories><li>Manufactured</li></thingCategories>
     <graphicData>
       <graphicClass>Graphic_Single</graphicClass>
@@ -93,7 +94,7 @@
 道书符图上只画一枚啄痕，旁注说良工琢玉，最后一凿不在手重，而在知道何处应当停手。现任云间子依图悟出此符，使每一次收刃、落锤与抛光都恰到好处。
 
 效果：显著提高云间子制成器物的品质。需筑基境，并占用一个阳符位。</description><graphicData><texPath>Yunjianzi/Talisman/Zhuoyu</texPath></graphicData><statBases><MarketValue>500</MarketValue></statBases></ThingDef>
-  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Shenjie</defName><label>神截符</label><description>“有之以为利，无之以为用。”——《道德经》
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Shenjie</defName><label>截真符</label><description>“有之以为利，无之以为用。”——《道德经》
 
 道书将此符夹在数篇残缺的格物札记之间，教后继者从万象中截取一线真意。所谓“截”，不是窃取天机，而是在无穷岔路中认出可行的一条。
 
@@ -118,12 +119,12 @@
 上一代云间子在道书中告诫，此符不窥隐私，只斩去谈判中的虚声。对方的迟疑、渴求与底线都会像剑下纹理般清楚；然而要使心剑不偏，持符者也须先照见自己的贪念。
 
 效果：改善贸易价格并提高社交影响。需筑基境，并占用一个阳符位。</description><graphicData><texPath>Yunjianzi/Talisman/Xinjian</texPath></graphicData><statBases><MarketValue>500</MarketValue></statBases></ThingDef>
-  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Beidou</defName><label>北斗符</label><description>“斗为帝车，运于中央，临制四乡。”——《史记·天官书》
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Beidou</defName><label>斗转符</label><description>“斗为帝车，运于中央，临制四乡。”——《史记·天官书》
 
 道书《星符篇》以七点墨痕记下斗柄运转之序。它不赐予蛮力，而是校准出手、瞄准与飞剑回旋的节律，让每一次攻势都更早进入下一周天。
 
 效果：加快近战、射击与御剑的攻击节奏。需紫府境，并占用一个阳符位。</description><graphicData><texPath>Yunjianzi/Talisman/Beidou</texPath></graphicData><statBases><MarketValue>1500</MarketValue></statBases></ThingDef>
-  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Guihai</defName><label>归海符</label><description>“天下莫柔弱于水，而攻坚强者莫之能胜。”——《道德经》
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Guihai</defName><label>百川归海符</label><description>“天下莫柔弱于水，而攻坚强者莫之能胜。”——《道德经》
 
 道书以百川归海之图譬喻周天，现任云间子由此悟出归流之符。它将逸散灵气重新引回百脉，使吐纳与修行所得不再轻易漏失。
 
@@ -133,7 +134,7 @@
 上一代云间子把数百种制器工序压成一道符图，使神识先见器物成形，再令双手循最短路径完成它。现任云间子参悟后，锯屑、火星与机床鸣响皆能各归其位。
 
 效果：大幅提高所有工作的速度。需紫府境，并占用一个阳符位。</description><graphicData><texPath>Yunjianzi/Talisman/Shenlian</texPath></graphicData><statBases><MarketValue>1500</MarketValue></statBases></ThingDef>
-  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Huijian</defName><label>惠剑斩念符</label><description>“常能遣其欲，而心自静；澄其心，而神自清。”——《太上老君说常清静经》
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Huijian</defName><label>慧剑斩念符</label><description>“常能遣其欲，而心自静；澄其心，而神自清。”——《太上老君说常清静经》
 
 道书此页仅有一道横过灵台的剑痕，旁题“慧剑不斩血肉，只断外来低语与自生妄念”。清静并非麻木，而是把自己的声音重新从万千回响中辨认出来。
 
@@ -153,14 +154,14 @@
 道书将此符列为偏法：偏取六阳，不留一阴调和。纯阳灌体时，持符者的目与手只为争斗而生；代价是文思枯灼，心火躁烈，再美的事物也难入眼。
 
 效果：使射击与格斗臻于极境，却完全失去艺术能力并变得极易躁乱；卸下后恢复。需金丹境，并占用一个阳符位。</description><graphicData><texPath>Yunjianzi/Talisman/Liuyang</texPath></graphicData><statBases><MarketValue>3000</MarketValue></statBases></ThingDef>
-  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Tiandao</defName><label>天道符</label><description>“观天之道，执天之行，尽矣。”——《黄帝阴符经》
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Tiandao</defName><label>万艺通玄符</label><description>“观天之道，执天之行，尽矣。”——《黄帝阴符经》
 
-上一代云间子把毕生所见汇成道书最后几页：医理与剑理同出一机，耕作与炼器共循一序。天道符并不把知识凭空赐下，只让化神者暂时看见每一种技艺抵达尽头时的模样。
+上一代云间子把毕生所见汇成道书最后几页：医理与剑理同出一机，耕作与炼器共循一序。万艺通玄符并不把知识凭空赐下，只让化神者暂时看见每一种技艺抵达尽头时的模样。
 
 效果：使所有能够从事的技能臻于极境，但不会解除背景故事禁止的工作；卸下后恢复。需化神境，并占用一个阳符位。</description><graphicData><texPath>Yunjianzi/Talisman/Tiandao</texPath></graphicData><statBases><MarketValue>5000</MarketValue></statBases></ThingDef>
-  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Huanri</defName><label>换日符</label><description>“归根曰静，是谓复命。”——《道德经》
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Huanri</defName><label>偷天符</label><description>“天之道，损有余而补不足。”——《道德经》
 
-道书符图上旧日西沉，新日却迟迟不升。上一代云间子所换的不是一天寿数，而是肉身走向衰老的那一步；岁月仍会被世界记下，只不再刻进血肉。
+道书符图中，天数如长河奔流，唯有一笔逆势挑出，把本该落向肉身的衰朽藏入无形。前代云间子称此举并非长生，只是从天数中偷去“渐老”一程；岁月仍会被世界记下，却不再刻进血肉。
 
 效果：停止生理衰老，但不会逆转已有的衰老与疾病。需化神境，并占用一个阳符位。</description><graphicData><texPath>Yunjianzi/Talisman/Huanri</texPath></graphicData><statBases><MarketValue>5000</MarketValue></statBases></ThingDef>
 </Defs>
