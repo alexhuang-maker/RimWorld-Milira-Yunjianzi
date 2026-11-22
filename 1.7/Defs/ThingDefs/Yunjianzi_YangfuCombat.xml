@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef Name="YJZ_YangfuEffectBase" Abstract="True">
+    <category>Ethereal</category>
+    <tickerType>Normal</tickerType>
+    <selectable>false</selectable>
+    <drawGUIOverlay>false</drawGUIOverlay>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <useHitPoints>false</useHitPoints>
+    <thingClass>Yunjianzi.ThingYangfuCastMarker</thingClass>
+    <graphicData>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>TransparentPostLight</shaderType>
+      <drawSize>(1.35,1.35)</drawSize>
+    </graphicData>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_YangfuEffectBase">
+    <defName>YJZ_Effect_TalismanRed</defName>
+    <label>火龙卷符</label>
+    <graphicData><texPath>Yunjianzi/Effects/Yangfu/TalismanRed</texPath></graphicData>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_YangfuEffectBase">
+    <defName>YJZ_Effect_TalismanPurple</defName>
+    <label>天雷神风符</label>
+    <graphicData>
+      <texPath>Yunjianzi/Effects/Yangfu/TalismanPurple</texPath>
+      <shaderType>MoteGlow</shaderType>
+    </graphicData>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_YangfuEffectBase">
+    <defName>YJZ_Effect_TalismanGreen</defName>
+    <label>撒豆成兵符</label>
+    <graphicData><texPath>Yunjianzi/Effects/Yangfu/TalismanGreen</texPath></graphicData>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_YangfuEffectBase">
+    <defName>YJZ_Effect_FireTornado</defName>
+    <label>火龙卷</label>
+    <thingClass>Yunjianzi.ThingYangfuFireTornado</thingClass>
+    <altitudeLayer>Weather</altitudeLayer>
+    <graphicData>
+      <texPath>Yunjianzi/Effects/Yangfu/FireTornado</texPath>
+      <drawSize>(2.2,2.2)</drawSize>
+    </graphicData>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_YangfuEffectBase">
+    <defName>YJZ_Effect_ThunderWind</defName>
+    <label>天雷神风</label>
+    <thingClass>Yunjianzi.ThingYangfuThunderWind</thingClass>
+    <graphicData>
+      <texPath>Yunjianzi/Effects/Yangfu/ThunderWindField</texPath>
+      <shaderType>MoteGlow</shaderType>
+      <drawSize>(10,10)</drawSize>
+    </graphicData>
+  </ThingDef>
+
+  <!-- 符兵是真正的临时 Pawn，而非通过修改 Position 假装移动的建筑式 Thing。 -->
+  <ThingDef Name="YJZ_BeanSoldierRaceBase" ParentName="AnimalThingBase" Abstract="True">
+    <label>符兵</label>
+    <description>前代以符术凝兵，又借机巧补足寻敌之法，留下撒豆成兵的符图。云间子依式施术，兵形便循令奔赴敌前。
+
+符胆既燃，形体随之俱散，只将余威留在敌阵之中。</description>
+    <tickerType>Normal</tickerType>
+    <statBases>
+      <MarketValue>0</MarketValue>
+      <MoveSpeed>6.4</MoveSpeed>
+      <Mass>12</Mass>
+      <Flammability>0</Flammability>
+      <Wildness>0</Wildness>
+    </statBases>
+    <race>
+      <body>QuadrupedAnimalWithPawsAndTail</body>
+      <baseBodySize>0.28</baseBodySize>
+      <baseHungerRate>0</baseHungerRate>
+      <foodType>None</foodType>
+      <trainability>None</trainability>
+      <neverIncludeInQuests>true</neverIncludeInQuests>
+      <lifeExpectancy>1</lifeExpectancy>
+      <lifeStageAges><li><def>AnimalAdult</def><minAge>0</minAge></li></lifeStageAges>
+    </race>
+    <comps><li Class="Yunjianzi.CompProperties_YangfuBeanSoldier" /></comps>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierRaceBase"><defName>YJZ_BeanSoldierRace_Qi</defName><label>练气符兵</label><race><baseHealthScale>3.3</baseHealthScale></race></ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierRaceBase"><defName>YJZ_BeanSoldierRace_Foundation</defName><label>筑基符兵</label><race><baseHealthScale>8.3</baseHealthScale></race></ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierRaceBase"><defName>YJZ_BeanSoldierRace_Zifu</defName><label>紫府符兵</label><race><baseHealthScale>15</baseHealthScale></race></ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierRaceBase"><defName>YJZ_BeanSoldierRace_GoldenCore</defName><label>金丹符兵</label><race><baseHealthScale>23.3</baseHealthScale></race></ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierRaceBase"><defName>YJZ_BeanSoldierRace_Deity</defName><label>化神符兵</label><race><baseHealthScale>33.3</baseHealthScale></race></ThingDef>
+  <ThingDef ParentName="YJZ_BeanSoldierRaceBase">
+    <defName>YJZ_BeanSoldierRace_CloudCommand</defName>
+    <label>灵兵构装体</label>
+    <race><baseHealthScale>23.3</baseHealthScale></race>
+    <comps Inherit="false">
+      <li Class="Yunjianzi.CompProperties_YangfuBeanSoldier">
+        <defaultRank>4</defaultRank>
+        <swordShadowCount>2</swordShadowCount>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <PawnKindDef Name="YJZ_BeanSoldierKindBase" ParentName="AnimalKindBase" Abstract="True">
+    <label>符兵</label><combatPower>1</combatPower><ecoSystemWeight>0</ecoSystemWeight>
+    <lifeStages><li><bodyGraphicData>
+      <texPath>Yunjianzi/Effects/Yangfu/BeanSoldier</texPath>
+      <graphicClass>Graphic_Multi</graphicClass><shaderType>CutoutComplex</shaderType><drawSize>0.72</drawSize>
+    </bodyGraphicData></li></lifeStages>
+  </PawnKindDef>
+  <PawnKindDef ParentName="YJZ_BeanSoldierKindBase"><defName>YJZ_BeanSoldier_1</defName><label>练气符兵</label><race>YJZ_BeanSoldierRace_Qi</race></PawnKindDef>
+  <PawnKindDef ParentName="YJZ_BeanSoldierKindBase"><defName>YJZ_BeanSoldier_2</defName><label>筑基符兵</label><race>YJZ_BeanSoldierRace_Foundation</race></PawnKindDef>
+  <PawnKindDef ParentName="YJZ_BeanSoldierKindBase"><defName>YJZ_BeanSoldier_3</defName><label>紫府符兵</label><race>YJZ_BeanSoldierRace_Zifu</race></PawnKindDef>
+  <PawnKindDef ParentName="YJZ_BeanSoldierKindBase"><defName>YJZ_BeanSoldier_4</defName><label>金丹符兵</label><race>YJZ_BeanSoldierRace_GoldenCore</race></PawnKindDef>
+  <PawnKindDef ParentName="YJZ_BeanSoldierKindBase"><defName>YJZ_BeanSoldier_5</defName><label>化神符兵</label><race>YJZ_BeanSoldierRace_Deity</race></PawnKindDef>
+  <PawnKindDef ParentName="YJZ_BeanSoldierKindBase"><defName>YJZ_BeanSoldier_CloudCommand</defName><label>灵兵构装体</label><race>YJZ_BeanSoldierRace_CloudCommand</race></PawnKindDef>
+</Defs>

@@ -40,7 +40,9 @@
   <ThingDef ParentName="YJZ_AdvancedCultivationFacilityBase">
     <defName>YJZ_Building_SpiritConvergencePool</defName>
     <label>青灵聚元池</label>
-    <description>一座以真玉钢约束地脉、以青灵玉珠调和灵潮的聚元池。池中瀑流并非凡水，而是被凝成可见形态的灵力；中央玉珠一面稳定电网，一面将逸散能量送入附近的蒲团与白玉台。\n\n效果：持续输出 20,000W 电力，相当于四座米莉拉帝国暗物质电池；连接修炼座位后，额外提高 50% 灵力恢复与修为增长速度，并提高 25% 突破速度。设施关闭、故障或断开连接时不提供修炼加成。</description>
+    <description>云间子在修炼时发现，散入周围的灵气尚可收聚。她以真玉钢约束灵流，另设玉枢调和，将聚元池接入落脚处的能源回路。
+
+池中灵机既济，可供灯火百工；坐于近旁，吐纳与破境亦得其助。</description>
     <size>(2,2)</size>
     <graphicData>
       <texPath>Yunjianzi/Buildings/CultivationFacilities/SpiritConvergencePool</texPath>
@@ -81,7 +83,9 @@
     <thingClass>Yunjianzi.Building_CelestialDaoGate</thingClass>
     <drawerType>RealtimeOnly</drawerType>
     <label>云阙问道仪</label>
-    <description>一座将灵脉、玉枢与超维能源回路合为一体的问道仪。悬于云阙中央的青灵玉珠持续牵引周天灵机，环门则把灵潮中的杂乱波动炼为可供殖民地使用的稳定电力。\n\n效果：持续输出 120,000W 电力，达到联合重工大型发生器的等级；连接修炼座位后，额外提高 100% 灵力恢复与修为增长速度，并提高 50% 突破速度。设施关闭、故障或断开连接时不提供修炼加成。</description>
+    <description>从聚元池的工法继续推演，以环门定枢，引动更深处的灵流。此仪须经云间子亲自参校，方能使周天运转与故乡的能源回路相接。
+
+仪成则灵潮有序，道场得其清气，居处亦受其长明。</description>
     <size>(3,3)</size>
     <graphicData>
       <texPath>Yunjianzi/Buildings/CultivationFacilities/CelestialDaoGate</texPath>

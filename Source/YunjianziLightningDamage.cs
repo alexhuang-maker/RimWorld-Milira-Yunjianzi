@@ -44,7 +44,7 @@ namespace Yunjianzi
                 .Where(t => t != caster && (caster == null || t.HostileTo(caster)) &&
                     (t is Pawn || t is Building)).ToList())
                 YunjianziEmp.Apply(target, caster, amount);
-            YunjianziPurpleLightning.EmpPulse(cell.ToVector3Shifted(), map, radius);
+            YunjianziPurpleLightning.EmpPulse(cell.ToVector3Shifted(), map, radius, realm: LightningRealm.Of(caster));
         }
 
         private static void ExplodeEmp(IntVec3 cell, Map map, Pawn caster, float radius,

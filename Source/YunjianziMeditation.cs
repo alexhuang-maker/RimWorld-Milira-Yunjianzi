@@ -129,7 +129,7 @@ namespace Yunjianzi
             });
             string disabledReason = null;
             if (selPawn.Downed) disabledReason = "云间子已倒地";
-            else if (!comp.HasOpenedBoundScroll) disabledReason = "尚未研读遗仙宝卷";
+            else if (!comp.HasOpenedBoundScroll) disabledReason = "尚未研读前代手记";
             if (comp.CanBreakthrough && comp.Realm >= 3 && parent.def != YunjianziOptionalBuildingDefs.WhiteJadePlatform)
                 disabledReason = "突破金丹及之后必须使用白玉修行台";
             else if (!selPawn.CanReserveAndReach(parent, PathEndMode.OnCell, Danger.Deadly))

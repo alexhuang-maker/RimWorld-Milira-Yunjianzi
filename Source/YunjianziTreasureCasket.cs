@@ -61,7 +61,8 @@ namespace Yunjianzi
                 return false;
             }
 
-            return thing.GetSlotGroup()?.parent is Building_TreasureCasket;
+            var storage = thing.GetSlotGroup()?.parent;
+            return storage is Building_TreasureCasket || storage is Building_YunjianziInheritanceChest;
         }
     }
 

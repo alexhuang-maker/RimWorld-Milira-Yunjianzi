@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- 以下 statBases 均为普通品质的基础数值。实际制造品质由工匠技能决定，
+       优良至传奇品质继续使用 RimWorld 原生品质倍率。 -->
+  <ThingDef ParentName="Milian_MiddleBase">
+    <defName>YJZ_Apparel_ShenjiArmor_Base</defName>
+    <label>青羽玉甲</label>
+    <description>前代为青羽机侍留下的甲式，连同替换关节、检修铳机的方法记在同一册手稿里。云间子修复旧机侍时逐处核对，后来新造的甲衣也沿用了这套工法。
+
+玉甲护住机枢，灵路贯通臂腕，受击可守，举铳亦稳。</description>
+    <tradeability>None</tradeability>
+    <smeltable>false</smeltable>
+    <recipeMaker Inherit="False" IsNull="True" />
+    <graphicData>
+      <texPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Base</texPath>
+      <shaderType>Cutout</shaderType>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>320</MaxHitPoints>
+      <Mass>4.0</Mass>
+      <ArmorRating_Sharp>0.58</ArmorRating_Sharp>
+      <ArmorRating_Blunt>0.38</ArmorRating_Blunt>
+      <ArmorRating_Heat>0.35</ArmorRating_Heat>
+      <StuffEffectMultiplierArmor>0</StuffEffectMultiplierArmor>
+    </statBases>
+    <apparel>
+      <useWornGraphicMask>false</useWornGraphicMask>
+      <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+      <bodyPartGroups><li>Neck</li><li>Torso</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups>
+      <wornGraphicPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Base</wornGraphicPath>
+      <tags><li>YJZ_ShenjiIntrinsic</li></tags>
+    </apparel>
+    <equippedStatOffsets><RangedCooldownFactor>-0.05</RangedCooldownFactor></equippedStatOffsets>
+    <comps>
+      <li Class="Milira.CompProperties_TargetableMilian">
+        <compClass>Milira.CompTargetable_Milian</compClass>
+        <ignoreQuestLodgerPawns>true</ignoreQuestLodgerPawns>
+        <targetableMilianPawnkinds><li>YJZ_Shenji</li></targetableMilianPawnkinds>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="Milian_MiddleBase">
+    <defName>YJZ_Apparel_ShenjiArmor_Intermediate</defName>
+    <label>玄翎灵铠</label>
+    <description>青羽甲式之外，前代另记有一道卸力阵纹。云间子开辟紫府后，才有余力将它炼入日盘钢，制成供玄翎灵卫披挂的灵铠。
+
+外力至时，余势沿甲而散；灵机流贯全身，行止、发铳皆少滞碍。</description>
+    <tradeability>None</tradeability>
+    <smeltable>false</smeltable>
+    <recipeMaker Inherit="False" IsNull="True" />
+    <graphicData>
+      <texPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Intermediate</texPath>
+      <shaderType>Cutout</shaderType>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>720</MaxHitPoints>
+      <Mass>6.5</Mass>
+      <ArmorRating_Sharp>0.95</ArmorRating_Sharp>
+      <ArmorRating_Blunt>0.70</ArmorRating_Blunt>
+      <ArmorRating_Heat>0.75</ArmorRating_Heat>
+      <StuffEffectMultiplierArmor>0</StuffEffectMultiplierArmor>
+    </statBases>
+    <apparel>
+      <useWornGraphicMask>false</useWornGraphicMask>
+      <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+      <bodyPartGroups><li>Neck</li><li>Torso</li><li>Shoulders</li><li>Arms</li><li>Hands</li><li>Legs</li><li>Feet</li></bodyPartGroups>
+      <wornGraphicPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Intermediate</wornGraphicPath>
+      <tags><li>YJZ_ShenjiIntrinsic</li></tags>
+    </apparel>
+    <equippedStatOffsets><RangedCooldownFactor>-0.12</RangedCooldownFactor><MoveSpeed>0.25</MoveSpeed></equippedStatOffsets>
+    <comps>
+      <li Class="Milira.CompProperties_TargetableMilian">
+        <compClass>Milira.CompTargetable_Milian</compClass>
+        <ignoreQuestLodgerPawns>true</ignoreQuestLodgerPawns>
+        <targetableMilianPawnkinds><li>YJZ_Shenji_Lingwei</li></targetableMilianPawnkinds>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="Milian_MiddleBase">
+    <defName>YJZ_Apparel_ShenjiArmor_Final</defName>
+    <label>九霄天铠</label>
+    <description>这是前代神机器图中最后留下的甲式。炼制时须将甲衣与机体灵路反复参校，直到护身、运力与御器同出一息，方可交付九霄天将披用。
+
+甲成之后，周身气机相应，临阵可拒重击，执器不碍百工。</description>
+    <tradeability>None</tradeability>
+    <smeltable>false</smeltable>
+    <recipeMaker Inherit="False" IsNull="True" />
+    <graphicData>
+      <texPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Final</texPath>
+      <shaderType>Cutout</shaderType>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>1400</MaxHitPoints>
+      <Mass>8.0</Mass>
+      <ArmorRating_Sharp>1.40</ArmorRating_Sharp>
+      <ArmorRating_Blunt>0.95</ArmorRating_Blunt>
+      <ArmorRating_Heat>1.10</ArmorRating_Heat>
+      <StuffEffectMultiplierArmor>0</StuffEffectMultiplierArmor>
+    </statBases>
+    <apparel>
+      <useWornGraphicMask>false</useWornGraphicMask>
+      <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+      <bodyPartGroups><li>Neck</li><li>Torso</li><li>Shoulders</li><li>Arms</li><li>Hands</li><li>Legs</li><li>Feet</li></bodyPartGroups>
+      <wornGraphicPath>Yunjianzi/Apparel/Shenji/ShenjiArmor_Final</wornGraphicPath>
+      <tags><li>YJZ_ShenjiIntrinsic</li></tags>
+    </apparel>
+    <equippedStatOffsets><RangedCooldownFactor>-0.20</RangedCooldownFactor><MoveSpeed>0.75</MoveSpeed><WorkSpeedGlobal>0.30</WorkSpeedGlobal></equippedStatOffsets>
+    <comps>
+      <li Class="Milira.CompProperties_TargetableMilian">
+        <compClass>Milira.CompTargetable_Milian</compClass>
+        <ignoreQuestLodgerPawns>true</ignoreQuestLodgerPawns>
+        <targetableMilianPawnkinds><li>YJZ_Shenji_Tianjiang</li></targetableMilianPawnkinds>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <!-- 战术目镜必须使用米莉安原生头部服装层。若合并进身体装甲纹理，
+       Milian_Milian 渲染树会在它上面再次绘制头部和头发。 -->
+  <ThingDef ParentName="Milian_OverheadBase">
+    <defName>YJZ_Apparel_ShenjiVisor</defName>
+    <label>神机战术目镜</label>
+    <description>云间子在修复机侍的旧视窗时，沿用了前代滤去杂光的符式，又将阵令接入其中。此后战场烟尘与交错辉光之下，灵卫也能辨清敌影。
+
+镜能明察，不能代甲承锋。</description>
+    <tradeability>None</tradeability>
+    <smeltable>false</smeltable>
+    <recipeMaker Inherit="False" IsNull="True" />
+    <graphicData>
+      <texPath>Yunjianzi/Apparel/Shenji/ShenjiVisor</texPath>
+      <shaderType>Cutout</shaderType>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>9999</MaxHitPoints>
+      <Mass>0</Mass>
+      <ArmorRating_Sharp>0</ArmorRating_Sharp>
+      <ArmorRating_Blunt>0</ArmorRating_Blunt>
+      <ArmorRating_Heat>0</ArmorRating_Heat>
+      <StuffEffectMultiplierArmor>0</StuffEffectMultiplierArmor>
+    </statBases>
+    <apparel>
+      <useWornGraphicMask>false</useWornGraphicMask>
+      <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+      <bodyPartGroups><li>FullHead</li></bodyPartGroups>
+      <wornGraphicPath>Yunjianzi/Apparel/Shenji/ShenjiVisor</wornGraphicPath>
+      <tags><li>YJZ_ShenjiIntrinsic</li><li>YJZ_Shenji_Lingwei</li></tags>
+    </apparel>
+    <comps>
+      <li Class="Milira.CompProperties_TargetableMilian">
+        <compClass>Milira.CompTargetable_Milian</compClass>
+        <ignoreQuestLodgerPawns>true</ignoreQuestLodgerPawns>
+        <targetableMilianPawnkinds><li>YJZ_Shenji_Lingwei</li></targetableMilianPawnkinds>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="Milian_OverheadBase">
+    <defName>YJZ_Apparel_JiuxiaoImmortalCrown</defName>
+    <label>九霄仙冠</label>
+    <description>以日棱晶为枢，承接九霄天铠未尽的护身灵路。前代器图将冠与甲分记两页，炼成时却须合参，不能各自运转。
+
+戴冠则灵机上聚，护住首脑，纷乱敌影亦可辨明。</description>
+    <tradeability>None</tradeability>
+    <smeltable>false</smeltable>
+    <recipeMaker Inherit="False" IsNull="True" />
+    <graphicData>
+      <texPath>Yunjianzi/Apparel/Shenji/JiuxiaoImmortalCrown</texPath>
+      <shaderType>Cutout</shaderType>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>360</MaxHitPoints>
+      <Mass>1.2</Mass>
+      <ArmorRating_Sharp>0.55</ArmorRating_Sharp>
+      <ArmorRating_Blunt>0.25</ArmorRating_Blunt>
+      <ArmorRating_Heat>0.50</ArmorRating_Heat>
+      <StuffEffectMultiplierArmor>0</StuffEffectMultiplierArmor>
+    </statBases>
+    <apparel>
+      <useWornGraphicMask>false</useWornGraphicMask>
+      <developmentalStageFilter>Child, Adult</developmentalStageFilter>
+      <bodyPartGroups><li>FullHead</li></bodyPartGroups>
+      <wornGraphicPath>Yunjianzi/Apparel/Shenji/JiuxiaoImmortalCrown</wornGraphicPath>
+      <!-- 米莉安头部为 50、前发为 62；北向置于 61，完整冠体会被后发
+           自然遮住，只露出越过头顶的竖角。其余方向保持头饰默认前层。 -->
+      <drawData><dataNorth><layer>61</layer></dataNorth></drawData>
+      <tags><li>YJZ_ShenjiIntrinsic</li><li>YJZ_Shenji_Tianjiang</li></tags>
+    </apparel>
+    <equippedStatOffsets><ShootingAccuracyPawn>2</ShootingAccuracyPawn></equippedStatOffsets>
+    <!-- The base supplies the dress menu and effect, but each concrete apparel
+         must supply its own target selector and eligible PawnKindDefs. -->
+    <comps>
+      <li Class="Milira.CompProperties_TargetableMilian">
+        <compClass>Milira.CompTargetable_Milian</compClass>
+        <ignoreQuestLodgerPawns>true</ignoreQuestLodgerPawns>
+        <targetableMilianPawnkinds>
+          <li>YJZ_Shenji_Tianjiang</li>
+        </targetableMilianPawnkinds>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>

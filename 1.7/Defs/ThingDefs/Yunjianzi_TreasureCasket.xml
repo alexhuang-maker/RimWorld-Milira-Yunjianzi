@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="StorageShelfBase">
+    <defName>YJZ_TreasureCasket</defName>
+    <label>建木镇宝匣</label>
+    <description>前代远行多有器物相随，遂以洞天之法炼成此匣，又取建木为名，将制法留给后人。云间子依旧图重炼，才得以收起日渐繁多的行装。
+
+方寸能容诸物，藏久亦少腐败。可收入者自有界限，山石生木与庞然之物，仍须留在匣外。</description>
+    <thingClass>Yunjianzi.Building_TreasureCasket</thingClass>
+    <designationCategory>YJZ_QinglingJade</designationCategory>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/Storage/TreasureCasket</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <!-- The physical footprint remains 3x3.  The rebuilt Jianmu uses a
+           slightly larger draw square so the authored casket fills its
+           footprint while the cloud canopy can overhang it.  The scaled Z
+           offset keeps the casket, rather than the full tall sprite, centered
+           over the selected cells. -->
+      <drawSize>(5.75,5.75)</drawSize>
+      <drawOffset>(0,0,2.00)</drawOffset>
+    </graphicData>
+    <size>(3,3)</size>
+    <altitudeLayer>BuildingOnTop</altitudeLayer>
+    <!-- Graphic_Single still receives the thing rotation. The authored asset
+         is upright at North; forcing South was what inverted it in game. -->
+    <defaultPlacingRot>North</defaultPlacingRot>
+    <rotatable>false</rotatable>
+    <passability>PassThroughOnly</passability>
+    <pathCost>80</pathCost>
+    <fillPercent>0.72</fillPercent>
+    <stuffCategories Inherit="False" />
+    <costList>
+      <Milira_SplendidSteel>300</Milira_SplendidSteel>
+    </costList>
+    <statBases>
+      <MaxHitPoints>2500</MaxHitPoints>
+      <Mass>120</Mass>
+      <WorkToBuild>9000</WorkToBuild>
+      <Beauty>140</Beauty>
+      <Flammability>0</Flammability>
+    </statBases>
+    <constructionSkillPrerequisite>10</constructionSkillPrerequisite>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <building>
+      <storageGroupTag>YJZ_TreasureCasket</storageGroupTag>
+      <!-- 112 stacks per cell across the 3x3 footprint gives 1008 stack
+           positions. Stack contents and item mass do not impose another cap. -->
+      <maxItemsInCell>112</maxItemsInCell>
+      <preventDeteriorationOnTop>true</preventDeteriorationOnTop>
+      <ignoreStoredThingsBeauty>true</ignoreStoredThingsBeauty>
+      <paintable>false</paintable>
+    </building>
+    <comps>
+      <li Class="CompProperties_Forbiddable" />
+    </comps>
+    <uiIconScale>0.68</uiIconScale>
+    <uiOrder>3976</uiOrder>
+  </ThingDef>
+</Defs>

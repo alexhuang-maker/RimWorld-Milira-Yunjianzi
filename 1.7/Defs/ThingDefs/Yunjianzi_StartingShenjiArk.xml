@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase">
+    <defName>YJZ_StartingShenjiArk</defName><label>碎片方舟</label>
+    <description>沿陵墓正道两侧对称排列的米莉拉静滞舱，每侧三座。多数方舟已经空置，六座中仅有一座仍封存着青羽机侍。须先研读宝卷、接受传承才能手动开启。封存其中的机侍将苏醒并加入云间子；每座初始陵墓只留下这一台机侍。</description>
+    <thingClass>Yunjianzi.Building_YunjianziStartingShenjiArk</thingClass>
+    <size>(2,3)</size><rotatable>false</rotatable><passability>PassThroughOnly</passability><fillPercent>1</fillPercent>
+    <drawerType>MapMeshAndRealTime</drawerType><bringAlongOnGravship>false</bringAlongOnGravship>
+    <graphicData><texPath>Milira/Building/Buildings_Misc/MilianCapsule</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(3,3)</drawSize></graphicData>
+    <statBases><MaxHitPoints>180</MaxHitPoints><Flammability>0</Flammability><Beauty>20</Beauty><Mass>75</Mass></statBases>
+    <building><deconstructible>true</deconstructible></building>
+  </ThingDef>
+</Defs>

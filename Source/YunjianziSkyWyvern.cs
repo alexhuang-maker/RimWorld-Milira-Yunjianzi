@@ -341,7 +341,7 @@ namespace Yunjianzi
             float damage = Stage >= 5 ? 58f : Stage >= 4 ? 42f : 30f;
             // Capture the impact before damage can destroy/despawn the target.
             YunjianziQilinClawEffects.Play(Pawn, target.DrawPos, Stage, ref lastClawVariant);
-            if (Stage >= 5) YunjianziPurpleLightning.EmpPulse(target.DrawPos, Pawn.Map, 3.2f);
+            if (Stage >= 5) YunjianziPurpleLightning.EmpPulse(target.DrawPos, Pawn.Map, 3.2f, realm: Stage);
             foreach (Thing victim in HostilesInRadius(target.Position, Stage >= 5 ? 3.2f : 2.2f).ToList())
             {
                 victim.TakeDamage(new DamageInfo(DamageDefOf.Cut, damage, Stage >= 5 ? 2f : .8f, -1f, Pawn));
@@ -372,7 +372,7 @@ namespace Yunjianzi
             Thing target = HostilesInRadius(Pawn.Position, 32f).OrderBy(t => t.Position.DistanceToSquared(Pawn.Position)).FirstOrDefault();
             if (target == null) { missileReadyTick = now + 15; return; }
             missileReadyTick = now + QilinBattleRoarState.AttackInterval(180, BattleRoarActive);
-            YunjianziPurpleLightning.Glow(Pawn.DrawPos + new Vector3(0f, 0f, .65f), Pawn.Map, 1.4f);
+            YunjianziPurpleLightning.Glow(Pawn.DrawPos + new Vector3(0f, 0f, .65f), Pawn.Map, 1.4f, realm: Stage);
             GenExplosion.DoExplosion(target.Position, Pawn.Map, 2.4f, DamageDefOf.Bomb, Pawn, 32, .55f);
         }
 
@@ -395,7 +395,7 @@ namespace Yunjianzi
                 shield = 0f;
                 shieldBrokenUntil = Find.TickManager.TicksGame + 1800;
             }
-            if (Pawn?.Spawned == true) YunjianziPurpleLightning.Glow(Pawn.DrawPos, Pawn.Map, 1.2f + ShieldRadius * .06f);
+            if (Pawn?.Spawned == true) YunjianziPurpleLightning.Glow(Pawn.DrawPos, Pawn.Map, 1.2f + ShieldRadius * .06f, realm: Stage);
         }
 
         public bool TryInterceptProjectile(Projectile projectile)
@@ -410,7 +410,7 @@ namespace Yunjianzi
             combatUntilTick = Find.TickManager.TicksGame + 600;
             float cost = YunjianziProjectileShieldUtility.InterceptionCost(projectile, Stage);
             shield -= cost;
-            YunjianziPurpleLightning.Glow(projectile.ExactPosition, pawn.Map, 1f);
+            YunjianziPurpleLightning.Glow(projectile.ExactPosition, pawn.Map, 1f, realm: Stage);
             if (shield <= 0f)
             {
                 shield = 0f;
@@ -430,7 +430,7 @@ namespace Yunjianzi
             Command_Action breath = new Command_Action
             {
                 defaultLabel = "雷霆龙息",
-                defaultDesc = $"云麒麟引来云中积雷，自灵角一息吐尽。雷光会麻痹血肉、扰乱机械，并席卷落点周围。\n\n当前蓄雷：{breathCharges}/{BreathMax}",
+                defaultDesc = $"将积蓄的雷光吐向目标，冲击周围敌人，使血肉麻痹、机械失去响应。\n\n当前蓄雷：{breathCharges}/{BreathMax}",
                 icon = YunjianziAbilityTextures.SummonSkyWyvern,
                 action = BeginBreathTargeting
             };
@@ -459,7 +459,7 @@ namespace Yunjianzi
             breathCharges--;
             if (breathCharges < BreathMax && nextBreathChargeTick <= Find.TickManager.TicksGame)
                 nextBreathChargeTick = Find.TickManager.TicksGame + BreathRecharge;
-            YunjianziPurpleLightning.Arc(Pawn.DrawPos, cell.ToVector3Shifted(), Pawn.Map, 1.6f);
+            YunjianziPurpleLightning.Arc(Pawn.DrawPos, cell.ToVector3Shifted(), Pawn.Map, 1.6f, realm: Stage);
             int bolts = Stage >= 5 ? 7 : 4;
             for (int i = 0; i < bolts; i++)
             {
@@ -469,7 +469,7 @@ namespace Yunjianzi
                 YunjianziCombatEffects.ChargeSwordWardFromLightning(Owner);
             }
             float damage = Stage >= 5 ? 120f : 72f;
-            YunjianziPurpleLightning.EmpPulse(cell.ToVector3Shifted(), Pawn.Map, 3.9f);
+            YunjianziPurpleLightning.EmpPulse(cell.ToVector3Shifted(), Pawn.Map, 3.9f, realm: Stage);
             foreach (Thing victim in HostilesInRadius(cell, 3.9f).ToList())
             {
                 victim.TakeDamage(new DamageInfo(DamageDefOf.Burn, damage, Stage >= 5 ? 2.2f : 1.1f, -1f, Pawn));
@@ -849,7 +849,7 @@ namespace Yunjianzi
             Command_Action summon = new Command_Action
             {
                 defaultLabel = "瑞麟践约",
-                defaultDesc = "循着道书末页的旧约，呼唤世间唯一的云麒麟。形态按当前境界决定：紫府为云中灵麟，金丹为负霆瑞兽，化神为九天麟主；突破后可再次施展使其进阶。已有当前境界的麒麟时隐藏此技能。\n\n麒麟被消灭时散为云气，不留下尸体或死亡产物；此技能重新显示并进入10天冷却，冷却结束后可再次呼唤。正常进阶不触发冷却。\n\n消耗100点灵力。" +
+                defaultDesc = "循前代手记中留下的旧约，呼唤世间唯一的云麒麟。形态按当前境界决定：紫府为云中灵麟，金丹为负霆瑞兽，化神为九天麟主；突破后可再次施展使其进阶。已有当前境界的麒麟时隐藏此技能。\n\n麒麟被消灭时散为云气，不留下尸体或死亡产物；此技能重新显示并进入10天冷却，冷却结束后可再次呼唤。正常进阶不触发冷却。\n\n消耗100点灵力。" +
                     (cooldown > 0 ? "\n当前冷却：" + SkyWyvernCooldownText : ""),
                 icon = YunjianziAbilityTextures.SummonSkyWyvern,
                 action = SummonSkyWyvern

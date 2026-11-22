@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Vanilla Research/Scan work givers disallow mechs independently of the
+       race's mechEnabledWorkTypes. These entries only accept Tianjiang. -->
+  <WorkGiverDef>
+    <defName>YJZ_ShenjiResearch</defName>
+    <label>神机研究</label>
+    <giverClass>Yunjianzi.WorkGiver_YunjianziShenjiResearch</giverClass>
+    <workType>Research</workType>
+    <priorityInType>100</priorityInType>
+    <canBeDoneByMechs>true</canBeDoneByMechs>
+    <requiredCapacities><li>Manipulation</li></requiredCapacities>
+    <verb>研究于</verb>
+    <gerund>正在研究于</gerund>
+  </WorkGiverDef>
+  <WorkGiverDef>
+    <defName>YJZ_ShenjiLongRangeScan</defName>
+    <label>神机远程矿物扫描</label>
+    <giverClass>Yunjianzi.WorkGiver_YunjianziShenjiScanner</giverClass>
+    <workType>Research</workType>
+    <priorityInType>50</priorityInType>
+    <canBeDoneByMechs>true</canBeDoneByMechs>
+    <scannerDef>LongRangeMineralScanner</scannerDef>
+    <requiredCapacities><li>Manipulation</li></requiredCapacities>
+    <verb>扫描于</verb>
+    <gerund>正在扫描于</gerund>
+  </WorkGiverDef>
+  <WorkGiverDef>
+    <defName>YJZ_ShenjiGroundScan</defName>
+    <label>神机深地扫描</label>
+    <giverClass>Yunjianzi.WorkGiver_YunjianziShenjiScanner</giverClass>
+    <workType>Research</workType>
+    <priorityInType>50</priorityInType>
+    <canBeDoneByMechs>true</canBeDoneByMechs>
+    <scannerDef>GroundPenetratingScanner</scannerDef>
+    <requiredCapacities><li>Manipulation</li></requiredCapacities>
+    <verb>扫描于</verb>
+    <gerund>正在扫描于</gerund>
+  </WorkGiverDef>
+</Defs>

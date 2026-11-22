@@ -5,11 +5,9 @@
   <ThingDef ParentName="Milian_MiddleBase">
     <defName>YJZ_Apparel_ShenjiArmor_Base</defName>
     <label>青羽玉甲</label>
-    <description>“有之以为利，无之以为用。”——《道德经》
+    <description>前代为青羽机侍留下的甲式，连同替换关节、检修铳机的方法记在同一册手稿里。云间子修复旧机侍时逐处核对，后来新造的甲衣也沿用了这套工法。
 
-道书《神机篇》的第一幅甲图并非重甲，只以白玉式外壳护住核心与传动关节。甲片之间刻意留下空隙，让自循环能源与新生灵识都有伸展之处。
-
-效果：青羽机侍的专属装甲，提供基础防护并略微加快射击；需要在精密加工台制造。</description>
+玉甲护住机枢，灵路贯通臂腕，受击可守，举铳亦稳。</description>
     <tradeability>None</tradeability>
     <smeltable>false</smeltable>
     <recipeMaker Inherit="False" IsNull="True" />
@@ -45,11 +43,9 @@
   <ThingDef ParentName="Milian_MiddleBase">
     <defName>YJZ_Apparel_ShenjiArmor_Intermediate</defName>
     <label>玄翎灵铠</label>
-    <description>“万物负阴而抱阳，冲气以为和。”——《道德经》
+    <description>青羽甲式之外，前代另记有一道卸力阵纹。云间子开辟紫府后，才有余力将它炼入日盘钢，制成供玄翎灵卫披挂的灵铠。
 
-道书第二幅甲图须待紫府开启方能读懂。图中日盘钢承受外击，白玉阵纹分散余势，淡青辉光则把过剩能量送回步伐与炮机，使甲衣如第二躯壳般运转。
-
-效果：玄翎灵卫的专属装甲，提供强力防护，并提高移动与射击速度；需要在精密加工台制造。</description>
+外力至时，余势沿甲而散；灵机流贯全身，行止、发铳皆少滞碍。</description>
     <tradeability>None</tradeability>
     <smeltable>false</smeltable>
     <recipeMaker Inherit="False" IsNull="True" />
@@ -85,11 +81,9 @@
   <ThingDef ParentName="Milian_MiddleBase">
     <defName>YJZ_Apparel_ShenjiArmor_Final</defName>
     <label>九霄天铠</label>
-    <description>“大成若缺，其用不弊。”——《道德经》
+    <description>这是前代神机器图中最后留下的甲式。炼制时须将甲衣与机体灵路反复参校，直到护身、运力与御器同出一息，方可交付九霄天将披用。
 
-道书最后一幅甲图直到化神方才完整显现，图中玉环仍留一道缺口。那并非工艺未竟，而是上一代云间子有意为变化留下余地，不把九霄天将封死成一件器物。
-
-效果：九霄天将的最终专属装甲，提供极强防护，并全面提高移动、工作与射击效率；需要在精密加工台制造。</description>
+甲成之后，周身气机相应，临阵可拒重击，执器不碍百工。</description>
     <tradeability>None</tradeability>
     <smeltable>false</smeltable>
     <recipeMaker Inherit="False" IsNull="True" />
@@ -127,11 +121,9 @@
   <ThingDef ParentName="Milian_OverheadBase">
     <defName>YJZ_Apparel_ShenjiVisor</defName>
     <label>神机战术目镜</label>
-    <description>“五色令人目盲。”——《道德经》
+    <description>云间子在修复机侍的旧视窗时，沿用了前代滤去杂光的符式，又将阵令接入其中。此后战场烟尘与交错辉光之下，灵卫也能辨清敌影。
 
-道书器图中的淡青镜片能滤去过量的光、热与灵能噪声，只留下目标轮廓和阵令。现任云间子依图将它与云间神机的发饰、视窗连为一体。
-
-效果：玄翎灵卫使用的战术头具，用于目标识别与维持完整外观；不提供额外防护，不可交易。</description>
+镜能明察，不能代甲承锋。</description>
     <tradeability>None</tradeability>
     <smeltable>false</smeltable>
     <recipeMaker Inherit="False" IsNull="True" />
@@ -166,11 +158,9 @@
   <ThingDef ParentName="Milian_OverheadBase">
     <defName>YJZ_Apparel_JiuxiaoImmortalCrown</defName>
     <label>九霄仙冠</label>
-    <description>“挫其锐，解其纷，和其光，同其尘。”——《道德经》
+    <description>以日棱晶为枢，承接九霄天铠未尽的护身灵路。前代器图将冠与甲分记两页，炼成时却须合参，不能各自运转。
 
-九霄天将的完成体冠饰以左右相应的白玉翎角承接灵机，正中的日棱晶将逸散辉光收束成一线。冠体不封闭头颅，金边与淡青灵焰之间仍留有空隙，既像米莉拉高阶骑士的角冠，又保留云间法器轻灵通透的形制。
-
-效果：九霄天将的专属头冠，提供高阶头部防护，并强化目标识别；需要在合玉炉制造。</description>
+戴冠则灵机上聚，护住首脑，纷乱敌影亦可辨明。</description>
     <tradeability>None</tradeability>
     <smeltable>false</smeltable>
     <recipeMaker Inherit="False" IsNull="True" />

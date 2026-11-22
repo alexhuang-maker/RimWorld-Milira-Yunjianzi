@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HeadTypeDef ParentName="AverageBase">
+    <defName>YJZ_Head_Yunjianzi</defName>
+    <!-- Head mesh UVs already mirror west (GraphicMeshSet). Keep the west PNG
+         identical to east; pre-mirroring it turns the face back under the hair. -->
+    <graphicPath>Yunjianzi/Pawn/Head/YunjianziHead</graphicPath>
+    <gender>Female</gender>
+    <randomChosen>false</randomChosen>
+  </HeadTypeDef>
+</Defs>

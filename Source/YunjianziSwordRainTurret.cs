@@ -205,7 +205,7 @@ namespace Yunjianzi
                 Command_Action manualStrike = new Command_Action
                 {
                     defaultLabel = "手动指定剑气落点",
-                    defaultDesc = "命令养剑台将下一轮交错剑意投向指定目标。",
+                    defaultDesc = "将养剑台下一轮的交错剑气投向指定目标。",
                     icon = ContentFinder<Texture2D>.Get("UI/Commands/Attack"),
                     hotKey = KeyBindingDefOf.Misc4,
                     action = BeginManualTargeting

@@ -2,11 +2,9 @@
 <Defs>
   <ThingDef Name="YJZ_Shenji_RaceBase" ParentName="Milira_MilianBase_Pawn" Abstract="True">
     <label>青羽机侍</label>
-    <description>“金石能载道，光电亦可书符。”
+    <description>前代与米莉安同行时留下了神机器图，修补与重制之法都记在其中。云间子修复旧伴后，也逐渐掌握了培育新机的方法。
 
-道书《神机篇》记着上一代云间子与一位米莉安同行的旧事，也留下重塑其身的完整器图。现任云间子依图以米莉拉技术塑身、以符法贯通能源与灵识，却仍把选择与成长留给被唤醒者自己。
-
-效果：云间子的专属火力支援型米莉安，不占用机械带宽，拥有自循环能源。机体型号由投入米莉安培育器的神机核心决定；装甲与武器需要另行制造和穿戴。</description>
+机身自有灵机周流，不借常规带宽维系。佩甲执铳，可守驻所，亦可随行远征。</description>
     <statBases><BandwidthCost MayRequire="Ludeon.Rimworld.Biotech">0</BandwidthCost><MechEnergyLossPerHP MayRequire="Ludeon.Rimworld.Biotech">0</MechEnergyLossPerHP></statBases>
     <comps Inherit="False">
       <!-- 神机使用米莉拉自己的双层发型渲染器。列表故意只留一项：
@@ -115,11 +113,9 @@
     <generateCommonality>0</generateCommonality>
     <weaponTags Inherit="False" />
     <label>青芒灵铳</label>
-    <description>“九层之台，起于累土。”——《道德经》
+    <description>前代留给青羽机侍的铳式，保留了米莉拉制式武装的机括，又以符路接通机体能源。旧驻所中尚有拆检的记录，故而重制时颇有章法可循。
 
-道书第一幅器图仍保留制式突击步枪结构，只在铳机内多出一圈与修炼者灵脉同频的青色符路。它不以奇迹取胜，却是此后一切武装变化的可靠根基。
-
-效果：青羽机侍初醒时使用的可靠点射武器，是此后诸般炮形展开的根基。仅神机可以装备，青羽机侍、玄翎灵卫和九霄天将通用。</description>
+青芒随指而发，点射相续，最宜伴机侍守夜与远行。</description>
     <graphicData>
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Assault</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -135,11 +131,9 @@
     <generateCommonality>0</generateCommonality>
     <weaponTags Inherit="False" />
     <label>连星机括</label>
-    <description>“枢始得其环中，以应无穷。”——《庄子》
+    <description>云间子依手记中的连星器图改炼铳机，使诸管轮转，共承灵流。铳火尚未收尽，后续弹流已循轨而出。
 
-道书第二幅炮图须待筑基方能展开：单一枪管围绕灵能中枢化作连星炮机。每一发都借下一发校正自身，密集弹流如群星循轨。
-
-效果：连星机括发射密集离子弹流，落点会迸出小片爆光，尤其擅长压制聚集之敌。仅神机可以装备，青羽机侍、玄翎灵卫和九霄天将通用。</description>
+临阵展开，星芒密落，聚集之敌难以从容近身。</description>
     <graphicData>
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Gatling</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -214,11 +208,9 @@
     <generateCommonality>0</generateCommonality>
     <weaponTags Inherit="False" />
     <label>贯日光铳</label>
-    <description>“电以照幽，雷以震妄。”
+    <description>器图以日棱晶束光，符纹约其去向。云间子以紫府神识参校各处灵路，才使这道辉光能够出铳而不散。
 
-道书第三幅器图须以紫府神识读取，使神机武装舍弃实体弹丸，将日棱晶约束的能量压成青白辉光。这是上一代云间子对古人所谓“神光”的工程学解答。
-
-效果：贯日光铳将能量约束为连绵辉光，能够迅疾洞穿远处之敌。仅神机可以装备，青羽机侍、玄翎灵卫和九霄天将通用。</description>
+光至则甲穿，远处之敌亦难蔽形。</description>
     <graphicData>
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Gauss</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -241,11 +233,9 @@
   <ThingDef ParentName="YJZ_Weapon_Shenji_Gauss_Base">
     <defName>YJZ_Weapon_Shenji_Legendary</defName>
     <label>九霄神光仪</label>
-    <description>“大方无隅，大器晚成。”——《道德经》
+    <description>贯日器图推演至此，已须另炼光仪来承接余能。主辉光出后，诸仪仍可引其未尽之势；待流光千折之法参透，敌影之间便有青芒递转。
 
-道书最后一幅器图只写“以金丹为炉，以神机为器”。至此，贯日光铳原有的折叠结构完全展开，不再拘于寻常铳炮之形；主辉光贯穿目标，余能则由光仪阵列重新导向，在敌阵之间递次折射。
-
-效果：九霄神光仪持续放出迅疾而深远的青白辉光；悟得流光千折后，余光还会循敌影递次折射。仅神机可以装备，青羽机侍、玄翎灵卫和九霄天将通用。</description>
+神光相续，照彻远阵，机体灵机未息，铳火便不轻歇。</description>
     <graphicData>
       <texPath>Yunjianzi/Weapons/ShenjiCannon_Legendary</texPath>
       <graphicClass>Graphic_Single</graphicClass>

@@ -2,12 +2,10 @@
 <Defs>
   <ThingDef ParentName="ResourceBase">
     <defName>YJZ_Item_BoundImmortalScroll</defName>
-    <label>云间子的遗仙宝卷</label>
-    <description>“千里之行，始于足下。”——《道德经》
+    <label>前代云间子手记</label>
+    <description>上一代云间子留下的修行笔记。书页间记着沿途的星图、异常的征兆，以及运气、养息和练剑的方法。几处墨迹已经洇开，页边仍留着后来补上的纠错。
 
-这正是上一代云间子留下的那本道书。卷中万法并非一开始便可阅读，只有第一页的灵机向继承者敞开；初次研读之后，书中文字沉入神魂，其余篇章则要随境界逐页参悟。
-
-效果：仅云间子能够研读。初次研读后，道书与她的神魂相合，为修行奠定最初的灵力根基。</description>
+开篇写得尤其细。作者似乎很清楚初学者会在哪些地方犯错，连气息走岔时该如何停下，都另作了标记。对刚踏上修行之路的云间子而言，这些经验能省去许多摸索。</description>
     <thingClass>ThingWithComps</thingClass>
     <category>Item</category>
     <stackLimit>1</stackLimit>

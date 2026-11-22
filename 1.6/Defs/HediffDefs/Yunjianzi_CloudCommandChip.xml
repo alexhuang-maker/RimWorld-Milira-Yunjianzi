@@ -5,7 +5,9 @@
   <MilianModification.MilianComponentDef ParentName="MilianComponentBase_Head">
     <defName>YJZ_MilianFitting_CloudCommandChip</defName>
     <label>灵术演算芯片</label>
-    <description>将《神机篇》记载的灵术结构编译为米莉安能够执行的战术协议。仅九霄天将能够安装。安装后显现云间子同式光环，并可部署四台各自搭载双剑影的金丹级灵兵构装体；护盾破碎时还会释放青色灵气脉冲，推开近敌并立即重聚护盾。</description>
+    <description>云间子将手记中的分神御兵法逐步译入米莉安演算协议，制成这枚芯片。寻常机体难以承载，唯有九霄天将能将其中诸令一并运转。
+
+念动可遣灵兵，破盾则灵气外荡，退敌重障。</description>
     <descriptionHyperlinks>
       <HediffDef>YJZ_Hediff_CloudCommandChip</HediffDef>
     </descriptionHyperlinks>
@@ -29,7 +31,7 @@
   <HediffDef ParentName="Milian_ImplantHediffBase">
     <defName>YJZ_Hediff_CloudCommandChip</defName>
     <label>灵术演算芯片</label>
-    <description>九霄天将已接入灵术演算芯片。</description>
+    <description>灵术演算芯片已经接入，灵兵部署与护盾应急重构协议处于可用状态。</description>
     <descriptionHyperlinks>
       <ThingDef>YJZ_MilianFitting_CloudCommandChip</ThingDef>
     </descriptionHyperlinks>
@@ -52,7 +54,7 @@
   <AbilityDef ParentName="MilianModifyAbility_Base">
     <defName>YJZ_Ability_ReleaseCloudCommandSoldiers</defName>
     <label>灵兵部署</label>
-    <description>部署四台各自搭载两柄剑影的金丹级灵兵构装体。每小时恢复一次使用次数，最多储存两次。</description>
+    <description>在附近部署携带剑影的灵兵构装体，协助作战。使用次数随时间恢复。</description>
     <iconPath>Yunjianzi/UI/Abilities/BeanSoldiers</iconPath>
     <jobDef>CastAbilityOnThingWithoutWeaponInterruptible</jobDef>
     <cooldownTicksRange>2500</cooldownTicksRange>

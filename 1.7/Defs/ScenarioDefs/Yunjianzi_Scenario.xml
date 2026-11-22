@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ScenPartDef>
+    <defName>YJZ_SoleColonistRule</defName>
+    <label>旧独行规则（兼容）</label>
+    <description>旧存档兼容标记，不再限制殖民者加入。</description>
+    <category>Rule</category>
+    <scenPartClass>Yunjianzi.ScenPart_YunjianziSoleColonist</scenPartClass>
+    <selectionWeight>0</selectionWeight>
+    <summaryPriority>520</summaryPriority>
+    <maxUses>1</maxUses>
+  </ScenPartDef>
+
+  <ScenPartDef>
+    <defName>YJZ_UnlockBaseMiliraResearch</defName>
+    <label>解锁米莉拉本体科技</label>
+    <description>开局时完成由“Milira Race”本体定义的全部研究，不包含其他米莉拉拓展 Mod 的研究。</description>
+    <category>Rule</category>
+    <scenPartClass>Yunjianzi.ScenPart_UnlockBaseMiliraResearch</scenPartClass>
+    <selectionWeight>0</selectionWeight>
+    <summaryPriority>510</summaryPriority>
+    <maxUses>1</maxUses>
+  </ScenPartDef>
+
+  <ScenPartDef>
+    <defName>YJZ_StartingShenji</defName>
+    <label>随行青羽机侍</label>
+    <description>初始青羽机侍。孤云遗冢开局中，须先研读宝卷、接受传承，再手动开启陵墓正道两侧六座方舟中唯一有机侍的一座后获得，并接入云间灵脉的控制组。</description>
+    <category>Rule</category>
+    <scenPartClass>Yunjianzi.ScenPart_YunjianziStartingShenji</scenPartClass>
+    <selectionWeight>0</selectionWeight>
+    <summaryPriority>515</summaryPriority>
+    <maxUses>1</maxUses>
+  </ScenPartDef>
+
+  <ScenarioDef ParentName="ScenarioBase" MayRequire="Ludeon.RimWorld.Anomaly">
+    <defName>YJZ_YunjianziAnomalyStart</defName>
+    <label>云间子·孤云异象</label>
+    <description>星图把云间子带到这颗星球。前代曾在笔记中记录过这里的异常，离去时仍有几处未能查明。如今，地表的远古巨石已经苏醒，她也沿着旧日坐标抵达。
+
+青羽机侍替她卸下行装。它曾跟随上一代云间子走过这条路，关于此地的记录却已残缺。她只好把笔记重新摊开，先从还能辨认的地方开始。
+
+旅途近来并不平静。某些追兵来得太巧，几次转移之后，身后的动静又短暂消失。她逐渐明白，自从诛邪回应自己，那个与前代为敌的魔神便已察觉传承未绝。它尚未看清她身在何处，却正在借各方敌人的脚步逼近。
+
+这一次，她需要在这里停留，修行，查明异常，也为可能到来的袭击作好准备。若追踪再度迫近，她便带上同伴离开，去星图上的下一处地方。</description>
+    <scenario>
+      <summary>循前代笔记而来的米莉拉传人，与留下的青羽机侍一同调查苏醒的异象。诛邪已认新主，魔神的追踪也随之而来。建立落脚之地，接纳同伴，在追兵逼近时再次启程。</summary>
+      <playerFaction Inherit="false">
+        <def>PlayerFaction</def>
+        <factionDef>Milira_PlayerFaction</factionDef>
+      </playerFaction>
+      <standardAnomalyPlaystyleOnly>true</standardAnomalyPlaystyleOnly>
+      <parts>
+        <li Class="ScenPart_ConfigPage_ConfigureStartingPawns_KindDefs">
+          <def>ConfigurePawnsKindDefs</def>
+          <pawnChoiceCount>1</pawnChoiceCount>
+          <leftBehindPawnKind>YJZ_Yunjianzi</leftBehindPawnKind>
+          <kindCounts>
+            <li>
+              <kindDef>YJZ_Yunjianzi</kindDef>
+              <count>1</count>
+              <requiredAtStart>true</requiredAtStart>
+            </li>
+          </kindCounts>
+        </li>
+
+        <li Class="ScenPart_PlayerPawnsArriveMethod">
+          <def>PlayerPawnsArriveMethod</def>
+          <method>Standing</method>
+        </li>
+
+        <li Class="Yunjianzi.ScenPart_YunjianziStartingShenji">
+          <def>YJZ_StartingShenji</def>
+        </li>
+
+        <!-- Keep the complete RimWorld 1.6 Milira ordinary-start inventory. -->
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Milian_Recharger</thingDef>
+          <count>1</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Milira_UniversalBench</thingDef>
+          <count>1</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Milira_SunPlateSteel</thingDef>
+          <count>150</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Milira_SolarCrystal</thingDef>
+          <count>25</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>ComponentIndustrial</thingDef>
+          <count>25</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Milira_SunLightFuel</thingDef>
+          <count>100</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Milira_TravellerFood</thingDef>
+          <count>40</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>MedicineIndustrial</thingDef>
+          <count>20</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Bedroll</thingDef>
+          <stuff>Cloth</stuff>
+          <count>1</count>
+        </li>
+        <li Class="ScenPart_StartingThing_Defined">
+          <def>StartingThing_Defined</def>
+          <thingDef>Jade</thingDef>
+          <count>200</count>
+        </li>
+
+        <li Class="ScenPart_ScatterThingsNearPlayerStart">
+          <def>ScatterThingsNearPlayerStart</def>
+          <thingDef>Steel</thingDef>
+          <count>320</count>
+        </li>
+        <li Class="ScenPart_ScatterThingsNearPlayerStart">
+          <def>ScatterThingsNearPlayerStart</def>
+          <thingDef>WoodLog</thingDef>
+          <count>500</count>
+        </li>
+        <li Class="ScenPart_ScatterThingsNearPlayerStart">
+          <def>ScatterThingsNearPlayerStart</def>
+          <thingDef>Plasteel</thingDef>
+          <count>240</count>
+        </li>
+
+        <li Class="ScenPart_ScatterThingsAnywhere">
+          <def>ScatterThingsAnywhere</def>
+          <thingDef>ShipChunk</thingDef>
+          <allowRoofed>false</allowRoofed>
+          <count>8</count>
+        </li>
+        <li Class="ScenPart_ScatterThingsAnywhere">
+          <def>ScatterThingsAnywhere</def>
+          <thingDef>Steel</thingDef>
+          <count>220</count>
+        </li>
+
+        <li Class="ScenPart_DisableMapGen">
+          <def>DisableExostriderRemains</def>
+        </li>
+
+        <!-- Vanilla Anomaly 1.6 scenario parts. A zero delay means the
+             generated monolith is activated as soon as the game starts. -->
+        <li Class="ScenPart_MonolithGeneration">
+          <def>ScenPart_MonolithGeneration</def>
+          <method>NearColonists</method>
+        </li>
+        <li Class="ScenPart_AutoActivateMonolith">
+          <def>AutoActivateMonolith</def>
+          <delayTicks>0</delayTicks>
+        </li>
+
+        <li Class="Yunjianzi.ScenPart_YunjianziPursuit">
+          <def>YJZ_Pursuit</def>
+        </li>
+        <li Class="Yunjianzi.ScenPart_UnlockBaseMiliraResearch">
+          <def>YJZ_UnlockBaseMiliraResearch</def>
+        </li>
+      </parts>
+    </scenario>
+  </ScenarioDef>
+</Defs>

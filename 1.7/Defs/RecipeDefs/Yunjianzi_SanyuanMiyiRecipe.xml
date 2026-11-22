@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>YJZ_Make_SanyuanMiyi</defName><label>炼制三垣秘仪斗</label><description>炼金为轨，以群机契纹贯通三垣。</description><jobString>正在炼制三垣秘仪斗。</jobString>
+    <researchPrerequisite>YJZ_Research_SanyuanMiyi</researchPrerequisite>
+    <workAmount>24000</workAmount><workSkill>Crafting</workSkill><workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    <effectWorking>Smith</effectWorking><soundWorking>Recipe_Smith</soundWorking><skillRequirements><Crafting>12</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>80</count></li>
+      <li><filter><thingDefs><li>Gold</li></thingDefs></filter><count>40</count></li>
+      <li><filter><thingDefs><li>Milira_SolarCrystal</li></thingDefs></filter><count>20</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>4</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>Gold</li><li>Milira_SolarCrystal</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
+    <products><YJZ_Apparel_SanyuanMiyi>1</YJZ_Apparel_SanyuanMiyi></products>
+    <recipeUsers><li>YJZ_Building_TalismanTable</li></recipeUsers>
+  </RecipeDef>
+</Defs>

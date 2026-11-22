@@ -8,4 +8,12 @@
     <li IfModActive="co.uk.epicguru.meleeanimation">1.6/Mods/co.uk.epicguru.meleeanimation</li>
     <li IfModActive="void.charactereditor">1.6/Mods/void.charactereditor</li>
   </v1.6>
+  <v1.7>
+    <li>1.7</li>
+    <li>Content</li>
+    <li IfModActive="Ancot.MiliraRaceGenePatch">1.7/Mods/Ancot.MiliraRaceGenePatch</li>
+    <li IfModActive="Nals.FacialAnimation">1.7/Mods/Nals.FacialAnimation</li>
+    <li IfModActive="co.uk.epicguru.meleeanimation">1.7/Mods/co.uk.epicguru.meleeanimation</li>
+    <li IfModActive="void.charactereditor">1.7/Mods/void.charactereditor</li>
+  </v1.7>
 </loadFolders>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThoughtDef>
+    <defName>YJZ_Thought_JiqingScenery</defName>
+    <durationDays>0.02</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>寄情于清幽之境</label>
+        <description>看看四周，心情也平静了些。</description>
+        <baseMoodEffect>3</baseMoodEffect>
+      </li>
+      <li>
+        <label>寄情于雅致之境</label>
+        <description>这里收拾得清雅，待着很舒服。</description>
+        <baseMoodEffect>6</baseMoodEffect>
+      </li>
+      <li>
+        <label>寄情于瑰丽之境</label>
+        <description>光影与陈设都很合意，想多留一会儿。</description>
+        <baseMoodEffect>10</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+</Defs>

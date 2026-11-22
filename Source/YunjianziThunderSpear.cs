@@ -53,7 +53,7 @@ namespace Yunjianzi
             {
                 Vector3 previous = Vector3.Lerp(origin, destination.ToVector3Shifted(),
                     Mathf.Clamp01((age - 6f) / flightTicks));
-                YunjianziPurpleLightning.Arc(previous, exact, Map, .75f);
+                YunjianziPurpleLightning.Arc(previous, exact, Map, .75f, realm: realm);
             }
             IntVec3 cell = exact.ToIntVec3();
             if (cell.InBounds(Map) && Position != cell) Position = cell;
@@ -73,9 +73,9 @@ namespace Yunjianzi
                 incoming.y = 0f;
                 if (incoming.sqrMagnitude < .001f) incoming = Vector3.forward;
                 incoming.Normalize();
-                YunjianziPurpleLightning.Arc(hit + incoming * .75f, hit, Map, .72f);
-                YunjianziPurpleLightning.Burst(hit, Map, .92f);
-                YunjianziPurpleLightning.Glow(hit, Map, 1.25f);
+                YunjianziPurpleLightning.Arc(hit + incoming * .75f, hit, Map, .72f, realm: realm);
+                YunjianziPurpleLightning.Burst(hit, Map, .92f, realm: realm);
+                YunjianziPurpleLightning.Glow(hit, Map, 1.25f, realm: realm);
                 if (sparkBursts++ < 3) FleckMaker.ThrowMicroSparks(hit, Map);
             }
         }
@@ -89,7 +89,7 @@ namespace Yunjianzi
             {
                 if (CanDamage(thing)) ApplySpearDamage(thing);
             }
-            YunjianziPurpleLightning.ImpactWave(cell.ToVector3Shifted(), Map, radius, 1.45f);
+            YunjianziPurpleLightning.ImpactWave(cell.ToVector3Shifted(), Map, radius, 1.45f, realm: realm);
             for (int i = 0; i < 3; i++)
             {
                 float angle = (thingIDNumber * 47f + i * 120f) * Mathf.Deg2Rad;
@@ -161,7 +161,7 @@ namespace Yunjianzi
             float pulse = 1f + Mathf.Sin((Find.TickManager.TicksGame + thingIDNumber) * .45f) * .06f;
             Matrix4x4 matrix = Matrix4x4.TRS(loc, Quaternion.AngleAxis(angle, Vector3.up),
                 new Vector3(2.4f * pulse, 1f, 4.8f * pulse));
-            Graphics.DrawMesh(MeshPool.plane10, matrix, SpearMaterial, 0, null, 0, ThunderSpearGlow.Properties);
+            Graphics.DrawMesh(MeshPool.plane10, matrix, SpearMaterial, 0, null, 0, ThunderSpearGlow.ForRealm(realm));
         }
 
         public override void ExposeData()

@@ -14,7 +14,7 @@ namespace Yunjianzi
             if (map == null || YJZDefOf.YJZ_ThunderBeast == null) return 0;
             var beasts = map.mapPawns.AllPawnsSpawned
                 .Where(p => p.Spawned && p.Map == map && !p.Dead && !p.Destroyed &&
-                    p.kindDef == YJZDefOf.YJZ_ThunderBeast)
+                    ThunderBeastTier.IsElemental(p.kindDef))
                 .OrderBy(p => p.thingIDNumber).ToList();
             // Stable ordering also repairs old saves and out-of-band spawns.
             // Normal destruction preserves the existing one-time energy refund.

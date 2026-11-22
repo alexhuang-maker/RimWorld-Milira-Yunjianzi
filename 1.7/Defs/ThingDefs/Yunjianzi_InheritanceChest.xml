@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="StorageShelfBase">
+    <defName>YJZ_InheritanceChest</defName><label>青云纳物匣</label>
+    <description>白玉为骨，青玉为面，云纹沿金线流转。此匣虽是入门法器，内里亦有方寸纳物之妙。自律机械将一件道袍与75枚翡翠封存其中，留待传人读完宝卷后取用。
+
+开局的普通钢铁、塑钢、零部件、翡翠、真玉钢、两个高级零部件与100个逆重板分散存放在偏殿物品架上。米莉拉材料、燃料、食物和药品仍留在船上，休息使用船内床铺。
+
+可储存30组物品，不另设物品总重量上限；箱体自重8 kg。占地一格，可卸下搬走；开启后与货架一样，搬运箱体前请另行收好已存放的物品。</description>
+    <thingClass>Yunjianzi.Building_YunjianziInheritanceChest</thingClass>
+    <size>(1,1)</size><rotatable>false</rotatable><passability>PassThroughOnly</passability>
+    <graphicData><texPath>Yunjianzi/Buildings/OrbitalMemorial/BeginnerChest</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(1.05,1.05)</drawSize></graphicData>
+    <minifiedDef>MinifiedThing</minifiedDef><thingCategories><li>BuildingsFurniture</li></thingCategories>
+    <stuffCategories Inherit="False"/><costList><Jade>30</Jade><Gold>5</Gold></costList>
+    <statBases><MaxHitPoints>250</MaxHitPoints><Mass>8</Mass><WorkToBuild>600</WorkToBuild><Beauty>15</Beauty><Flammability>0</Flammability></statBases>
+    <building>
+      <maxItemsInCell>30</maxItemsInCell><preventDeteriorationOnTop>true</preventDeteriorationOnTop><ignoreStoredThingsBeauty>true</ignoreStoredThingsBeauty><storageGroupTag>YJZ_BeginnerChest</storageGroupTag><paintable>false</paintable>
+      <fixedStorageSettings><filter><disallowedCategories Inherit="False"><li>Chunks</li><li>Plants</li></disallowedCategories></filter></fixedStorageSettings>
+    </building>
+  </ThingDef>
+</Defs>

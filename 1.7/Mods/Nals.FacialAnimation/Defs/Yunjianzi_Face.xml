@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Fixed cyan eyes with the sharper Milira D silhouette. -->
+  <FacialAnimation.EyeballTypeDef>
+    <defName>YJZ_FA_Eye_Yunjianzi</defName>
+    <texPath>Things/Pawn/Milira/Eyes/NormalD</texPath>
+    <altMaskPath>Things/Pawn/Milira/Eyes/Common</altMaskPath>
+    <shader>Map/CutoutSkinOverlay</shader>
+    <enableUnisexTexPath>true</enableUnisexTexPath>
+    <raceName>Milira_Race</raceName>
+    <minColor>RGB(100,225,245)</minColor>
+    <maxColor>RGB(100,225,245)</maxColor>
+    <probability>0.0001</probability>
+    <modExtensions>
+      <li Class="AriandelLibrary.FA.ModExtension_NPCFA">
+        <forNPC>Yunjianzi</forNPC>
+      </li>
+    </modExtensions>
+  </FacialAnimation.EyeballTypeDef>
+
+  <FacialAnimation.LidTypeDef>
+    <defName>YJZ_FA_Lid_Yunjianzi</defName>
+    <texPath>Things/Pawn/Milira/Lids/NormalD</texPath>
+    <raceName>Milira_Race</raceName>
+    <shader>Map/Transparent</shader>
+    <enableUnisexTexPath>true</enableUnisexTexPath>
+    <probability>0</probability>
+    <modExtensions>
+      <li Class="AriandelLibrary.FA.ModExtension_NPCFA">
+        <forNPC>Yunjianzi</forNPC>
+      </li>
+    </modExtensions>
+  </FacialAnimation.LidTypeDef>
+
+  <FacialAnimation.MouthTypeDef>
+    <defName>YJZ_FA_Mouth_Yunjianzi</defName>
+    <texPath>Things/Pawn/Milira/Mouth/Normal</texPath>
+    <raceName>Milira_Race</raceName>
+    <shader>Map/Transparent</shader>
+    <enableUnisexTexPath>true</enableUnisexTexPath>
+    <probability>0.0001</probability>
+    <modExtensions>
+      <li Class="AriandelLibrary.FA.ModExtension_NPCFA">
+        <forNPC>Yunjianzi</forNPC>
+      </li>
+    </modExtensions>
+  </FacialAnimation.MouthTypeDef>
+
+  <FacialAnimation.SkinTypeDef>
+    <defName>YJZ_FA_Skin_Yunjianzi</defName>
+    <texPath>Things/Pawn/Milira/Skins/Normal</texPath>
+    <raceName>Milira_Race</raceName>
+    <shader>Map/CutoutSkin</shader>
+    <enableUnisexTexPath>true</enableUnisexTexPath>
+    <probability>0.0001</probability>
+    <modExtensions>
+      <li Class="AriandelLibrary.FA.ModExtension_NPCFA">
+        <forNPC>Yunjianzi</forNPC>
+      </li>
+    </modExtensions>
+  </FacialAnimation.SkinTypeDef>
+
+  <FacialAnimation.BrowTypeDef>
+    <defName>YJZ_FA_Brow_Yunjianzi</defName>
+    <texPath>Things/Pawn/Milira/Brows/Normal</texPath>
+    <raceName>Milira_Race</raceName>
+    <shader>Map/Transparent</shader>
+    <enableUnisexTexPath>true</enableUnisexTexPath>
+    <probability>0.0001</probability>
+    <modExtensions>
+      <li Class="AriandelLibrary.FA.ModExtension_NPCFA">
+        <forNPC>Yunjianzi</forNPC>
+      </li>
+    </modExtensions>
+  </FacialAnimation.BrowTypeDef>
+</Defs>

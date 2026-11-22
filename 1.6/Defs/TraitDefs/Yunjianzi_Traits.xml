@@ -7,7 +7,7 @@
     <degreeDatas>
       <li>
         <label>云海剑心</label>
-        <description>她愿意追问未知，却不把力量误认作答案；她也会拔剑，但总记得剑锋之后仍是众生。所谓剑心，并非冷硬无情，而是在纷乱中仍知道自己为何出剑、又该在何时归鞘。</description>
+        <description>考古研究留下的习惯仍在：面对陌生事物，她会先观察、核对，再试着动手。远行之后，她也学会了在危险逼近时作出决定，持剑护住自己与同行者。</description>
         <skillGains>
           <Melee>4</Melee>
           <Crafting>4</Crafting>

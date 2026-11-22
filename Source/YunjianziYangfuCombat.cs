@@ -54,19 +54,19 @@ namespace Yunjianzi
             int fireRank = LearnedYangfuRank(FireTornadoRanks);
             if (fireRank > 0)
                 yield return MakeYangfuCommand(YangfuCombatSpell.FireTornado, fireRank, YangfuEnergyCost(fireRank), fireTornadoReadyTick,
-                    "阳符诀·火龙卷", "赤符燃尽后生成受控火龙卷，在施法点十格内游走、缩小并持续灼烧敌人。",
+                    "阳符诀·火龙卷", "在施法位置放出受控火龙卷，游走并持续灼烧附近敌人。",
                     YunjianziAbilityTextures.FireTornado);
 
             int thunderRank = LearnedYangfuRank(ThunderWindRanks);
             if (thunderRank > 0)
                 yield return MakeYangfuCommand(YangfuCombatSpell.ThunderWind, thunderRank, YangfuEnergyCost(thunderRank), thunderWindReadyTick,
-                    "阳符诀·天雷神风", "紫符展开十格聚风场，持续牵引敌人；聚风结束后按境界连续降下强化天雷。",
+                    "阳符诀·天雷神风", "以风场牵引敌人，聚风结束后连续引下天雷。",
                     YunjianziAbilityTextures.ThunderWind);
 
             int beanRank = LearnedYangfuRank(BeanSoldierRanks);
             if (beanRank > 0)
                 yield return MakeYangfuCommand(YangfuCombatSpell.BeanSoldiers, beanRank, YangfuEnergyCost(beanRank), beanSoldiersReadyTick,
-                    "阳符诀·撒豆成兵", "青符爆开，在目标附近召唤会追踪敌人并以纯爆炸伤害自毁的符兵。",
+                    "阳符诀·撒豆成兵", "在目标附近凝成符兵，追向敌人后引爆。",
                     YunjianziAbilityTextures.BeanSoldiers);
         }
 
@@ -168,7 +168,7 @@ namespace Yunjianzi
             YangfuCombatSpell castSpell = spell;
             int castRank = rank;
             if (castSpell == YangfuCombatSpell.ThunderWind)
-                YunjianziPurpleLightning.Glow(DrawPos, map, 2.1f);
+                YunjianziPurpleLightning.Glow(DrawPos, map, 2.1f, realm: rank);
             else FleckMaker.ThrowLightningGlow(DrawPos, map, 2.1f);
             for (int i = 0; i < 8; i++)
                 FleckMaker.ThrowMicroSparks(DrawPos + Gen.RandomHorizontalVector(.15f + i * .035f), map);
@@ -377,7 +377,7 @@ namespace Yunjianzi
                 {
                     float angle = ageTicks * .17f + thingIDNumber;
                     Vector3 rim = DrawPos + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * 2.2f;
-                    YunjianziPurpleLightning.Arc(rim, DrawPos, Map, .65f);
+                    YunjianziPurpleLightning.Arc(rim, DrawPos, Map, .65f, realm: rank);
                 }
                 if ((Find.TickManager.TicksGame + thingIDNumber) % 5 == 0)
                 {
@@ -443,7 +443,7 @@ namespace Yunjianzi
             Vector3 loc = drawLoc;
             loc.y = AltitudeLayer.MoteOverhead.AltitudeFor();
             Matrix4x4 matrix = Matrix4x4.TRS(loc, Quaternion.Euler(0f, ageTicks * .35f, 0f), new Vector3(pulse, 1f, pulse));
-            Graphics.DrawMesh(MeshPool.plane10, matrix, Graphic.MatSingle, 0);
+            Graphics.DrawMesh(MeshPool.plane10, matrix, Graphic.MatSingle, 0, null, 0, ThunderSpearGlow.ForRealm(rank));
         }
 
         public override void ExposeData()

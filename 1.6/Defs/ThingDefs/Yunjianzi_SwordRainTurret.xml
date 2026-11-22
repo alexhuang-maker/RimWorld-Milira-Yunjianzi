@@ -39,7 +39,7 @@
   <ThingDef ParentName="BaseWeaponTurret">
     <defName>YJZ_TurretGun_SwordRain</defName>
     <label>云间养剑灵枢</label>
-    <description>养剑台以池中灵剑投射剑意的内在灵枢。</description>
+    <description>依养剑之法炼入台中的灵枢。剑意蓄足，便可循令投出，在远处交锋相斩。</description>
     <graphicData>
       <texPath>Yunjianzi/Buildings/Security/Transparent</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -88,7 +88,9 @@
   <ThingDef ParentName="BuildingBase">
     <defName>YJZ_Building_SwordRainTurret</defName>
     <label>云间养剑台</label>
-    <description>以真玉钢砌成的灵池养剑台。四道锁链与结界将一柄剑束在池心，剑尖向下，随灵潮沉浮。轰击时池中剑光大盛，在落点先后投下两柄交错灵剑：一剑自左上劈向右下，一剑自右上劈向左下，以交叉剑气爆发造成切割杀伤。</description>
+    <description>云间子沿前代养剑的工法另设灵池，将蓄养的剑意引入守阵之器。池中之剑不必离台，锋意已能循枢而出。
+
+来敌至时，交错剑光遥落阵前，斩过之处，犹闻余鸣。</description>
     <thingClass>Yunjianzi.Building_YunjianziSwordRainTurret</thingClass>
     <drawerType>MapMeshAndRealTime</drawerType>
     <graphicData>

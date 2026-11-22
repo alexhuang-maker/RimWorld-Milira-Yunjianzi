@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ApparelNoQualityBase">
+    <defName>YJZ_Apparel_SanyuanMiyi</defName><label>三垣秘仪斗</label>
+    <description>以三垣为廓，纳群机之灵。银白机轨若隐若现，金纹自行周流；灵机既满，三光奉敕。\n\n神机同契：绑定神机伤害提高30%，护盾恢复速度提高50%。命中敌人反哺剑罡并充能；不同神机接连命中同敌时额外共鸣。\n三曜归墟：满100能量自动连续扫射三道光束，将路径敌人推向远端。归墟印持续8秒，神机命中时向6格内同印敌人传递25%伤害。\n百骸归元：神机脱战10秒后，每秒消耗主人2点灵力修复3点普通损伤。不会复活或恢复缺失部件。</description>
+    <techLevel>Ultra</techLevel><useHitPoints>false</useHitPoints><smeltable>false</smeltable><burnableByRecipe>false</burnableByRecipe>
+    <graphicData><texPath>Yunjianzi/Apparel/SanyuanMiyi/Spirit</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>0.8</drawSize></graphicData>
+    <statBases><Mass>0.4</Mass><DeteriorationRate>0</DeteriorationRate><Flammability>0</Flammability><MarketValue>16000</MarketValue></statBases>
+    <thingCategories><li>ApparelUtility</li></thingCategories><tradeability>None</tradeability>
+    <apparel>
+      <countsAsClothingForNudity>false</countsAsClothingForNudity><careIfWornByCorpse>false</careIfWornByCorpse><wearPerDay>0</wearPerDay>
+      <bodyPartGroups><li>FullHead</li></bodyPartGroups><layers><li>YJZ_SanyuanArtifact</li></layers>
+      <wornGraphicPath>Yunjianzi/Apparel/JiuxiaoXianxu/JiuxiaoXianxu</wornGraphicPath>
+      <wornGraphicData><renderUtilityAsPack>true</renderUtilityAsPack></wornGraphicData><drawData><scale>0</scale></drawData>
+    </apparel>
+    <comps><li Class="Yunjianzi.CompProperties_Sanyuan" /></comps>
+  </ThingDef>
+</Defs>

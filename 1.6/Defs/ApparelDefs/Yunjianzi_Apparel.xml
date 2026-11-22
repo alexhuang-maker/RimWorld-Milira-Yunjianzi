@@ -3,11 +3,9 @@
   <ThingDef ParentName="Milira_OnSkinBase">
     <defName>YJZ_Apparel_YunjianRobe</defName>
     <label>云间道袍</label>
-    <description>“被褐怀玉。”——《道德经》
+    <description>前代手记中夹着一幅旧衣样，袖角处还留着修补的批注。云间子依样裁衣，以故乡的织材缝合护身符纹，作远行时的常服。
 
-道书卷首绘着上一代云间子的旧衣：珠白外袍仍守道衣之形，青玉灵路却与异世能源回路一同呼吸。现任云间子依图裁成此袍，也由此明白，继承古法不必舍弃自己的故乡。
-
-效果：云间子的专属常驻道袍，不会损坏，并能保护全身、抵御伤害与严酷温度。</description>
+灵气蕴于衣中，可御水火，亦避寒暑。历经风霜，衣上针脚仍如初成。</description>
     <techLevel>Ultra</techLevel>
     <smeltable>false</smeltable>
     <burnableByRecipe>false</burnableByRecipe>
@@ -59,19 +57,21 @@
   </ThingDef>
   <ThingDef ParentName="ApparelNoQualityBase">
     <defName>YJZ_Apparel_CloudSwordArray</defName>
-    <label>云海剑轮</label>
-    <description>云间子以诛邪剑意温养的一匣灵剑。平日收敛无形，临战时六剑自匣中飞出，在主人背后结成扇形剑阵。\n\n效果：使灵气周流、步履与出手更为迅捷，并为分光剑术添入六柄常随灵剑；征召或锁定敌人时，剑轮会在背后显形。</description>
+    <label>云海剑匣</label>
+    <description>前代曾将随身飞剑收于一匣，远行时负在背上。手记中留下了养剑与御剑的方法，云间子循此炼成剑匣，以诛邪的剑意温养诸锋。
+
+平日六剑藏于匣中，征召时才飞出，在肩后分列如翼。匣中灵机周流，持有者身手亦随之轻捷。</description>
     <techLevel>Ultra</techLevel>
     <smeltable>false</smeltable>
     <burnableByRecipe>false</burnableByRecipe>
     <useHitPoints>false</useHitPoints>
     <recipeMaker Inherit="False" IsNull="True" />
     <graphicData>
-      <texPath>Yunjianzi/Apparel/CloudSwordArray/CloudSwordArrayV2</texPath>
+      <texPath>Yunjianzi/Apparel/CloudSwordArray/CloudSwordCase</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <drawSize>0.75</drawSize>
     </graphicData>
-    <uiIconPath>Yunjianzi/Apparel/CloudSwordArray/CloudSwordArrayV2</uiIconPath>
+    <uiIconPath>Yunjianzi/Apparel/CloudSwordArray/CloudSwordCase</uiIconPath>
     <statBases><Mass>0.8</Mass><DeteriorationRate>0</DeteriorationRate><Flammability>0</Flammability></statBases>
     <equippedStatOffsets>
       <MoveSpeed>0.5</MoveSpeed>
@@ -89,7 +89,7 @@
       <wearPerDay>0</wearPerDay>
       <bodyPartGroups><li>Torso</li></bodyPartGroups>
       <layers><li>YJZ_SwordArtifact</li></layers>
-      <!-- The visible sword wheel is rendered by CompCloudSwordArray.  HAR still
+      <!-- The deployed blades is rendered by CompCloudSwordArray.  HAR still
            asks for a body-type Multi graphic, so reuse the bundled transparent
            four-direction placeholder instead of probing nonexistent V2_Female files. -->
       <wornGraphicPath>Yunjianzi/Apparel/JiuxiaoXianxu/JiuxiaoXianxu</wornGraphicPath>
@@ -105,13 +105,9 @@
   <ThingDef ParentName="ApparelNoQualityBase">
     <defName>YJZ_Apparel_JiuxiaoXianxu</defName>
     <label>九霄仙絮</label>
-    <description>“云为衣兮风为马，长风引絮接九霄。”
+    <description>手记里的织雷法，须待元神有成方能施展。云间子取天丝承雷，反复炼去其中躁烈之气，才使雷霆化为可披可御的仙絮。
 
-以化神元神将雷霆织入无形天丝炼成的披帛法器。仙絮不凭风而动，两端绕身舒卷，既为仙阵接引九霄雷炁，也在来袭之力触身前将其层层卸去。
-
-平日显化为青玉莲冠、金纹素帛，绕于脑后，垂落肩侧；佩戴者被征召时，仙絮化作雷光莲冠，电芒向上、向外逸散。解除征召后恢复常态。形态变化不影响法器原有效果。
-
-效果：仙阵落雷间隔减半、每轮最多轰击六个目标；云间子造成的神霄雷电伤害翻倍；受到的一切伤害降低50%。可与云海剑轮同时佩用。</description>
+披之则罡风难近，雷火相亲；举手引动天霄，落雷亦可反哺护身剑罡。</description>
     <techLevel>Ultra</techLevel>
     <smeltable>false</smeltable>
     <burnableByRecipe>false</burnableByRecipe>

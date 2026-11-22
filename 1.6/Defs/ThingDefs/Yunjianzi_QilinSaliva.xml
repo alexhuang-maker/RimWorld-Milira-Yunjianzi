@@ -3,11 +3,9 @@
   <ThingDef ParentName="ResourceBase">
     <defName>YJZ_QilinSaliva</defName>
     <label>麟涎</label>
-    <description>云麒麟吐纳清炁，十日方凝一滴，澄澈如玉露。这是她自愿赠予同行者的灵药。
+    <description>云麒麟吐纳清炁，积久凝露，赠予照料她的同行者。前代曾将它收在远行药囊中，留待伤病沉重时取用。
 
-服用一份后，按原版治疗机械液的规则治愈一项最严重的健康问题，包括可治愈的疾病、永久伤残或缺失肢体。可以自行服用，也可以在健康页的手术菜单中安排他人喂服。没有可治愈的健康问题时无法使用。
-
-云麒麟每10天凝聚1份，由驯兽员采集。麟涎不是食物，不会被当作普通口粮吃掉。</description>
+清露入腹，能愈沉疴，续残肢；须有所伤病，方可受其滋养。</description>
     <thingClass>ThingWithComps</thingClass>
     <techLevel>Ultra</techLevel>
     <graphicData>
@@ -59,7 +57,7 @@
   <RecipeDef>
     <defName>YJZ_AdministerQilinSaliva</defName>
     <label>喂服麟涎</label>
-    <description>喂服一份麟涎，按治疗机械液的规则治愈一项最严重的健康问题。</description>
+    <description>喂服麟涎，治疗目标身上可处理的严重健康问题。</description>
     <workerClass>Recipe_AdministerUsableItem</workerClass>
     <jobString>正在喂服麟涎。</jobString>
     <workAmount>600</workAmount>

@@ -3,7 +3,7 @@
   <!-- Separate non-rendered utility layers make both artifacts wearable together. -->
   <ApparelLayerDef>
     <defName>YJZ_SwordArtifact</defName>
-    <label>剑轮法器</label>
+    <label>剑匣法器</label>
     <drawOrder>41</drawOrder>
   </ApparelLayerDef>
   <ApparelLayerDef>

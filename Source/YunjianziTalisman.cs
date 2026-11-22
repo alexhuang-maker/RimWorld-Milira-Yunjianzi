@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
@@ -25,50 +25,10 @@ namespace Yunjianzi
     {
         public override IEnumerable<FloatMenuOption> CompFloatMenuOptions(Pawn selPawn)
         {
-            CompYunjianziCultivation cultivation = selPawn == null ? null : selPawn.TryGetComp<CompYunjianziCultivation>();
-            if (cultivation == null || !cultivation.IsYunjianzi)
-            {
-                yield return new FloatMenuOption("装备阳符（仅云间子可佩用）", null);
-                yield break;
-            }
-            if (cultivation.TalismanSlotCount <= 0)
-            {
-                yield return new FloatMenuOption("装备阳符（筑基境解锁第一个阳符位）", null);
-                yield break;
-            }
-            if (!cultivation.CanEquipTalismanDef(parent.def))
-            {
-                yield return new FloatMenuOption("装备「" + parent.LabelCap + "」（尚未参悟此符）", null);
-                yield break;
-            }
-
-            for (int slot = 0; slot < cultivation.TalismanSlotCount; slot++)
-            {
-                int capturedSlot = slot;
-                Thing current = cultivation.ActiveTalismanThingAt(slot);
-                if (current != null && current.def == parent.def)
-                {
-                    yield return new FloatMenuOption("阳符位·" + (slot + 1) + "已装备「" + parent.LabelCap + "」", null);
-                    continue;
-                }
-
-                string replacement = current == null ? string.Empty : "（替换「" + current.LabelCap + "」）";
-                FloatMenuOption option = new FloatMenuOption(
-                    "装备到阳符位·" + (slot + 1) + replacement,
-                    delegate { cultivation.OrderEquipTalisman(capturedSlot, parent); });
-                if (parent.Spawned && !selPawn.CanReserveAndReach(parent, PathEndMode.Touch, Danger.Deadly))
-                {
-                    option.Disabled = true;
-                    option.Label += "（无法抵达或已被预定）";
-                }
-                yield return option;
-            }
+            yield break;
         }
 
-        public override string CompInspectStringExtra()
-        {
-            return "选中云间子后右键此符，可将它装备到已解锁的阳符位。";
-        }
+        public override string CompInspectStringExtra() => "旧版符箓，已失去效力。";
     }
 
     public sealed class YunjianziTalismanRecipeExtension : DefModExtension
@@ -160,7 +120,8 @@ namespace Yunjianzi
         private List<float> tiandaoOriginalSkillXpToday = new List<float>();
         private bool tiandaoApplied;
 
-        public int TalismanSlotCount { get { return Mathf.Clamp(Realm - 1, 0, 4); } }
+        // Retired: keep save migration and effect restoration only.
+        public int TalismanSlotCount { get { return 0; } }
 
         public ThingOwner GetDirectlyHeldThings()
         {
@@ -370,9 +331,9 @@ namespace Yunjianzi
                     slot = capturedSlot,
                     defaultLabel = active == null ? "阳符位·" + (slot + 1) : "阳符位·" + (slot + 1) + "「" + active.LabelCap + "」",
                     defaultDesc = active == null
-                        ? "此处尚无符箓镇守。右键可从已经参悟并随身持有的阳符中择取一张。"
-                        : "符意流转：「" + active.LabelCap + "」\n\n" + EffectDescription(active.def.defName) +
-                          "\n\n右键可更易或解下此符；旧符仍会收入随身物品，不致散失。",
+                        ? "此处尚未佩符。右键选择已经掌握且随身携带的阳符。"
+                        : "当前佩用：「" + active.LabelCap + "」\n\n" + EffectDescription(active.def.defName) +
+                          "\n\n右键更换或卸下，旧符收回随身物品。",
                     icon = slotIcon,
                     action = delegate { OpenTalismanMenu(capturedSlot); }
                 };

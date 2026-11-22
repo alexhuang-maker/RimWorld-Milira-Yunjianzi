@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <PawnKindDef ParentName="Milira_PawnBase">
+    <defName>YJZ_Yunjianzi</defName>
+    <label>云间子</label>
+    <fixedGender>Female</fixedGender>
+    <defaultFactionType>Ancients</defaultFactionType>
+    <combatPower>0</combatPower>
+    <itemQuality>Excellent</itemQuality>
+    <isFighter>true</isFighter>
+    <factionLeader>false</factionLeader>
+    <xenotypeSet Inherit="False">
+      <xenotypeChances>
+        <MiliraXenotype MayRequire="Ancot.MiliraRaceGenePatch">1.0</MiliraXenotype>
+      </xenotypeChances>
+    </xenotypeSet>
+    <apparelMoney>
+      <min>0</min>
+      <max>0</max>
+    </apparelMoney>
+    <!-- The inheritance initializer supplies feather-thread traveling clothes.
+         The robe is a one-time reward in the sealed memorial chest. -->
+    <apparelTags Inherit="False" />
+    <apparelRequired Inherit="False" />
+    <specificApparelRequirements Inherit="False" />
+    <apparelDisallowTags Inherit="False" />
+    <apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
+    <weaponMoney>
+      <min>0</min>
+      <max>0</max>
+    </weaponMoney>
+    <weaponTags Inherit="False" />
+    <inventoryOptions Inherit="False" />
+    <invNutrition>0</invNutrition>
+    <gearHealthRange Inherit="False">
+      <min>1</min>
+      <max>1</max>
+    </gearHealthRange>
+    <forceNormalGearQuality>false</forceNormalGearQuality>
+    <minApparelQuality>Excellent</minApparelQuality>
+    <maxApparelQuality>Excellent</maxApparelQuality>
+    <backstoryFiltersOverride Inherit="False">
+      <li>
+        <categoriesChildhood>
+          <li>YJZ_Backstory_Childhood_Category</li>
+        </categoriesChildhood>
+        <categoriesAdulthood>
+          <li>YJZ_Backstory_Explorer_Category</li>
+        </categoriesAdulthood>
+      </li>
+    </backstoryFiltersOverride>
+    <!-- Fixed final values include the gains described by both backstories and
+         Cloudsea Sword Heart. FixedPawnTemplate reapplies them after generation,
+         so CE rerolls can never randomize Yunjianzi. -->
+    <skills Inherit="False">
+      <li><skill>Shooting</skill><range>7~7</range></li>
+      <li><skill>Melee</skill><range>19~19</range></li>
+      <li><skill>Construction</skill><range>6~6</range></li>
+      <li><skill>Mining</skill><range>3~3</range></li>
+      <li><skill>Cooking</skill><range>4~4</range></li>
+      <li><skill>Plants</skill><range>4~4</range></li>
+      <li><skill>Animals</skill><range>4~4</range></li>
+      <li><skill>Crafting</skill><range>19~19</range></li>
+      <li><skill>Artistic</skill><range>5~5</range></li>
+      <li><skill>Medicine</skill><range>5~5</range></li>
+      <li><skill>Social</skill><range>7~7</range></li>
+      <li><skill>Intellectual</skill><range>20~20</range></li>
+    </skills>
+    <forcedTraits Inherit="False" />
+    <!-- Keep invisible vanilla appearance state deterministic too. The visible
+         hairstyle is supplied by the Yunjianzi HAR body addons below. -->
+    <forcedHair>Bald</forcedHair>
+    <forcedHairColor>(255,255,255)</forcedHairColor>
+    <skinColorOverride>(255,255,255)</skinColorOverride>
+    <modExtensions>
+      <li Class="AriandelLibrary.FixedIdentityExtension">
+        <firstNameKey>YJZ_Name_First</firstNameKey>
+        <lastNameKey>YJZ_Name_Last</lastNameKey>
+
+        <genderMode>Female</genderMode>
+        <childhoodBackstoryDef>YJZ_Backstory_Childhood</childhoodBackstoryDef>
+        <adulthoodBackstoryDef>YJZ_Backstory_Explorer</adulthoodBackstoryDef>
+        <forcedAgeYears>24</forcedAgeYears>
+        <forcedChronologicalAgeYears>120</forcedChronologicalAgeYears>
+        <forcedHeadTypeDef>YJZ_Head_Yunjianzi</forcedHeadTypeDef>
+        <disableRandomTraits>true</disableRandomTraits>
+        <extraForcedHediffs>
+          <li>
+            <def>YJZ_Identity_Yunjianzi</def>
+            <severity>0.5</severity>
+            <overwriteIfExists>true</overwriteIfExists>
+          </li>
+
+        </extraForcedHediffs>
+      </li>
+      <!-- Locks both level and passion after every PawnGenerator call. -->
+      <li Class="Yunjianzi.FixedPawnTemplateExtension">
+        <!-- BeginInheritanceJourney replaces generated gear once. -->
+        <clearInitialEquipment>true</clearInitialEquipment>
+        <clearInitialInventory>true</clearInitialInventory>
+        <skills>
+          <li><skill>Shooting</skill><level>7</level><passion>None</passion></li>
+          <li><skill>Melee</skill><level>19</level><passion>Major</passion></li>
+          <li><skill>Construction</skill><level>6</level><passion>None</passion></li>
+          <li><skill>Mining</skill><level>3</level><passion>None</passion></li>
+          <li><skill>Cooking</skill><level>4</level><passion>None</passion></li>
+          <li><skill>Plants</skill><level>4</level><passion>None</passion></li>
+          <li><skill>Animals</skill><level>4</level><passion>None</passion></li>
+          <li><skill>Crafting</skill><level>19</level><passion>Major</passion></li>
+          <li><skill>Artistic</skill><level>5</level><passion>None</passion></li>
+          <li><skill>Medicine</skill><level>5</level><passion>None</passion></li>
+          <li><skill>Social</skill><level>7</level><passion>None</passion></li>
+          <li><skill>Intellectual</skill><level>20</level><passion>Major</passion></li>
+        </skills>
+      </li>
+      <li Class="AriandelLibrary.NPCKindTag">
+        <npcTag>Yunjianzi</npcTag>
+      </li>
+      <li Class="AriandelLibrary.SpecialPawnExtension">
+        <uniqueID>Yunjianzi</uniqueID>
+        <tabDef>MI_Milira_Tab</tabDef>
+        <iconPathRecruited>Yunjianzi/UI/YunjianziIcon</iconPathRecruited>
+        <labelKey>YJZ_SpecialPawn_Label</labelKey>
+        <descKey>YJZ_SpecialPawn_Desc</descKey>
+        <order>30</order>
+      </li>
+      <li Class="AriandelLibrary.AL_Kill_Manager_Extension" />
+      <li Class="AriandelLibrary.AL_SubcoreScannerBlocker_Extension" />
+      <li Class="AriandelLibrary.AL_SurgeryBlocker_Extension">
+        <blockLowTech>true</blockLowTech>
+        <blockHarvest>true</blockHarvest>
+      </li>
+      <li Class="AriandelLibrary.AL_AgeFreeze_Extension">
+        <freezeBiologicalAge>true</freezeBiologicalAge>
+      </li>
+      <!-- Special-Milira wing pipeline: the first extension replaces all
+           flight animations; the second replaces the static portrait wings. -->
+      <li Class="AriandelLibrary.Milira.AL_MiliraFlyAnimation_Extension">
+        <animNorth>YJZ_Milira_FlyNorth</animNorth>
+        <animEast>YJZ_Milira_FlyEast</animEast>
+        <animSouth>YJZ_Milira_FlySouth</animSouth>
+        <animWest>YJZ_Milira_FlyWest</animWest>
+      </li>
+      <li Class="AriandelLibrary.Milira.AL_WingGraphics_Extension">
+        <leftWingBasePath>Yunjianzi/Pawn/Wings/LeftWingNew</leftWingBasePath>
+        <rightWingBasePath>Yunjianzi/Pawn/Wings/RightWingNew</rightWingBasePath>
+      </li>
+      <li Class="AriandelLibrary.Anomaly.AL_RitualRoleRestriction_Extension" MayRequire="Ludeon.RimWorld.Anomaly" />
+      <li Class="AriandelLibrary.Anomaly.AL_ObeliskDuplicationBlocker_Extension" MayRequire="Ludeon.RimWorld.Anomaly" />
+    </modExtensions>
+  </PawnKindDef>
+</Defs>

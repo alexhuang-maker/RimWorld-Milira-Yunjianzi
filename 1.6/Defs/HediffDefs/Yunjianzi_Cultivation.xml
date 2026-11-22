@@ -3,7 +3,7 @@
   <HediffDef>
     <defName>YJZ_CultivationRealm</defName>
     <label>云间灵脉</label>
-    <description>依照道书所载周天之法开辟的灵脉，其中既有古修真炁，也有天空精灵能源回路留下的清光。随着境界精进，它会承载更多灵力，并逐步唤醒诛邪与诸篇传承。</description>
+    <description>依修炼法门打通的经脉，灵力在其中循行。随着根基稳固，云间子能够运用更复杂的剑术、阵法与符术。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <tendable>false</tendable>
@@ -117,7 +117,7 @@
   <HediffDef>
     <defName>YJZ_SwordControlImmunity</defName>
     <label>剑意适应</label>
-    <description>诛邪剑意尚留在神魂之中，相同的镇压一时难以再次奏效。</description>
+    <description>先前的剑意镇压尚未散尽，目标暂时不会再次受到相同控制。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <tendable>false</tendable>
@@ -131,7 +131,7 @@
   <HediffDef>
     <defName>YJZ_SwordHeartClarity</defName>
     <label>剑心通明</label>
-    <description>诛邪在手，剑心与本命剑相合，心神归一。</description>
+    <description>握住诛邪时，杂乱的念头逐渐平息，心神更容易集中。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <tendable>false</tendable>
@@ -150,7 +150,7 @@
   <HediffDef>
     <defName>YJZ_ArrayShield</defName>
     <label>众生同庇</label>
-    <description>仙阵分出一缕剑罡护住阵中同伴；一旦离开阵域，这层庇护便会迅速散去。</description>
+    <description>仙阵正在保护目标。离开阵域后，这层护盾会迅速消散。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <tendable>false</tendable>
@@ -166,7 +166,7 @@
   <HediffDef>
     <defName>YJZ_ArrayEdgeSlow</defName>
     <label>缚形界纹</label>
-    <description>触碰仙阵边界后，周身气机被阵纹牵引，移动速度暂时降低。</description>
+    <description>阵纹牵制着身体，移动暂时受阻。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>true</isBad>
     <tendable>false</tendable>
@@ -186,7 +186,7 @@
   <HediffDef>
     <defName>YJZ_ArrayEdgeControlImmunity</defName>
     <label>阵纹适应</label>
-    <description>身体尚记得方才阵纹牵引的方向，相同边界一时难以再次困住脚步。</description>
+    <description>目标刚刚挣脱阵纹，短时间内不会再次被同一边界困住。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <tendable>false</tendable>

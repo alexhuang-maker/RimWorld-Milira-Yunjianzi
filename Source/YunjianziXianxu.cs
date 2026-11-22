@@ -1,5 +1,6 @@
 using RimWorld;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
@@ -21,14 +22,42 @@ namespace Yunjianzi
     public sealed class CompJiuxiaoXianxu : ThingComp
     {
         private CompProperties_JiuxiaoXianxu Props => (CompProperties_JiuxiaoXianxu)props;
+        private bool cloudLattice = true;
+        private bool alwaysVisible;
+
+        public override void PostExposeData()
+        {
+            base.PostExposeData();
+            Scribe_Values.Look(ref cloudLattice, "xianxuCloudLattice", true);
+            Scribe_Values.Look(ref alwaysVisible, "xianxuAlwaysVisible", false);
+        }
+
+        public override IEnumerable<Gizmo> CompGetWornGizmosExtra()
+        {
+            foreach (Gizmo gizmo in base.CompGetWornGizmosExtra()) yield return gizmo;
+            yield return new Command_Action
+            {
+                defaultLabel = cloudLattice ? "仙絮：流光云络" : "仙絮：游霆天绶",
+                defaultDesc = "切换九霄仙絮的展开外观：游霆天绶（A）／流光云络（C）。隐显时统一收敛为游霆天绶的双肩灵扣。白色实体描边保持不变，宝石与灵絮随当前境界呈青白、紫色或亮金色。仅改变外观。",
+                icon = ContentFinder<Texture2D>.Get(XianxuAppearanceRules.TexturePath(cloudLattice ? 2 : 1, LightningRealm.Of((parent as Apparel)?.Wearer))),
+                action = () => cloudLattice = !cloudLattice
+            };
+            yield return new Command_Toggle
+            {
+                defaultLabel = "仙絮常显",
+                defaultDesc = "开启：始终显示选定的 A／C 外观。关闭：平日使用 A 隐显灵扣，征召时展开选定外观。战斗效果不受影响。",
+                icon = ContentFinder<Texture2D>.Get(XianxuAppearanceRules.TexturePath(0, LightningRealm.Of((parent as Apparel)?.Wearer))),
+                isActive = () => alwaysVisible,
+                toggleAction = () => alwaysVisible = !alwaysVisible
+            };
+        }
 
         public override void CompDrawWornExtras()
         {
             Pawn pawn = (parent as Apparel)?.Wearer;
             if (pawn == null || !pawn.Spawned || pawn.Dead) return;
 
-            Rot4 rot = pawn.Rotation;
-            JiuxiaoXianxuDrawer.Draw(pawn, pawn.DrawPos, rot,
+            XianxuStyleDrawer.Draw(pawn, cloudLattice, alwaysVisible,
                 Props.drawScale, Props.drawOffsetZ);
         }
     }

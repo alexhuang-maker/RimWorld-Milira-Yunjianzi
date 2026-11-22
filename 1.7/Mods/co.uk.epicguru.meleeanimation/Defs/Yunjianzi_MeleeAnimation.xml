@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Official Melee Animation compatibility hook: explicitly classify Zhuxie
+       as an animated melee weapon without patching that mod's DLL. -->
+  <AM.MeleeAnimationAdjustmentDef MayRequire="co.uk.epicguru.meleeanimation">
+    <defName>YJZ_MeleeAnimationAdjustment</defName>
+    <considerMeleeWeapons>
+      <li>YJZ_Weapon_Zhuxie</li>
+    </considerMeleeWeapons>
+    <weaponAdjustments>
+      <li>
+        <key>YJZ_Weapon_Zhuxie</key>
+        <value>
+          <overrideSize>Medium</overrideSize>
+        </value>
+      </li>
+    </weaponAdjustments>
+  </AM.MeleeAnimationAdjustmentDef>
+</Defs>

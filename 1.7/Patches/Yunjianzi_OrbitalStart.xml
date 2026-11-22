@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- No Odyssey: preserve the existing land scenario. Existing saved scenarios
+       are serialized separately and are not converted by this definition patch. -->
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/MapGeneratorDef[defName="OrbitalRelay"]</xpath>
+    <match Class="PatchOperationSequence"><operations>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/ScenarioDef[defName="YJZ_YunjianziAnomalyStart"]/label</xpath>
+        <value><label>云间子·孤云遗冢</label></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/ScenarioDef[defName="YJZ_YunjianziAnomalyStart"]/description</xpath>
+        <value><description>西娅·阿纳斯塔西亚循古老星图远航，在轨道残骸之间找到一座完整的大理石陵墓。前代云间子曾在这里与大敌同归于尽，幸存的自律机械耗尽最后的能量，为主人修建陵殿，将传承留给后人。
+
+墓碑居于殿中，香案供奉宝卷，左侧宝箱仍受封印。推开墓门，研读遗卷，接下云间子之名，再以此身修行，斩断魔神遗留的祸根。</description></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/ScenarioDef[defName="YJZ_YunjianziAnomalyStart"]/scenario/summary</xpath>
+        <value><summary>以未入道的西娅抵达轨道陵墓，研读宝卷后继承云间子之名、修为与剑心，开启左侧宝箱，驾驶飞船踏上修行征途。</summary></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/ScenarioDef[defName="YJZ_YunjianziAnomalyStart"]/scenario/parts/li[@Class="ScenPart_PlayerPawnsArriveMethod"]</xpath>
+        <value><li Class="AncotLibrary.ScenPart_PlayerPawnsArriveMethod_GravShip"><def>PlayerPawnsArriveMethod</def><sketch>Milira_Gravship</sketch></li></value>
+      </li>
+      <li Class="PatchOperationRemove">
+        <xpath>Defs/ScenarioDef[defName="YJZ_YunjianziAnomalyStart"]/scenario/parts/li[@Class="ScenPart_ScatterThingsNearPlayerStart" or @Class="ScenPart_ScatterThingsAnywhere"]</xpath>
+      </li>
+      <li Class="PatchOperationRemove">
+        <xpath>Defs/ScenarioDef[defName="YJZ_YunjianziAnomalyStart"]/scenario/parts/li[@Class="ScenPart_StartingThing_Defined" and (thingDef="Bedroll" or thingDef="Milian_Recharger" or thingDef="Milira_UniversalBench")]</xpath>
+      </li>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs/ScenarioDef[defName="YJZ_YunjianziAnomalyStart"]/scenario/parts</xpath>
+        <value>
+          <li Class="ScenPart_PlanetLayer"><def>PlanetLayerFixed</def><tag>Orbit</tag><layer>Orbit</layer><settingsDef>Orbit</settingsDef><hide>true</hide><connections><Surface><zoomMode>ZoomIn</zoomMode></Surface></connections></li>
+          <li Class="ScenPart_ForcedMap"><def>ForcedMap</def><mapGenerator>YJZ_OrbitalMemorial</mapGenerator><layerDef>Orbit</layerDef></li>
+          <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>BasicGravtech</project></li>
+          <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>OrbitalTech</project></li>
+          <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>BiofuelRefining</project></li>
+          <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>Steel</thingDef><count>540</count></li>
+          <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>Plasteel</thingDef><count>240</count></li>
+          <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>ComponentSpacer</thingDef><count>2</count></li>
+          <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>GravlitePanel</thingDef><count>100</count></li>
+          <li Class="ScenPart_GameStartDialog"><def>GameStartDialog</def><text>西娅·阿纳斯塔西亚抵达了星图所指的轨道陵墓。
+
+前代与大敌同归于尽后，幸存的自律机械以最后的能量建成了这座完整的大理石陵殿。
+
+沿通道从正门进入陵墓。沿正道进入最深处的内殿。选中西娅，右键香案上的宝卷，选择研读，方可接下云间子之名，开启修炼。陵墓正道两侧各有三座碎片方舟，接受传承后方可手动开启，其中只有一座封存着初始青羽机侍。
+
+接受传承后，香案左侧宝箱解除封印，内有道袍一件与奖励翡翠75枚。普通钢铁、塑钢、零部件、开局翡翠、真玉钢、两个高级零部件与100个逆重板，分散存放在四间偏殿的物品架上。米莉拉材料、燃料、食物和药品留在船上，休息使用船内床铺。香案前的云纹蒲团与宝箱均可卸下带走。</text><closeSound>GameStartSting</closeSound></li>
+        </value>
+      </li>
+    </operations></match>
+  </Operation>
+</Patch>

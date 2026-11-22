@@ -1,0 +1,44 @@
+<Project>
+  <PropertyGroup>
+    <RimWorldVersion Condition="'$(RimWorldVersion)' == ''">1.7</RimWorldVersion>
+    <RimWorldDir Condition="'$(RimWorldDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\RimWorld</RimWorldDir>
+    <WorkshopDir Condition="'$(WorkshopDir)' == ''">C:\Program Files (x86)\Steam\steamapps\workshop\content\294100</WorkshopDir>
+    <TargetFramework Condition="'$(RimWorldVersion)' == '1.6'">net48</TargetFramework>
+    <TargetFramework Condition="'$(RimWorldVersion)' == '1.7'">net10.0</TargetFramework>
+    <RimWorldManagedDir Condition="'$(RimWorldManagedDir)' == '' and '$(RimWorldVersion)' == '1.6'">$(RimWorldDir)\RimWorldWin64_Data\Managed</RimWorldManagedDir>
+    <RimWorldManagedDir Condition="'$(RimWorldManagedDir)' == ''">$(RimWorldDir)</RimWorldManagedDir>
+    <HarmonyAssemblyPath Condition="'$(HarmonyAssemblyPath)' == ''">$(WorkshopDir)\2009463077\$(RimWorldVersion)\Assemblies\0Harmony.dll</HarmonyAssemblyPath>
+    <AncotAssemblyPath Condition="'$(AncotAssemblyPath)' == ''">$(WorkshopDir)\2988801276\1.6\Assemblies\AncotLibrary.dll</AncotAssemblyPath>
+    <LangVersion>latest</LangVersion>
+    <YunjianziAudit Condition="'$(YunjianziAudit)' == ''">false</YunjianziAudit>
+    <IntermediateOutputPath>obj\$(RimWorldVersion)\$(Configuration)\audit-$(YunjianziAudit)\</IntermediateOutputPath>
+    <Nullable>disable</Nullable>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <OutputPath>..\$(RimWorldVersion)\Assemblies\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp" HintPath="$(RimWorldManagedDir)\Assembly-CSharp.dll" Private="false" />
+    <Reference Include="0Harmony" HintPath="$(HarmonyAssemblyPath)" Private="false" />
+    <Reference Include="AncotLibrary" HintPath="$(AncotAssemblyPath)" Private="false" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(RimWorldVersion)' == '1.6'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="all" />
+    <Reference Include="UnityEngine" HintPath="$(RimWorldManagedDir)\UnityEngine.dll" Private="false" />
+    <Reference Include="UnityEngine.CoreModule" HintPath="$(RimWorldManagedDir)\UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="UnityEngine.IMGUIModule" HintPath="$(RimWorldManagedDir)\UnityEngine.IMGUIModule.dll" Private="false" />
+    <Reference Include="UnityEngine.TextRenderingModule" HintPath="$(RimWorldManagedDir)\UnityEngine.TextRenderingModule.dll" Private="false" />
+    <Reference Include="Unity.Mathematics" HintPath="$(RimWorldManagedDir)\Unity.Mathematics.dll" Private="false" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(RimWorldVersion)' == '1.7'">
+    <Reference Include="UnityStubs" HintPath="$(RimWorldManagedDir)\UnityStubs.dll" Private="false" />
+    <Reference Include="Waylith" HintPath="$(RimWorldManagedDir)\Waylith.dll" Private="false" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)LegacyUnityReferences\UnityEngine.CoreModule.csproj" Private="false" />
+  </ItemGroup>
+  <Target Name="ValidateRimWorldReferences" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(RimWorldVersion)' != '1.6' and '$(RimWorldVersion)' != '1.7'" Text="RimWorldVersion must be 1.6 or 1.7." />
+    <Error Condition="!Exists('$(RimWorldManagedDir)\Assembly-CSharp.dll')" Text="Missing game assembly: $(RimWorldManagedDir)\Assembly-CSharp.dll. Set RimWorldDir or RimWorldManagedDir for the selected version." />
+    <Error Condition="!Exists('$(HarmonyAssemblyPath)')" Text="Missing version-specific Harmony: $(HarmonyAssemblyPath)." />
+    <Error Condition="'$(RimWorldVersion)' == '1.7' and !Exists('$(RimWorldManagedDir)\UnityStubs.dll')" Text="RimWorld 1.7 requires the actual Waylith game assemblies, including UnityStubs.dll." />
+  </Target>
+</Project>

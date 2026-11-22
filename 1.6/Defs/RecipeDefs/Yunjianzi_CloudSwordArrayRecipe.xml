@@ -2,9 +2,9 @@
 <Defs>
   <RecipeDef>
     <defName>YJZ_Make_CloudSwordArray</defName>
-    <label>炼制云海剑轮</label>
-    <description>以日盘钢锻成六柄飞剑，以青玉与太阳水晶刻入御剑灵路，炼成云间子的云海剑轮。</description>
-    <jobString>正在炼制云海剑轮。</jobString>
+    <label>炼制云海剑匣</label>
+    <description>锻制灵剑与剑匣，刻入御剑灵路，组装云海剑匣。</description>
+    <jobString>正在炼制云海剑匣。</jobString>
     <workerClass>Yunjianzi.RecipeWorker_YunjianziTalisman</workerClass>
     <workAmount>18000</workAmount>
     <workSkill>Crafting</workSkill>

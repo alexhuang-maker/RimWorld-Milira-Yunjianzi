@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="MusicalInstrumentBase">
+    <defName>YJZ_Building_Guzheng</defName>
+    <label>云间玉筝</label>
+    <description>远行行装中添置的一架玉筝，依手记所载共鸣之法制成。弦声能经玉座传开，坐在近旁的人也听得清楚。
+
+修炼暂歇时拨弦，余音入室，亦可稍解旅途劳顿。</description>
+    <thingClass>Building_MusicalInstrument</thingClass>
+    <designationCategory>YJZ_QinglingJade</designationCategory>
+    <size>(3,1)</size>
+    <defaultPlacingRot>South</defaultPlacingRot>
+    <rotatable>true</rotatable>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/Recreation/Guzheng</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(3.25,1.25)</drawSize>
+      <damageData><rect>(0.12,0.15,0.76,0.70)</rect></damageData>
+    </graphicData>
+    <interactionCellOffset>(0,0,-1)</interactionCellOffset>
+    <building>
+      <joyKind>HighCulture</joyKind>
+      <instrumentRange>16</instrumentRange>
+      <isEdifice>false</isEdifice>
+      <paintable>false</paintable>
+    </building>
+    <recipeMaker IsNull="True" />
+    <costList>
+      <WoodLog>110</WoodLog>
+      <Milira_SplendidSteel>55</Milira_SplendidSteel>
+      <Jade>25</Jade>
+    </costList>
+    <statBases>
+      <MaxHitPoints>320</MaxHitPoints>
+      <WorkToBuild>4200</WorkToBuild>
+      <Mass>38</Mass>
+      <JoyGainFactor>1.15</JoyGainFactor>
+      <Beauty>30</Beauty>
+      <Flammability>0.25</Flammability>
+    </statBases>
+    <constructionSkillPrerequisite>5</constructionSkillPrerequisite>
+    <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
+    <fillPercent>0.35</fillPercent>
+    <soundPlayInstrument>Harp_Play</soundPlayInstrument>
+    <uiIconScale>0.92</uiIconScale>
+    <uiOrder>3990</uiOrder>
+  </ThingDef>
+</Defs>

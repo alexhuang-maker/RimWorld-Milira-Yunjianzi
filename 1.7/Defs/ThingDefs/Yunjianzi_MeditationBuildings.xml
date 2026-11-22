@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef Name="YJZ_MeditationBuildingBase" ParentName="BuildingBase" Abstract="True">
+    <thingClass>Building</thingClass>
+    <category>Building</category>
+    <tickerType>Never</tickerType>
+    <drawerType>MapMeshOnly</drawerType>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>Standable</passability>
+    <pathCost>0</pathCost>
+    <fillPercent>0.12</fillPercent>
+    <rotatable>false</rotatable>
+    <designationCategory>YJZ_QinglingJade</designationCategory>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <thingCategories><li>BuildingsMisc</li></thingCategories>
+    <building>
+      <isEdifice>false</isEdifice>
+      <ai_chillDestination>true</ai_chillDestination>
+    </building>
+    <comps>
+      <li Class="CompProperties_Forbiddable" />
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_MeditationBuildingBase">
+    <defName>YJZ_Building_MeditationCushion</defName>
+    <label>云纹蒲团</label>
+    <description>依前代静坐的习惯编成，常置于歇脚处。云间子初学吐纳时，便在这样的蒲团上逐句参照手记，理顺行气的次序。
+
+坐定则气息渐调，散去的灵力亦可复归。</description>
+    <stuffCategories><li>Fabric</li></stuffCategories>
+    <costStuffCount>45</costStuffCount>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/Meditation/MeditationCushion</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(1,1)</drawSize>
+    </graphicData>
+    <uiIconScale>0.9</uiIconScale>
+    <statBases>
+      <MaxHitPoints>120</MaxHitPoints>
+      <WorkToBuild>1200</WorkToBuild>
+      <Mass>2</Mass>
+      <Beauty>6</Beauty>
+      <Flammability>0.7</Flammability>
+    </statBases>
+    <constructionSkillPrerequisite>2</constructionSkillPrerequisite>
+    <comps>
+      <li Class="Yunjianzi.CompProperties_YunjianziMeditationSeat">
+        <baseRecoveryFactor>2</baseRecoveryFactor>
+        <breakthroughPower>0</breakthroughPower>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_MeditationBuildingBase">
+    <defName>YJZ_Building_WhiteJadePlatform</defName>
+    <label>白玉修行台</label>
+    <description>前代闭关用过的台式，留有引气与定神的阵图。云间子修成根基后依图重建，将它安置在道场清静处。
+
+平日可养息修身，破境时亦能稳住周身灵机。无人静坐时，台上清光仍在。</description>
+    <size>(3,3)</size>
+    <graphicData>
+      <texPath>Yunjianzi/Buildings/Meditation/WhiteJadePlatform</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <!-- The platform is effectively opaque; a transparent render queue made
+           its full 2.7x2.7 quad draw over pawn apparel in the center opening. -->
+      <shaderType>Cutout</shaderType>
+      <drawSize>(2.7,2.7)</drawSize>
+    </graphicData>
+    <uiIconScale>0.65</uiIconScale>
+    <statBases>
+      <MaxHitPoints>1200</MaxHitPoints>
+      <WorkToBuild>16000</WorkToBuild>
+      <Mass>120</Mass>
+      <Beauty>120</Beauty>
+      <Flammability>0</Flammability>
+    </statBases>
+    <costList>
+      <Jade>200</Jade>
+      <Milira_SplendidSteel>300</Milira_SplendidSteel>
+      <Milira_SolarCrystal>80</Milira_SolarCrystal>
+    </costList>
+    <constructionSkillPrerequisite>10</constructionSkillPrerequisite>
+    <comps>
+      <li Class="Yunjianzi.CompProperties_YunjianziMeditationSeat">
+        <baseRecoveryFactor>3</baseRecoveryFactor>
+        <breakthroughPower>0.5</breakthroughPower>
+      </li>
+      <li Class="CompProperties_Glower">
+        <glowRadius>4</glowRadius>
+        <glowColor>(255,255,255,0)</glowColor>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>

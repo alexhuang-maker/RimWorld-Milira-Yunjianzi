@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- Attach wherever the vanilla healer-serum surgery is already supported,
+       including inherited humanlike and animal recipes and modded races.
+       Milira defines its own empty recipe list, so include its base explicitly. -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/*/recipes[li="AdministerMechSerumHealer" or ../@Name="Milira_Race"]</xpath>
+    <value><li>YJZ_AdministerQilinSaliva</li></value>
+  </Operation>
+</Patch>

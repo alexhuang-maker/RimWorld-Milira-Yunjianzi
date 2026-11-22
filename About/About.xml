@@ -5,8 +5,9 @@
   <packageId>Alex.MiliraPrivateExpansion.Yunjianzi</packageId>
   <supportedVersions>
     <li>1.6</li>
+    <li>1.7</li>
   </supportedVersions>
-  <description>添加特殊米莉拉角色“云间子”。她拥有固定身份、固定形象、修行与战斗体系及唯一角色保护机制。本体提供蒲团、白玉台、云间画符台、云间玉筝，以及建木镇宝匣、合玉炉、青灵聚元池、云阙问道仪、云间养剑台、云间之影和配套真玉钢制作体系。其余家具、装饰、门、地砖及奥德赛飞船组件由可选的“云间子建筑扩展”提供。</description>
+  <description>添加米莉拉修行者云间子。她曾在大学从事考古研究，循前代手记继承诛邪与道号，与留下的青羽机侍一同远行。本体包含修行、剑阵、符术、神机与配套器物；故事从调查异象展开，并逐步走向对未知高维魔神的反击。其余家具、装饰、门、地砖及奥德赛飞船组件由可选的“云间子建筑扩展”提供。</description>
   <modDependencies>
     <li>
       <packageId>brrainz.harmony</packageId>

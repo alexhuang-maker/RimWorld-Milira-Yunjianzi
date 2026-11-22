@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
@@ -190,12 +190,14 @@ namespace Yunjianzi
         public override string CompInspectStringExtra()
         {
             float maximum = ShieldMax;
+            string history = GameComponent_YunjianziPursuit.Instance?.companion == Pawn
+                ? GameComponent_YunjianziPursuit.Text("Companion") + "\n\n" : string.Empty;
             if (maximum <= 0f)
-                return Cultivation == null ? "神机护盾：未连接云间灵脉" : "神机护盾：尚未解锁";
+                return history + (Cultivation == null ? "神机护盾：未连接云间灵脉" : "神机护盾：尚未解锁");
             int remaining = Mathf.Max(0, shieldBrokenUntil - Find.TickManager.TicksGame);
             if (remaining > 0)
-                return string.Format("神机护盾：已破碎（{0:0.0}秒后开始重聚）\n护盾值：0 / {1:0}", remaining / 60f, maximum);
-            return string.Format("神机护盾：{0:0.#} / {1:0}", Mathf.Clamp(shield, 0f, maximum), maximum);
+                return history + string.Format("神机护盾：已破碎（{0:0.0}秒后开始重聚）\n护盾值：0 / {1:0}", remaining / 60f, maximum);
+            return history + string.Format("神机护盾：{0:0.#} / {1:0}", Mathf.Clamp(shield, 0f, maximum), maximum);
         }
 
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
@@ -249,7 +251,7 @@ namespace Yunjianzi
                 if (Find.TickManager.TicksGame >= shieldBrokenUntil && ShieldMax > 0f)
                     // MI belts recharge at 0.15 against a 6.0 capacity: 2.5%
                     // per second, or about 40 seconds from empty to full.
-                    shield = Mathf.Min(ShieldMax, shield + ShieldMax / 40f);
+                    shield = Mathf.Min(ShieldMax, shield + ShieldMax / 40f * (Cultivation?.Sanyuan?.Active == true ? 1.5f : 1f));
                 TryAutomaticRocketJump();
             }
         }
@@ -262,6 +264,9 @@ namespace Yunjianzi
             Pawn pawn = Pawn;
             Pawn owner = Owner;
             if (pawn == null || owner == null || pawn.relations == null) return false;
+            // The uninitiated explorer has no cultivation control groups yet.
+            // Keep the companion bound by ID and activate its group after study.
+            if (owner.TryGetComp<CompYunjianziCultivation>()?.AwaitingInheritance == true) return false;
 
             bool addedRelation = false;
             try
@@ -499,6 +504,7 @@ namespace Yunjianzi
         public override void PostExposeData()
         {
             base.PostExposeData();
+            Scribe_Values.Look(ref sanyuanCombatTick, "sanyuanCombatTick", -99999);
             Scribe_Values.Look(ref ownerThingId, "yjz_shenjiOwner", -1);
             Scribe_Values.Look(ref shield, "yjz_shenjiShield", 0f);
             Scribe_Values.Look(ref shieldBrokenUntil, "yjz_shenjiShieldBrokenUntil", 0);
@@ -659,7 +665,7 @@ namespace Yunjianzi
             Command_Action production = new Command_Action
             {
                 defaultLabel = "凝成青羽神机核心",
-                defaultDesc = "主动凝成一枚青羽神机核心。全世界现役神机与青羽、玄翎、九霄三类核心共享神机额度；只有总量低于上限时才能继续生成。核心可在合玉炉升炼，再投入米莉安培育器。\n\n全世界神机与核心：" + worldTotal + "/" + ShenjiLimit + "。\n当前受控神机：" + count + "/" + ShenjiLimit + "。",
+                defaultDesc = "凝成供培育青羽机侍使用的核心。现役神机与各类核心共用额度，未满时才能继续凝成；核心可升炼后投入培育器。\n\n全世界神机与核心：" + worldTotal + "/" + ShenjiLimit + "。\n当前受控神机：" + count + "/" + ShenjiLimit + "。",
                 icon = YunjianziAbilityTextures.SummonShenji,
                 action = TryGenerateShenjiCore
             };

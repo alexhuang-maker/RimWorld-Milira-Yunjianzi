@@ -8,6 +8,7 @@ namespace Yunjianzi
     public sealed class CompProperties_ThunderBeast : CompProperties
     {
         public int lifetimeTicks = 1800;
+        public int visualRealm;
 
         public CompProperties_ThunderBeast()
         {
@@ -24,6 +25,10 @@ namespace Yunjianzi
         private bool energyRefunded;
         private bool populationChecked;
 
+        // The summoned race fixes its tier; later advancement of the owner must
+        // not recolour an already spawned weak elemental as a stronger one.
+        internal int VisualRealm => ((CompProperties_ThunderBeast)props).visualRealm > 0
+            ? ((CompProperties_ThunderBeast)props).visualRealm : LightningRealm.Of(energyOwner);
         private Pawn Pawn => parent as Pawn;
 
         public void Initialize(Pawn caster = null, float paidLightningCost = 0f)
@@ -72,7 +77,7 @@ namespace Yunjianzi
 
             if (Find.TickManager.TicksGame >= vanishTick)
             {
-                YunjianziPurpleLightning.Glow(pawn.DrawPos, pawn.Map, 1.1f);
+                YunjianziPurpleLightning.Glow(pawn.DrawPos, pawn.Map, 1.1f, realm: VisualRealm);
                 pawn.Destroy(DestroyMode.Vanish);
                 return;
             }
@@ -139,6 +144,8 @@ namespace Yunjianzi
             if (caster == null || map == null || !caster.Spawned || caster.Map != map) return;
             CompYunjianziCultivation cultivation = caster.TryGetComp<CompYunjianziCultivation>();
             if (cultivation?.WearingJiuxiaoXianxu != true || YJZDefOf.YJZ_ThunderBeast == null) return;
+            PawnKindDef kind = ThunderBeastTier.ForRealm(cultivation.Realm);
+            if (kind == null) return;
             // Reject before searching for a cell or generating a Pawn.
             if (ThunderBeastLimit.Enforce(map) >= ThunderBeastLimit.MaximumPerMap) return;
 
@@ -149,12 +156,12 @@ namespace Yunjianzi
                     cell => cell.Standable(map) && cell.GetFirstPawn(map) == null)) return;
             }
 
-            Pawn beast = PawnGenerator.GeneratePawn(YJZDefOf.YJZ_ThunderBeast);
+            Pawn beast = PawnGenerator.GeneratePawn(kind);
             if (caster.Faction != null) beast.SetFaction(caster.Faction);
             GenSpawn.Spawn(beast, spawnCell, map);
             beast.TryGetComp<CompThunderBeast>()?.Initialize(caster, paidLightningCost);
             beast.mindState.mentalStateHandler.Reset();
-            YunjianziPurpleLightning.Glow(spawnCell.ToVector3Shifted(), map, 1.6f);
+            YunjianziPurpleLightning.Glow(spawnCell.ToVector3Shifted(), map, 1.6f, realm: LightningRealm.Of(caster));
         }
     }
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ResearchProjectDef>
+    <defName>YJZ_Research_CloudSwordArray</defName>
+    <label>云海剑匣</label>
+    <description>云间子达到紫府境，在仙器拾遗中花费1点灵气参悟云海剑匣后，可开始此项研究。完成后可在仙器炼制台炼制云海剑匣。</description>
+    <baseCost>2000</baseCost>
+    <techLevel>Neolithic</techLevel>
+    <tab>Milira_ResearchTab</tab>
+    <researchViewX>8</researchViewX>
+    <researchViewY>6</researchViewY>
+  </ResearchProjectDef>
+  <ResearchProjectDef>
+    <defName>YJZ_Research_JiuxiaoXianxu</defName>
+    <label>九霄仙絮</label>
+    <description>云间子达到化神境，在仙器拾遗中花费1点灵气参悟九霄仙絮后，可开始此项研究。完成后可在仙器炼制台炼制九霄仙絮。</description>
+    <baseCost>2000</baseCost>
+    <techLevel>Neolithic</techLevel>
+    <tab>Milira_ResearchTab</tab>
+    <researchViewX>9</researchViewX>
+    <researchViewY>6</researchViewY>
+  </ResearchProjectDef>
+  <ResearchProjectDef>
+    <defName>YJZ_Research_SanyuanMiyi</defName><label>三垣秘仪斗</label>
+    <description>金丹境在仙器拾遗中花费1点灵气参悟后，可研究三垣秘仪斗；完成后在仙器炼制台炼制。</description>
+    <baseCost>2000</baseCost><techLevel>Neolithic</techLevel><tab>Milira_ResearchTab</tab>
+    <researchViewX>8</researchViewX><researchViewY>6.6</researchViewY>
+  </ResearchProjectDef>
+</Defs>

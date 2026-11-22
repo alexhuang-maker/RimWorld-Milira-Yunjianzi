@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef>
+    <defName>YJZ_Projectile_SwordShadow</defName>
+    <label>诛邪剑影</label>
+    <thingClass>Yunjianzi.ThingYunjianziSwordShadow</thingClass>
+    <category>Ethereal</category>
+    <tickerType>Normal</tickerType>
+    <drawerType>RealtimeOnly</drawerType>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <selectable>false</selectable>
+    <useHitPoints>false</useHitPoints>
+    <destroyable>true</destroyable>
+    <passability>Standable</passability>
+    <pathCost>0</pathCost>
+    <graphicData>
+      <texPath>Yunjianzi/Weapons/SwordShadow</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>1.58</drawSize>
+      <color>(255,255,255)</color>
+    </graphicData>
+  </ThingDef>
+
+  <ThingDef>
+    <defName>YJZ_Effect_LightningChain</defName>
+    <label>游霆电弧</label>
+    <thingClass>Yunjianzi.ThingYunjianziLightningChain</thingClass>
+    <category>Ethereal</category>
+    <tickerType>Normal</tickerType>
+    <drawerType>RealtimeOnly</drawerType>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <selectable>false</selectable>
+    <useHitPoints>false</useHitPoints>
+    <destroyable>true</destroyable>
+    <passability>Standable</passability>
+    <pathCost>0</pathCost>
+  </ThingDef>
+
+  <ThingDef>
+    <defName>YJZ_Projectile_ThunderSpear</defName>
+    <label>万钧雷枪</label>
+    <thingClass>Yunjianzi.ThingYunjianziThunderSpear</thingClass>
+    <category>Ethereal</category>
+    <tickerType>Normal</tickerType>
+    <drawerType>RealtimeOnly</drawerType>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <selectable>false</selectable>
+    <useHitPoints>false</useHitPoints>
+    <destroyable>true</destroyable>
+    <passability>Standable</passability>
+    <graphicData>
+      <texPath>Yunjianzi/Effects/ThunderSpear/ThunderSpear</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>MoteGlow</shaderType>
+      <drawSize>(2.4,4.8)</drawSize>
+    </graphicData>
+  </ThingDef>
+
+  <ThingDef>
+    <defName>YJZ_Effect_ThunderSpearAnchor</defName>
+    <label>万钧雷枪</label>
+    <thingClass>Yunjianzi.ThingYunjianziThunderSpearAnchor</thingClass>
+    <category>Ethereal</category>
+    <tickerType>Normal</tickerType>
+    <drawerType>RealtimeOnly</drawerType>
+    <altitudeLayer>ItemImportant</altitudeLayer>
+    <selectable>false</selectable>
+    <useHitPoints>false</useHitPoints>
+    <destroyable>true</destroyable>
+    <passability>Standable</passability>
+  </ThingDef>
+
+  <ThingDef>
+    <defName>YJZ_Thing_SwordRain</defName>
+    <label>天剑雨</label>
+    <description>剑意循仙阵而凝，借阵纹定下去处。灵剑落尽，余炁便散还周天，不留可拾之锋。</description>
+    <thingClass>Yunjianzi.ThingYunjianziSwordRain</thingClass>
+    <category>Ethereal</category>
+    <tickerType>Normal</tickerType>
+    <drawerType>None</drawerType>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <selectable>false</selectable>
+    <useHitPoints>false</useHitPoints>
+    <destroyable>true</destroyable>
+    <passability>Standable</passability>
+    <pathCost>0</pathCost>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase" Name="YJZ_ArrayCoreBase" Abstract="True">
+    <label>琉璃阵眼</label>
+    <description>依前代阵图炼成的琉璃枢珠。布阵之时，周围灵机皆由此回转，阵纹也随之相连。
+
+有形之枢承无形之阵，故亦可循迹而破；珠毁，则诸纹俱散。</description>
+    <thingClass>Yunjianzi.ThingYunjianziArrayCore</thingClass>
+    <category>Building</category>
+    <tickerType>Normal</tickerType>
+    <drawerType>RealtimeOnly</drawerType>
+    <altitudeLayer>Item</altitudeLayer>
+    <selectable>true</selectable>
+    <useHitPoints>true</useHitPoints>
+    <destroyable>true</destroyable>
+    <passability>Standable</passability>
+    <fillPercent>0</fillPercent>
+    <pathCost>0</pathCost>
+    <rotatable>false</rotatable>
+    <statBases>
+      <Flammability>0</Flammability>
+      <DeteriorationRate>0</DeteriorationRate>
+    </statBases>
+    <graphicData>
+      <texPath>Yunjianzi/Array/ArrayCore</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>0.9</drawSize>
+      <color>(255,255,255)</color>
+    </graphicData>
+  </ThingDef>
+
+  <!-- A vanilla wall has 300 HP and Sun Plate Steel has a 3.8 HP factor:
+       300 * 3.8 = 1140. Every cultivation realm doubles that durability. -->
+  <ThingDef ParentName="YJZ_ArrayCoreBase">
+    <defName>YJZ_Thing_ArrayCore</defName>
+    <statBases><MaxHitPoints>1140</MaxHitPoints></statBases>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_ArrayCoreBase">
+    <defName>YJZ_Thing_ArrayCore_Foundation</defName>
+    <statBases><MaxHitPoints>2280</MaxHitPoints></statBases>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_ArrayCoreBase">
+    <defName>YJZ_Thing_ArrayCore_PurplePalace</defName>
+    <statBases><MaxHitPoints>4560</MaxHitPoints></statBases>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_ArrayCoreBase">
+    <defName>YJZ_Thing_ArrayCore_GoldenCore</defName>
+    <statBases><MaxHitPoints>9120</MaxHitPoints></statBases>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_ArrayCoreBase">
+    <defName>YJZ_Thing_ArrayCore_SpiritTransformation</defName>
+    <statBases><MaxHitPoints>18240</MaxHitPoints></statBases>
+  </ThingDef>
+</Defs>

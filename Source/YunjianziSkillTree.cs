@@ -40,6 +40,7 @@ namespace Yunjianzi
         public const string ArrayReflect = "array.reflect";
         public const string ArrayStorm = "array.storm";
         public const string ArrayTeleportMastery = "array.teleport.mastery";
+        public const string SanyuanMiyi = "artifact.sanyuan.miyi";
         public const string JiuxiaoXianxu = "array.jiuxiao.xianxu";
         public const string ShenjiSummon = "shenji.summon";
         public const string ShenjiGatling = "shenji.gatling";
@@ -88,88 +89,58 @@ namespace Yunjianzi
 
         public static readonly List<YunjianziSkillNode> All = new List<YunjianziSkillNode>
         {
-            N(SummonZhuxie, "诛邪剑契", "道书封底的剑图已经苏醒。以灵力呼唤，世间唯一的诛邪便会回到传人手中。", 1, 0, 3),
-            N(ArrayCore, "琉璃定枢", "从《剑阵篇》中悟出最初阵式，以琉璃灵珠镇住中央，在周围展开一座短暂仙阵。", 1, 1, 0),
-            N(ArrayRecovery, "灵机养形", "阵势流转时分出温和生机，使阵中同伴的寻常伤势缓慢愈合。", 1, 1, 0, ArrayCore),
-            N(ArrayTeleport, "循纹神行", "消耗100点灵力，借紫电循阵纹而行，遁入仙阵覆盖之处。", 1, 1, 3, ArrayCore),
+            N(SummonZhuxie, "诛邪剑契", "以灵力呼唤已经认主的诛邪，使仙剑回到手中。", 1, 0, 3),
+            N(ArrayCore, "琉璃定枢", "凝成琉璃阵眼，在周围展开仙阵。", 1, 1, 0),
+            N(ArrayRecovery, "灵机养形", "引导阵内灵力，缓慢恢复同伴的寻常伤势。", 1, 1, 0, ArrayCore),
+            N(ArrayTeleport, "循纹神行", "沿阵纹移形，抵达仙阵覆盖的位置。", 1, 1, 3, ArrayCore),
 
-            N(SwordEnchantment, "雷炁洗锋", "剑意随锋而入，使生灵失神、机械失灵。受过一次镇压者会暂时适应，因而不会被剑意无休止地困住。", 2, 0, 0, SummonZhuxie),
-            N(SwordWard, "剑罡卫形", "精炼随境界自然壮大的护体剑罡，使其上限额外提高50%，并将脱离攻势后的重聚速度提升至三倍。", 2, 0, 1, SummonZhuxie),
-            N(ArrayLightning, "雷符镇宫", "将雷意接入阵纹，使仙阵周期性追索阵中之敌，落点附带同范围EMP脉冲；每道雷消耗10点灵力，数量、威力与范围随境界增长。", 2, 1, 1, ArrayCore),
-            N(ArrayEdgeSlow, "缚形界纹", "敌人触碰阵界时会遭强雷轰击并被阵纹牵住；同一道边界无法接连困住已经适应的目标。", 2, 1, 2, ArrayCore),
+            N(SwordEnchantment, "雷炁洗锋", "剑击附带镇压，使生灵短暂失神、机械失灵。目标受到控制后会暂时适应。", 2, 0, 0, SummonZhuxie),
+            N(SwordWard, "剑罡卫形", "增强护体剑罡，使其能承受更多冲击，脱离攻击后也恢复得更快。", 2, 0, 1, SummonZhuxie),
+            N(ArrayLightning, "雷符镇宫", "在阵中引下天雷，打击敌人并以电磁脉冲扰乱机械。落雷消耗灵力，效果随修为成长。", 2, 1, 1, ArrayCore),
+            N(ArrayEdgeSlow, "缚形界纹", "敌人触碰阵界时受到雷击，行动也被阵纹牵制。刚挣脱的目标不会立刻被同一边界再次困住。", 2, 1, 2, ArrayCore),
 
-            N(SwordShadowsI, "双仪分光", "一念分作双仪剑影，自身前蓄势射出，贯穿敌阵后回归。", 3, 0, 2, SummonZhuxie),
-            N(BlinkChain, "神行逐寇", "缩地一斩诛敌之后，余势会自行寻找下一个目标，直至剑势已尽。", 3, 0, 3, BlinkStrike),
-            N(SwordRainGolden, "九霄剑阵", "将剑势藏入紫府，使天剑雨可储存两次跃击，在境界成长之外额外增加1.5格连斩半径，斩击宽度随之扩大。", 3, 0, 4, SwordRain),
-            N(BlinkStrike, "缩地御剑", "身随剑意闪至敌后，挥出蓄势一斩；也可让剑心自行判断出手时机。", 2, 0, 3, SummonZhuxie),
-            N(SwordRain, "天剑垂象", "以剑罡护体腾空蓄势，霸体跃向敌阵，落地后分出淡蓝虚影穿梭连斩；每升一境，穿梭距离与伤害范围随之扩大。", 2, 0, 4, SummonZhuxie),
-            N(CloudSwordArray, "云海剑匣", "以紫府神识统御六柄常随灵剑，解锁高级法器“云海剑轮”的炼制。固定消耗100点灵力，不计入本境界技能数量。", 3, 0, 6, SwordWard),
-            N(MovingArray, "身载周天", "阵眼隐入周天，仙阵不再留驻原地，唯一阵域随云间子行止而移动。", 3, 1, 4, ArrayCore),
-            N(ArrayTeleportShock, "紫电惊雷", "阵遁落定之际迸发震雷，以EMP扰乱近敌并将其推开；修为越深，雷势越盛。", 3, 1, 3, ArrayTeleport),
+            N(SwordShadowsI, "双仪分光", "分出剑影，蓄势射向敌阵，贯穿后回到身边。", 3, 0, 2, SummonZhuxie),
+            N(BlinkChain, "神行逐寇", "缩地斩杀目标后，余势继续追向附近敌人，直至耗尽。", 3, 0, 3, BlinkStrike),
+            N(SwordRainGolden, "九霄剑阵", "改进天剑雨，使其能积蓄更多跃击，并扩大连斩的范围。", 3, 0, 4, SwordRain),
+            N(BlinkStrike, "缩地御剑", "闪身至敌后，持诛邪挥出蓄势斩击。可切换为征召时自动寻找出手机会。", 2, 0, 3, SummonZhuxie),
+            N(SwordRain, "天剑垂象", "腾空跃向敌阵，落地后分出虚影穿梭连斩。穿梭与攻击范围随修为扩大。", 2, 0, 4, SummonZhuxie),
+            N(CloudSwordArray, "云海剑匣", "紫府境花费1点灵气参悟，在米莉拉研究页完成2000进度后，可于仙器炼制台炼制。佩戴后获得以下效果：\n\n六剑归匣：额外增加6道常随剑影，自行寻敌攻伐。\n灵机周流：灵力自然恢复速度提高50%，移动速度增加0.5格/秒，近战与射击冷却系数各降低0.2。\n剑罡护主：剑罡上限提高50%，单次伤害最高按100点结算。剑罡受损越过三分之一刻度时，向5格内敌人爆发剑气，并将敌方单位击退至多4格。", 3, 3, 0),
+            N(MovingArray, "身载周天", "将阵势维系在身边，阵域随云间子移动，不再依赖驻地的实体阵眼。", 3, 1, 4, ArrayCore),
+            N(ArrayTeleportShock, "紫电惊雷", "循纹神行落定时释放震雷，推开附近敌人并以电磁脉冲扰乱机械。", 3, 1, 3, ArrayTeleport),
 
-            N(SwordShadowsII, "四象巡天", "双仪再分四象，更多剑影自周身射出，贯敌后回收再发。", 4, 0, 2, SwordShadowsI),
-            N(LightningEnchantment, "神霄雷篆", "把引雷阵纹刻入诛邪，使剑击与缩地御剑能够招来一道追随剑锋的天雷，在落点半径2.5格内造成神霄雷炁范围伤害与EMP脉冲；剑影承载雷纹时仍保留各自的引雷间隔。", 4, 0, 0, SwordEnchantment),
-            N(SwordHealing, "噬血奉主", "诛邪饮下敌势，再以温和剑息反哺主人，收拢伤口与流血。", 4, 0, 1, LightningEnchantment),
-            N(DeathLock, "抱一守命", "主人命悬一线时，诛邪会强行镇住生机；此等护主之举不能频繁施展。", 4, 0, 5, SummonZhuxie),
-            N(AllyArrayShield, "众生同庇", "仙阵为阵中同伴与友方机械覆上灵盾；雷霆命中友方所在区域时还会补充一层护盾。", 4, 1, 5, ArrayCore),
-            N(ArrayBarrier, "天垣绝矢", "以持续灵力维系阵界，使阵外来袭的抛射物止步；每次成功拦截固定消耗10点灵力。", 4, 1, 6, AllyArrayShield),
-            N(ArrayEdgeStun, "镇魂界纹", "缚形界纹再添镇魂之力，越界之敌会先失神片刻，而后步履沉重。", 4, 1, 2, ArrayEdgeSlow),
-            N(ArrayStorm, "万钧天狱", "凝聚不超过两秒的紫电雷枪并直线掷出，沿途半径3格贯穿、落点半径7.5格爆发，两段均可伤及敌方单位与建筑，并各自附带EMP，每段基础伤害金丹1200、化神1500，穿甲1000%。随后斜插为雷引，持续二十秒召来天雷轰击。主动施展消耗500点灵力，冷却10秒；同时缩短阵中被动落雷间隔。", 4, 1, 1, ArrayLightning),
+            N(SwordShadowsII, "四象巡天", "维系更多剑影，从周身射出，贯穿敌人后回收再发。", 4, 0, 2, SwordShadowsI),
+            N(LightningEnchantment, "神霄雷篆", "在诛邪刻入引雷纹，使剑击与缩地斩击能够引下天雷，冲击目标周围并扰乱机械。剑影引雷仍有各自的间隔。", 4, 0, 0, SwordEnchantment),
+            N(SwordHealing, "噬血奉主", "诛邪击中敌人后，将剑息引回主人身上，帮助收拢伤口、减轻流血。", 4, 0, 1, LightningEnchantment),
+            N(DeathLock, "抱一守命", "遭受致命威胁时，诛邪暂时护住主人的生机。发动后需要很久才能恢复。", 4, 0, 5, SummonZhuxie),
+            N(AllyArrayShield, "众生同庇", "为阵中同伴与友方机械提供灵盾，友方所在位置受到落雷时还能补充护盾。", 4, 1, 5, ArrayCore),
+            N(ArrayBarrier, "天垣绝矢", "持续耗费灵力维持阵界，拦截从阵外射入的抛射物；成功拦截也消耗灵力。", 4, 1, 6, AllyArrayShield),
+            N(ArrayEdgeStun, "镇魂界纹", "强化阵界控制，使越界敌人先短暂失神，随后行动迟缓。", 4, 1, 2, ArrayEdgeSlow),
+            N(ArrayStorm, "万钧天狱", "凝成雷枪掷向目标，贯穿沿途并在落点爆发，伤及敌方单位和建筑、扰乱机械。雷枪落地后继续引雷，同时改善阵内被动落雷的频率。", 4, 1, 1, ArrayLightning),
 
-            N(SwordShadowsIII, "太虚万剑", "四象铺陈八荒，剑影自周身接连射出，如群星贯穿敌阵。", 5, 0, 2, SwordShadowsII),
-            N(ChainLightningEnchantment, "万劫雷锋", "雷纹化作游走不息的细小电芒。每次剑击都会额外放出无须蓄势的闪电链，在邻近敌人间跳跃，每次命中附带EMP；此雷由剑锋自生，不与从天而降的雷霆同息。", 5, 0, 0, LightningEnchantment),
-            N(ArmorIgnore, "照见真形", "剑意越过甲胄表象，令诛邪、缩地御剑与剑影直指其内。", 5, 0, 6, SummonZhuxie),
-            N(ShadowAffixes, "诸天剑契", "诸剑影与诛邪同契，能够承载已经参悟的镇压与雷纹；分化之剑引雷稍缓，仍各有天威。", 5, 0, 1, SwordShadowsI, SwordEnchantment),
-            N(SwordRainSpirit, "太虚剑劫", "以太虚剑意驱动虚影，天剑雨穿梭连斩的伤害翻倍，充能也更加迅速。", 5, 0, 4, SwordRainGolden),
-            N(ArrayReflect, "诸法返照", "界壁不再一味承受来袭之物，而会循其来路将敌方抛射物返照回去。", 5, 1, 6, ArrayBarrier),
-            N(ArrayTeleportMastery, "一念周天", "身与阵纹浑然相合，阵遁落定时迸发的震雷达到化神层次。", 5, 1, 3, ArrayTeleportShock),
-            N(JiuxiaoXianxu, "九霄织雷", "以元神将天雷织入仙絮，解锁化神法器“九霄仙絮”的炼制；佩用后可令仙阵雷威与一切神霄雷炁大幅增长。自身引发的每一道天雷落下时，不论是否命中目标，都会为护体剑罡充能。固定消耗100点灵力，不计入本境界技能数量。", 5, 1, 0, ArrayStorm),
+            N(SwordShadowsIII, "太虚万剑", "以元神维系密集剑影，持续射向敌阵。", 5, 0, 2, SwordShadowsII),
+            N(ChainLightningEnchantment, "万劫雷锋", "剑击额外释放连锁闪电，在附近敌人之间跳跃，并附带电磁脉冲。此效果与落雷分别生效。", 5, 0, 0, LightningEnchantment),
+            N(ArmorIgnore, "照见真形", "使诛邪、缩地斩击与剑影越过装甲防护，直击目标。", 5, 0, 6, SummonZhuxie),
+            N(ShadowAffixes, "诸天剑契", "使剑影承载已经掌握的镇压与引雷效果。剑影的引雷节奏仍与本剑不同。", 5, 0, 1, SwordShadowsI, SwordEnchantment),
+            N(SwordRainSpirit, "太虚剑劫", "增强天剑雨虚影连斩的威力，并加快充能。", 5, 0, 4, SwordRainGolden),
+            N(ArrayReflect, "诸法返照", "将阵外射来的敌方抛射物沿来路反射回去。", 5, 1, 6, ArrayBarrier),
+            N(ArrayTeleportMastery, "一念周天", "进一步强化循纹神行落定时的震雷，使其达到化神层次。", 5, 1, 3, ArrayTeleportShock),
+            N(SanyuanMiyi, "三垣秘仪斗", "金丹境花费1点灵气参悟，在米莉拉研究页完成2000进度后，可于仙器炼制台炼制。佩戴后获得以下效果：\n\n神机同契：绑定神机伤害提高30%，护盾恢复速度提高50%。命中敌人反哺剑罡并充能；不同神机接连命中同敌时额外共鸣。\n三曜归墟：满100能量自动连续扫射三道光束，将路径敌人推向远端。归墟印持续8秒，神机命中时向6格内同印敌人传递25%伤害。\n百骸归元：神机脱战10秒后，每秒消耗主人2点灵力修复3点普通损伤。不会复活或恢复缺失部件。", 4, 3, 1),
+            N(JiuxiaoXianxu, "九霄仙絮", "化神境花费1点灵气参悟，在米莉拉研究页完成2000进度后，可于仙器炼制台炼制。佩戴后获得以下效果：\n\n九霄引雷：仙阵自动落雷间隔减半，最短为1秒；神霄雷电与雷枪爆发伤害翻倍。\n仙絮护身：受到的伤害降低50%。每次引下天雷，恢复剑罡上限的0.5%，最低恢复10点。\n雷炁化生：落雷处凝成雷兽，存续30秒，同地图最多20只。雷兽消散时返还对应落雷实际灵力消耗的80%。", 5, 3, 2),
 
-            N(ShenjiSummon, "灵机启明", "解锁主动凝成青羽神机核心，并解锁神机装备制造与米莉安培育器中的青羽机侍配方；全世界神机与三类核心总量低于一时才可凝成。", 1, 2, 4),
-            N(ShenjiGatling, "连星机括", "青芒灵铳展开多重铳管，机括循环如群星循轨，以密集离子弹流压制成群之敌。", 2, 2, 0, ShenjiSummon),
-            N(ShenjiRocketJump, "流火神行", "神机获得长距离跃迁能力；自主作战时若被敌人逼近，她也会借此迅速脱身。", 2, 2, 2, ShenjiSummon),
-            N(ShenjiShield, "玉光结盾", "百道细小灵路合为一面偏射护盾，容量600；普通、远程与爆炸命中固定消耗50点，明确近战命中消耗300点。尚有能量时完整挡住耗尽护盾的最后一击；遭受EMP时会直接破碎。", 2, 2, 3, ShenjiSummon),
-            N(ShenjiDualControl, "神分四象", "神识分镇四方而不乱，将神机与三类核心的全世界总量上限提升至四，并可同时维系四位神机米莉安；低于额度时可主动凝成青羽核心。", 3, 2, 7, ShenjiSummon),
-            N(ShenjiGauss, "日轮炼光", "神机武装舍弃实体弹丸，以日棱晶约束淡蓝脉冲辉光，迅疾洞穿远处之敌。", 3, 2, 0, ShenjiGatling),
-            N(ShenjiAccessories, "诸器同参", "参悟道书中的通机之理，使神机能够使用米莉拉通用配件；并解锁可供九霄天将安装的灵术演算芯片。", 4, 2, 5, ShenjiSummon),
-            N(ShenjiRecallRepair, "败形归炉", "神机将被彻底击溃时，道书印记会把她召回云间子身旁并重整形体；此法需要很久才能再次积蓄。", 4, 2, 6, ShenjiSummon),
-            N(ShenjiDarkShield, "太阴天幕", "以暗物质约束技术重炼玉光之盾，容量提升至2000点；普通、远程与爆炸命中固定消耗10点、明确近战命中消耗50点。尚有能量时完整挡住最后一击，并可无消耗抵挡EMP。", 4, 2, 3, ShenjiShield),
-            N(ShenjiLegendaryFirepower, "天工曜世", "金丹为炉，神机为器。最终器形完全展开，以永不枯竭的辉光维持传奇般的火力。", 4, 2, 0, ShenjiGauss),
-            N(ShenjiRicochetLaser, "流光千折", "辉光命中后借附近敌人的能量轮廓连续折跃；每次折射都会衰减，却足以扰乱整片敌阵。", 4, 2, 1, ShenjiGauss),
-            N(ShenjiQuadControl, "念镇九宫", "元神遍照九宫，将神机与三类核心的全世界总量上限提升至九，并可同时维系九位神机米莉安；低于额度时可主动凝成青羽核心。", 5, 2, 7, ShenjiDualControl),
-            N(ShenjiWyvern, "旧契重明", "读懂道书末页的云纹蹄印，呼唤曾与上一代云间子并肩远行的云麒麟。她并非受人驱使的坐骑，只有认可新传人后才会续上旧约；平日协助搬运，战时则自行迎敌，并以瑞气和灵盾护佑友军。她的形态随云间子的境界成长，不必另行领悟进阶技能；突破后再次唤起，即显现相应境界的真形。各形态能力详见云麒麟的介绍。", 3, 2, 8, ShenjiSummon),
+            N(ShenjiSummon, "灵机启明", "掌握青羽核心的凝成方法，解锁基础神机培育与装备制造。现役神机与各类核心共用额度，总量未满时才能凝成新核心。", 1, 2, 4),
+            N(ShenjiGatling, "连星机括", "解锁连星机括，以密集离子弹流压制聚集的敌人。", 2, 2, 0, ShenjiSummon),
+            N(ShenjiRocketJump, "流火神行", "使神机能够远距离跃迁，自主作战时也可用来脱离近敌。", 2, 2, 2, ShenjiSummon),
+            N(ShenjiShield, "玉光结盾", "为神机提供偏射护盾。受到攻击时消耗盾能，仍有盾能时可完整承受最后一击；电磁脉冲会使其直接破碎。", 2, 2, 3, ShenjiSummon),
+            N(ShenjiDualControl, "神分四象", "提高可维系的神机与核心总额度，并扩大同时控制规模。额度未满时可继续凝成青羽核心。", 3, 2, 7, ShenjiSummon),
+            N(ShenjiGauss, "日轮炼光", "解锁以日棱晶约束能量的贯日光铳，打击远处敌人。", 3, 2, 0, ShenjiGatling),
+            N(ShenjiAccessories, "诸器同参", "使神机能够使用米莉拉通用配件，并解锁九霄天将使用的灵术演算芯片。", 4, 2, 5, ShenjiSummon),
+            N(ShenjiRecallRepair, "败形归炉", "神机即将被彻底击溃时，将其召回云间子附近并重整机体。发动后需要较长时间恢复。", 4, 2, 6, ShenjiSummon),
+            N(ShenjiDarkShield, "太阴天幕", "强化偏射护盾，提升承载能力、降低受击消耗，并使其能够抵御电磁脉冲。", 4, 2, 3, ShenjiShield),
+            N(ShenjiLegendaryFirepower, "天工曜世", "解锁九霄神光仪，使神机能够持续输出高阶辉光火力。", 4, 2, 0, ShenjiGauss),
+            N(ShenjiRicochetLaser, "流光千折", "使辉光命中后折向附近敌人。每次折射都会减弱。", 4, 2, 1, ShenjiGauss),
+            N(ShenjiQuadControl, "念镇九宫", "进一步扩大控制规模与神机、核心的共同额度。额度未满时可继续凝成青羽核心。", 5, 2, 7, ShenjiDualControl),
+            N(ShenjiWyvern, "旧契重明", "读懂前代手记中留下的旧约，呼唤曾与他同行的云麒麟。平日协助搬运，战时主动迎敌、保护友军。形态随云间子的境界变化，突破后再次呼唤即可显现新形态。", 3, 2, 8, ShenjiSummon),
 
-            N(YangfuPrimer, "灵墨书符", "读懂《阳符篇》卷首：研墨裁纸，以灵力落笔。由此可修建画符台，并继续参悟书中的符图。", 1, 3, 2),
-            N(FireTornadoI, "燃符生焰", "赤符燃尽，符中火意化作一股受控龙卷，在指定之处持续追逐焚烧。", 1, 3, 6, YangfuPrimer),
-            N(ThunderWindI, "巽符引风", "紫符先唤神风收拢敌群，待风眼成形，再引一道天雷落下。", 1, 3, 7, YangfuPrimer),
-            N(BeanSoldiersI, "点豆生灵", "青符落地，唤出少量机巧符兵。它们会自行追敌，并以最后一息引爆符胆。", 1, 3, 8, YangfuPrimer),
-            N(TalismanZhuoyu, "啄玉符", "参悟良工知止之意，使制成器物更容易抵达上乘品阶，并可在画符台绘成实体阳符。", 2, 3, 0, YangfuPrimer),
-            N(TalismanShenjie, "截真符", "从万千表象中截取一线真意，大幅加快对未知事物的研究。", 2, 3, 1, YangfuPrimer),
-            N(TalismanShenxing, "神行符", "引轻灵之气行于足下，使脚步如云影越岭。", 2, 3, 2, YangfuPrimer),
-            N(TalismanJiqing, "寄情符", "把山水草木收进心境；四周越清雅华美，言谈与心神便越从容。", 2, 3, 3, YangfuPrimer),
-            N(TalismanBaicao, "百草符", "使百草医理映照病机，大幅精进医疗与手术，并避开最凶险的失误。", 2, 3, 4, YangfuPrimer),
-            N(TalismanXinjian, "心剑符", "心剑斩去言语虚声，使交易中的迟疑、渴求与底线清晰可辨。", 2, 3, 5, YangfuPrimer),
-            N(FireTornadoII, "赤龙卷地", "筑基真炁令火龙卷行得更远，也燃得更久、更烈。", 2, 3, 6, FireTornadoI),
-            N(ThunderWindII, "风眼聚形", "神风能够牵制敌人更久，并在风眼成形后接连引下天雷。", 2, 3, 7, ThunderWindI),
-            N(BeanSoldiersII, "黄巾借甲", "符图可以承载更多兵形，唤出的符兵也更坚固，爆裂之势更盛。", 2, 3, 8, BeanSoldiersI),
-            N(TalismanBeidou, "斗转符", "斗柄流转不息，使出手、瞄准与御剑的节律更为迅捷。", 3, 3, 2, TalismanShenxing),
-            N(TalismanGuihai, "百川归海符", "百脉如川，紫府如海；逸散灵气重新归流周天，大幅加快一切回灵。", 3, 3, 1, TalismanShenjie),
-            N(TalismanShenlian, "神炼符", "器物尚未成形，神念已见其完成后的模样，因而诸般工作皆能大幅加快。", 3, 3, 0, TalismanZhuoyu),
-            N(TalismanHuijian, "慧剑斩念符", "一线慧剑横过灵台，隔绝外来低语，也斩去纷乱妄念。", 3, 3, 3, TalismanJiqing),
-            N(FireTornadoIII, "金乌游天", "紫府神识能够在更远处维系火符，使龙卷久久不散。", 3, 3, 6, FireTornadoII),
-            N(ThunderWindIII, "紫霄召雷", "紫府神识稳住风眼，使聚拢更持久，并引来更多雷霆。", 3, 3, 7, ThunderWindII),
-            N(BeanSoldiersIII, "六丁结伍", "紫府神识可同时维系一队符兵，使它们结伴奔赴敌阵。", 3, 3, 8, BeanSoldiersII),
-            N(TalismanBumei, "不昧真灵符", "真灵历劫而不昧，所学所见皆归于本心，不再因心情动摇而失控。", 4, 3, 3, TalismanHuijian),
-            N(TalismanJiexin, "劫心符", "以一滴本源心血唤醒全身潜能，换取肉身、工作、医疗与战斗的全面强盛。", 4, 3, 4, TalismanBaicao),
-            N(TalismanLiuyang, "六阳真形符", "偏取六阳，使射击与格杀臻于极境；代价是文思枯灼，心火难平。", 4, 3, 2, TalismanBeidou),
-            N(FireTornadoIV, "大日炎狱", "金丹为火种，令龙卷越过更远距离，燃烧得更加持久而猛烈。", 4, 3, 6, FireTornadoIII),
-            N(ThunderWindIV, "罡风锁岳", "金丹法力使神风久聚不散，随后以连绵雷霆收束整道术式。", 4, 3, 7, ThunderWindIII),
-            N(BeanSoldiersIV, "六甲成阵", "金丹法力可赋予更多豆兵坚实形体，使一队符兵如小型军阵般冲锋。", 4, 3, 8, BeanSoldiersIII),
-            N(TalismanTiandao, "万艺通玄符", "百艺之理在符中彼此贯通，使所有能够从事的技艺暂时臻于极境。", 5, 3, 0, TalismanShenlian, TalismanBumei),
-            N(TalismanHuanri, "偷天符", "从天数中偷去肉身走向衰老的那一步，使生理寿元不再流逝。", 5, 3, 4, TalismanJiexin)
-            ,N(FireTornadoV, "焚天煮海", "元神遥御赤符，火龙卷可在极远处长久肆虐，并显露此术全部威能。", 5, 3, 6, FireTornadoIV)
-            ,N(ThunderWindV, "九霄雷狱", "元神镇住浩大风眼，将敌群久困其中，最终召来此术最盛的一场雷霆。", 5, 3, 7, ThunderWindIV)
-            ,N(BeanSoldiersV, "天兵奉敕", "元神一念分化众兵，符军数量、形体与自爆威势皆达到此法极致。", 5, 3, 8, BeanSoldiersIV)
         };
 
         private static YunjianziSkillNode N(string id, string label, string description, int realm, int branch, int lane, params string[] prerequisites)
@@ -219,7 +190,10 @@ namespace Yunjianzi
 
         public bool HasSkill(string id)
         {
-            return id == YunjianziSkills.SummonZhuxie || (learnedSkills != null && learnedSkills.Contains(id));
+            if (AwaitingInheritance) return false;
+            return id == YunjianziSkills.SummonZhuxie ||
+                (id != null && !id.StartsWith("yangfu.", StringComparison.Ordinal) &&
+                learnedSkills != null && learnedSkills.Contains(id));
         }
 
         public int LearnedSkillCountAtRealm(int realm)
@@ -235,12 +209,12 @@ namespace Yunjianzi
 
         private static bool IsArtifactSkill(string id)
         {
-            return id == YunjianziSkills.CloudSwordArray || id == YunjianziSkills.JiuxiaoXianxu;
+            return id == YunjianziSkills.SanyuanMiyi || id == YunjianziSkills.CloudSwordArray || id == YunjianziSkills.JiuxiaoXianxu;
         }
 
         internal int SkillCost(YunjianziSkillNode node)
         {
-            if (node != null && IsArtifactSkill(node.Id)) return 100;
+            if (node != null && IsArtifactSkill(node.Id)) return 1;
             int bought = LearnedSkillCountAtRealm(node.Realm);
             // Each realm has its own purchase counter: first pick is free, then
             // 10%, 20%, 30%... of that realm's energy cap, capped at 200%.
@@ -252,7 +226,7 @@ namespace Yunjianzi
         {
             if (node == null) return "无效技能。";
             if (HasSkill(node.Id)) return "已掌握。";
-            if (!HasOpenedBoundScroll) return "需要先研读云间宝卷。";
+            if (!HasOpenedBoundScroll) return "需要先研读前代手记。";
             if (Realm < node.Realm) return "需要达到" + RealmName(node.Realm) + "境。";
             for (int i = 0; i < node.Prerequisites.Length; i++)
             {
@@ -279,6 +253,7 @@ namespace Yunjianzi
             if (cost > 0 && !TrySpend(cost)) return;
             if (learnedSkills == null) learnedSkills = new List<string>();
             learnedSkills.Add(node.Id);
+            YunjianziArtifactResearch.UnlockLearned(learnedSkills);
             if (node.Id == YunjianziSkills.SwordWard) Shield = ShieldMax;
             if (node.Id == YunjianziSkills.ShenjiShield || node.Id == YunjianziSkills.ShenjiDarkShield)
                 RefreshBoundShenjiShields();
@@ -291,10 +266,11 @@ namespace Yunjianzi
         {
             if (!DebugSkillMode) return;
             boundScrollConsumed = true;
+            AcceptInheritance();
             boundScrollCreated = true;
             cultivatedEnergyMax = Mathf.Max(cultivatedEnergyMax, 10f);
             Energy = EnergyMax;
-            Messages.Message("DEV：已直接研读云间宝卷。", Pawn, MessageTypeDefOf.PositiveEvent, false);
+            Messages.Message("DEV：已直接研读前代手记。", Pawn, MessageTypeDefOf.PositiveEvent, false);
         }
 
         private void DebugAdvanceRealm()
@@ -322,6 +298,7 @@ namespace Yunjianzi
             if (learnedSkills == null) learnedSkills = new List<string>();
             foreach (YunjianziSkillNode node in YunjianziSkills.All.Where(n => n.Id != YunjianziSkills.SummonZhuxie && n.Realm <= Realm))
                 if (!learnedSkills.Contains(node.Id)) learnedSkills.Add(node.Id);
+            YunjianziArtifactResearch.UnlockLearned(learnedSkills);
             Shield = ShieldMax;
             Messages.Message("DEV：已解锁" + RealmLabel + "及之前的全部技能。", Pawn, MessageTypeDefOf.PositiveEvent, false);
         }
@@ -331,6 +308,7 @@ namespace Yunjianzi
             if (!DebugSkillMode || node == null || node.Id == YunjianziSkills.SummonZhuxie || HasSkill(node.Id)) return;
             if (learnedSkills == null) learnedSkills = new List<string>();
             learnedSkills.Add(node.Id);
+            YunjianziArtifactResearch.UnlockLearned(learnedSkills);
             if (node.Id == YunjianziSkills.SwordWard) Shield = ShieldMax;
             if (node.Id == YunjianziSkills.ShenjiShield || node.Id == YunjianziSkills.ShenjiDarkShield)
                 RefreshBoundShenjiShields();
@@ -374,6 +352,7 @@ namespace Yunjianzi
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 learnedSkills = YunjianziSkills.NormalizeLearnedSkills(learnedSkills);
+                YunjianziArtifactResearch.UnlockLearned(learnedSkills);
             }
         }
 
@@ -397,34 +376,34 @@ namespace Yunjianzi
         private readonly Dictionary<string, Rect> nodeRects = new Dictionary<string, Rect>();
         private int selectedBranch;
 
-        private static readonly string[] BranchTitles = { "御剑诀", "仙阵诀", "神机诀", "阳符诀" };
+        private static readonly string[] BranchTitles = { "御剑诀", "仙阵诀", "神机诀", "仙器拾遗" };
         private static readonly Texture2D[] BranchIcons =
         {
             YunjianziAbilityTextures.SummonZhuxie,
             YunjianziAbilityTextures.ImmortalArray,
             YunjianziAbilityTextures.SummonShenji,
-            YunjianziAbilityTextures.TalismanSlot
+            YunjianziAbilityTextures.CultivationTree
         };
         private static readonly string[] BranchIntroductions =
         {
             "白刃至今，御剑之术由杀伐之道而生。山门以灵御剑，诛邪无数，又以剑正道之谬。以剑载敌、遁行为小乘；凭心御剑，方是大道。",
             "阵法之道，玄妙非常。入道之人可凭一器演化，瞒天拘地；亦可引动天地雷霆，困敌于阵中，或融入心神，御敌无形。一人起阵，亦自成方圆。",
             "器者载道，机者通神。神机诀取米莉拉灵械之学，合阵枢、灵纹与修行之法，以心御机，以机行道。灵念所至，百工与兵锋皆如臂使指。",
-            "古有五经论道，观天地广阔、五行变换，皆可采其意而书于符中。符可护身益生，亦可蕴火、雷、风、兵之术；一纸虽轻，落笔即成法。"
+            "拾前代遗篇，参藏器之道。紫府藏剑，金丹御机，化神织雷。三器各费1点灵气参悟，再于米莉拉研究页各完成2000进度，即可在仙器炼制台炼制；无其他技能前置，不计入常规技能数量。"
         };
         private static readonly string[] BranchRootIds =
         {
             YunjianziSkills.SummonZhuxie,
             YunjianziSkills.ArrayCore,
             YunjianziSkills.ShenjiSummon,
-            YunjianziSkills.YangfuPrimer
+            string.Empty
         };
         private static readonly string[][] BranchLaneLabels =
         {
             new[] { "雷锋", "剑契", "分光", "神行", "剑劫", "守命", "真形" },
             new[] { "养形", "雷宫", "界纹", "神行", "周天", "同庇", "天垣" },
             new[] { "主火力", "折射", "机动", "护盾", "预留", "同参", "归炉", "御机", "瑞兽真形" },
-            new[] { "百工", "格物", "斗转", "斩念", "炼形", "心剑", "火法", "风雷", "道兵" }
+            new[] { "剑匣", "秘仪", "仙絮" }
         };
 
         public Window_YunjianziCultivationTree(CompYunjianziCultivation cultivation)
@@ -455,7 +434,7 @@ namespace Yunjianzi
             Widgets.DrawTextureFitted(new Rect(25f, 16f, 34f, 34f), YunjianziAbilityTextures.CultivationTree, 1f);
             Text.Font = GameFont.Medium;
             GUI.color = Ivory;
-            Widgets.Label(new Rect(70f, 11f, 360f, 28f), "云间宝卷 · 修为参悟");
+            Widgets.Label(new Rect(70f, 11f, 360f, 28f), "前代云间子手记 · 修为参悟");
             Text.Font = GameFont.Tiny;
             GUI.color = Mist;
             Widgets.Label(new Rect(72f, 36f, 350f, 16f), "循境问道 · 以灵印证 · 四诀同参");
@@ -594,45 +573,6 @@ namespace Yunjianzi
             DrawBranchNodes(branch);
             Text.Anchor = TextAnchor.UpperLeft;
             Text.Font = GameFont.Small;
-        }
-
-        private static void DrawYangfuConcept(Rect panel)
-        {
-            float top = panel.y + 72f;
-            float gap = 10f;
-            float cardWidth = (panel.width - 34f - gap * 3f) / 4f;
-            float cardHeight = 398f;
-            DrawConceptCard(new Rect(panel.x + 17f, top, cardWidth, cardHeight), "筑基 · 一符位",
-                "啄玉符：大幅提高成品品阶\n\n截真符：大幅提高科研速度\n\n神行符：大幅提高移动速度\n\n寄情符：美景转化为魅力与心境\n\n百草符：精通医术，避免灾难性失败\n\n心剑符：洞彻人心，提高贸易优势",
-                new Color(.15f, .35f, .31f, .94f));
-            DrawConceptCard(new Rect(panel.x + 17f + cardWidth + gap, top, cardWidth, cardHeight), "紫府 · 二符位",
-                "斗转符：攻速提升，缩短武器特效冷却\n\n百川归海符：大幅提高灵力恢复速度\n\n神炼符：大幅提高制作工作效率\n\n慧剑斩念符：免疫负面心灵低语与精神扰动",
-                new Color(.22f, .25f, .46f, .94f));
-            DrawConceptCard(new Rect(panel.x + 17f + (cardWidth + gap) * 2f, top, cardWidth, cardHeight), "金丹 · 三符位",
-                "不昧真灵符：心境圆满，法门施放加快\n\n劫心符：消耗本源，全面淬炼肉身\n\n六阳真形符：战斗技能20级；艺术归零，并大幅降低心境",
-                new Color(.47f, .33f, .12f, .94f));
-            DrawConceptCard(new Rect(panel.x + 17f + (cardWidth + gap) * 3f, top, cardWidth, cardHeight), "化神 · 四符位",
-                "万艺通玄符：所有未被背景禁止的技能臻于极境\n\n偷天符：生理年龄停止增长\n\n符位只限制同时生效数量；已学会和储存的符咒不受限制。",
-                new Color(.40f, .18f, .42f, .94f));
-
-            Rect combat = new Rect(panel.x + 17f, top + cardHeight + 14f, panel.width - 34f, 92f);
-            DrawConceptCard(combat, "战斗术符 · 独立直线进阶",
-                "火龙卷：移动焚烧与区域驱赶　　天雷神风：聚拢敌军后雷击　　撒豆成兵：召唤短命符兵冲锋自爆。右键选择术式，左键施放；三条路线分别进阶。",
-                new Color(.38f, .22f, .15f, .94f));
-        }
-
-        private static void DrawConceptCard(Rect rect, string title, string body, Color fill)
-        {
-            Widgets.DrawBoxSolid(rect, fill);
-            Widgets.DrawBox(rect, 1);
-            Text.Anchor = TextAnchor.UpperLeft;
-            Text.Font = GameFont.Small;
-            GUI.color = new Color(.88f, .95f, .91f);
-            Widgets.Label(new Rect(rect.x + 14f, rect.y + 12f, rect.width - 28f, 28f), title);
-            Text.Font = GameFont.Tiny;
-            GUI.color = new Color(.88f, .90f, .88f);
-            Widgets.Label(new Rect(rect.x + 14f, rect.y + 48f, rect.width - 28f, rect.height - 60f), body);
-            GUI.color = Color.white;
         }
 
         private void DrawRealmBands(Rect panel, int branch)
@@ -781,6 +721,7 @@ namespace Yunjianzi
                 string tip = node.Label + "（" + CompYunjianziCultivation.RealmName(node.Realm) + "）\n" + node.Description +
                     "\n\n本境界已学习：" + comp.LearnedSkillCountAtRealm(node.Realm) + "项\n本次消耗：" + cost + "当前灵力" +
                     "\n费用序列：第1～6项为0%、10%、20%、40%、70%、100%；第7项起每项固定为该境界标准灵力上限的200%。";
+                if (node.Branch == 3) tip = node.Label + "（" + CompYunjianziCultivation.RealmName(node.Realm) + "）\n" + node.Description + "\n\n参悟消耗：1点灵气；研究进度：2000。";
                 if (!learned && reason != null) tip += debug ? "\n\nGOD MODE：可忽略限制免费解锁。" : "\n\n尚不可学习：" + reason;
                 if (debug && learned && node.Id != YunjianziSkills.SummonZhuxie) tip += "\n\nGOD MODE：右键移除此节点。";
                 TooltipHandler.TipRegion(rect, tip);

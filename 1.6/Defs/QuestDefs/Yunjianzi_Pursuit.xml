@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef MayRequire="Ludeon.RimWorld.Odyssey">
+    <defName>YJZ_EntityVoidAdaptation</defName><label>界外适应</label><description>未知力量维持着这个实体，使其能够在真空与极端温度下生存。</description>
+    <hediffClass>HediffWithComps</hediffClass><isBad>false</isBad><initialSeverity>1</initialSeverity>
+    <stages><li><statOffsets><VacuumResistance>1</VacuumResistance><ComfyTemperatureMin>-1000</ComfyTemperatureMin><ComfyTemperatureMax>1000</ComfyTemperatureMax></statOffsets></li></stages>
+  </HediffDef>
+  <QuestScriptDef><defName>YJZ_NodeQuest</defName><root Class="QuestNode_Sequence"/><rootSelectionWeight>0</rootSelectionWeight><autoAccept>true</autoAccept></QuestScriptDef>
+  <Yunjianzi.YunjianziPursuitSettings><defName>YJZ_PursuitSettings</defName></Yunjianzi.YunjianziPursuitSettings>
+  <ScenPartDef>
+    <defName>YJZ_Pursuit</defName><label>魔神追踪</label><description>未知魔神追索云间子；迁移可暂避，斩断连接可终止追踪。</description>
+    <category>Rule</category><scenPartClass>Yunjianzi.ScenPart_YunjianziPursuit</scenPartClass><selectionWeight>0</selectionWeight><maxUses>1</maxUses>
+  </ScenPartDef>
+  <WorldObjectDef>
+    <defName>YJZ_SurfaceNodeSite</defName><label>地表连接</label><description>追踪痕迹汇集的遗址。</description>
+    <worldObjectClass>Yunjianzi.YunjianziSurfaceNodeSite</worldObjectClass><texture>World/WorldObjects/Expanding/Settlement</texture>
+    <expandingIcon>true</expandingIcon><expandingIconTexture>World/WorldObjects/Expanding/Settlement</expandingIconTexture><canHaveFaction>false</canHaveFaction>
+    <mapGenerator>Encounter</mapGenerator>
+  </WorldObjectDef>
+  <WorldObjectDef MayRequire="Ludeon.RimWorld.Odyssey">
+    <defName>YJZ_SpaceNodeSite</defName><label>天外连接</label><description>未知魔神留在轨道上的连接。</description>
+    <worldObjectClass>Yunjianzi.YunjianziSpaceNodeSite</worldObjectClass><texture>World/WorldObjects/Expanding/Settlement</texture>
+    <expandingIcon>true</expandingIcon><expandingIconTexture>World/WorldObjects/Expanding/Settlement</expandingIconTexture><canHaveFaction>false</canHaveFaction>
+    <mapGenerator>YJZ_NodeSpace</mapGenerator>
+  </WorldObjectDef>
+  <GenStepDef MayRequire="Ludeon.RimWorld.Odyssey"><defName>YJZ_NodePlatform</defName><order>200</order><genStep Class="Yunjianzi.GenStep_YunjianziPlatform" /></GenStepDef>
+  <MapGeneratorDef ParentName="SpaceMapGenerator" MayRequire="Ludeon.RimWorld.Odyssey">
+    <defName>YJZ_NodeSpace</defName><genSteps><li>YJZ_NodePlatform</li></genSteps>
+  </MapGeneratorDef>
+  <ThingDef Name="YJZ_PursuitNodeBase" ParentName="BuildingBase" Abstract="True">
+    <thingClass>Yunjianzi.Building_YunjianziNode</thingClass><tickerType>Normal</tickerType><category>Building</category>
+    <drawerType>RealtimeOnly</drawerType><rotatable>false</rotatable>
+    <graphicData><texPath>Yunjianzi/Buildings/PursuitNodes/BasicIcon</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(5,5)</drawSize></graphicData>
+    <bringAlongOnGravship>false</bringAlongOnGravship><preventGravshipLandingOn>true</preventGravshipLandingOn>
+    <size>(5,5)</size><altitudeLayer>Building</altitudeLayer><passability>Impassable</passability><selectable>true</selectable>
+    <useHitPoints>true</useHitPoints><statBases><MaxHitPoints>6000</MaxHitPoints><Flammability>0</Flammability></statBases>
+    <building><isTargetable>true</isTargetable><claimable>false</claimable><deconstructible>false</deconstructible><repairable>false</repairable></building>
+  </ThingDef>
+<ThingDef ParentName="YJZ_PursuitNodeBase"><defName>YJZ_PursuitNode0</defName><label>地表魔神节点·其一</label><description>魔神留在地表的节点。晦暗的力量盘踞于此，仍与界外相连。须逐层击溃其形体，并守至残余联系彻底消散。</description></ThingDef>
+<ThingDef ParentName="YJZ_PursuitNodeBase"><defName>YJZ_PursuitNode1</defName><label>地表魔神节点·其二</label><description>魔神留在地表的节点。晦暗的力量盘踞于此，仍与界外相连。须逐层击溃其形体，并守至残余联系彻底消散。</description></ThingDef>
+<ThingDef ParentName="YJZ_PursuitNodeBase"><defName>YJZ_PursuitNode2</defName><label>天外魔神节点·其一</label><size>(7,7)</size><graphicData><texPath>Yunjianzi/Buildings/PursuitNodes/AdvancedIcon</texPath><drawSize>(7,7)</drawSize></graphicData><description>魔神留在天外的节点。此地的联系更为深重，隐约有庞大的意志从另一端压来。须逐层击溃其形体，并守至残余联系彻底消散。</description></ThingDef>
+<ThingDef ParentName="YJZ_PursuitNodeBase"><defName>YJZ_PursuitNode3</defName><label>天外魔神节点·其二</label><size>(7,7)</size><graphicData><texPath>Yunjianzi/Buildings/PursuitNodes/AdvancedIcon</texPath><drawSize>(7,7)</drawSize></graphicData><description>魔神留在天外的节点。此地的联系更为深重，隐约有庞大的意志从另一端压来。须逐层击溃其形体，并守至残余联系彻底消散。</description></ThingDef>
+<ThingDef ParentName="YJZ_PursuitNodeBase"><defName>YJZ_PursuitNode4</defName><label>天外魔神节点·其三</label><size>(7,7)</size><graphicData><texPath>Yunjianzi/Buildings/PursuitNodes/AdvancedIcon</texPath><drawSize>(7,7)</drawSize></graphicData><description>魔神留在天外的节点。此地的联系更为深重，隐约有庞大的意志从另一端压来。须逐层击溃其形体，并守至残余联系彻底消散。</description></ThingDef>
+</Defs>

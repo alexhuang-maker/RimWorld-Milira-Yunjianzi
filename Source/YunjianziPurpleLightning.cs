@@ -82,53 +82,53 @@ namespace Yunjianzi
         internal static void Strike(IntVec3 cell, Map map, float strength = 1f,
             Pawn caster = null, float damage = -1f, float armorPenetration = .75f,
             float radius = YunjianziLightningDamage.MinimumRadius,
-            float empDamage = YunjianziEmp.LightningDamage, float empRadius = -1f)
+            float empDamage = YunjianziEmp.LightningDamage, float empRadius = -1f, int realm = -1)
         {
             if (map == null || !cell.InBounds(map)) return;
             YunjianziLightningDamage.Apply(cell, map, caster, damage, armorPenetration, radius, empDamage, empRadius);
-            MapComponent_YunjianziPurpleLightning visuals = Visuals(map, cell);
+            MapComponent_YunjianziPurpleLightning visuals = Visuals(map, cell, realm < 0 ? LightningRealm.Of(caster) : realm);
             visuals?.AddBolt(cell.ToVector3Shifted(), strength);
             visuals?.AddEmpPulse(cell.ToVector3Shifted(), Mathf.Max(YunjianziLightningDamage.MinimumRadius, Mathf.Max(radius, empRadius)));
         }
 
-        internal static void Glow(Vector3 position, Map map, float size)
+        internal static void Glow(Vector3 position, Map map, float size, int realm = 3)
         {
-            Visuals(map, position.ToIntVec3())?.AddGlow(position, size);
+            Visuals(map, position.ToIntVec3(), realm)?.AddGlow(position, size);
         }
 
-        internal static void Chain(List<Vector3> points, Map map, float strength = 1f)
+        internal static void Chain(List<Vector3> points, Map map, float strength = 1f, int realm = 3)
         {
             if (points == null || points.Count == 0) return;
-            Visuals(map, points[0].ToIntVec3())?.AddChain(points, strength);
+            Visuals(map, points[0].ToIntVec3(), realm)?.AddChain(points, strength);
         }
 
-        internal static void Arc(Vector3 start, Vector3 end, Map map, float strength = 1f)
+        internal static void Arc(Vector3 start, Vector3 end, Map map, float strength = 1f, int realm = 3)
         {
-            Chain(new List<Vector3> { start, end }, map, strength);
+            Chain(new List<Vector3> { start, end }, map, strength, realm);
         }
 
-        internal static void Burst(Vector3 position, Map map, float strength = 1f)
+        internal static void Burst(Vector3 position, Map map, float strength = 1f, int realm = 3)
         {
-            Visuals(map, position.ToIntVec3())?.AddBurst(position, strength);
+            Visuals(map, position.ToIntVec3(), realm)?.AddBurst(position, strength);
         }
 
-        internal static void ImpactWave(Vector3 position, Map map, float radius, float strength = 1f)
+        internal static void ImpactWave(Vector3 position, Map map, float radius, float strength = 1f, int realm = 3)
         {
-            Visuals(map, position.ToIntVec3())?.AddImpactWave(position, radius, strength);
+            Visuals(map, position.ToIntVec3(), realm)?.AddImpactWave(position, radius, strength);
         }
 
         // Visual-only EMP feedback. The caller owns all damage / stun rules.
-        internal static void EmpPulse(Vector3 position, Map map, float radius)
+        internal static void EmpPulse(Vector3 position, Map map, float radius, int realm = 3)
         {
-            Visuals(map, position.ToIntVec3())?.AddEmpPulse(position, radius);
+            Visuals(map, position.ToIntVec3(), realm)?.AddEmpPulse(position, radius);
         }
 
-        private static MapComponent_YunjianziPurpleLightning Visuals(Map map, IntVec3 cell)
+        private static MapComponent_YunjianziPurpleLightning Visuals(Map map, IntVec3 cell, int realm)
         {
-            // Hidden maps never accumulate VFX to replay on return. Damage above
-            // still runs on every map, even when no visual is admitted.
-            return map != null && map == Find.CurrentMap && cell.InBounds(map) && !cell.Fogged(map)
-                ? map.GetComponent<MapComponent_YunjianziPurpleLightning>() : null;
+            if (map == null || map != Find.CurrentMap || !cell.InBounds(map) || cell.Fogged(map)) return null;
+            var visuals = map.GetComponent<MapComponent_YunjianziPurpleLightning>();
+            visuals.EmissionRealm = realm;
+            return visuals;
         }
     }
 
@@ -136,6 +136,7 @@ namespace Yunjianzi
     {
         private sealed class Flash
         {
+            internal int realm;
             internal Vector3[] points;
             internal float born, duration, strength;
             internal int seed;
@@ -151,6 +152,7 @@ namespace Yunjianzi
 
         private sealed class Glow
         {
+            internal int realm;
             internal Vector3 position;
             internal float born, size;
         }
@@ -160,6 +162,7 @@ namespace Yunjianzi
         private readonly Stack<PurpleLightningRibbon> ribbonPool = new Stack<PurpleLightningRibbon>();
         private readonly PurpleLightningBudget budget = new PurpleLightningBudget();
         private readonly PurpleLightningStyleCycle styles = new PurpleLightningStyleCycle();
+        internal int EmissionRealm = 3;
         private float visualTime;
         private int serial;
         private int boltCount;
@@ -177,7 +180,7 @@ namespace Yunjianzi
             for (int i = 0; i < flashes.Count; i++)
             {
                 Flash existing = flashes[i];
-                if (existing.bolt && visualTime - existing.born < .12f &&
+                if (existing.realm == EmissionRealm && existing.bolt && visualTime - existing.born < .12f &&
                     (existing.points[0] - position).sqrMagnitude < 1.44f)
                 {
                     // Same-cell multihits brighten one bolt, without restarting
@@ -223,7 +226,7 @@ namespace Yunjianzi
             flashes.Add(new Flash
             {
                 points = points, strength = strength, bolt = bolt, duration = duration,
-                born = visualTime, seed = seed,
+                born = visualTime, seed = seed, realm = EmissionRealm,
                 ribbon = ribbonPool.Count > 0 ? ribbonPool.Pop() : new PurpleLightningRibbon()
             });
             if (bolt) boltCount++; else chainCount++;
@@ -243,7 +246,7 @@ namespace Yunjianzi
             for (int i = 0; i < flashes.Count; i++)
             {
                 Flash existing = flashes[i];
-                if (existing.particleExplosion && visualTime - existing.born < .12f &&
+                if (existing.realm == EmissionRealm && existing.particleExplosion && visualTime - existing.born < .12f &&
                     (existing.points[0] - position).sqrMagnitude < 1.44f)
                 {
                     existing.impactRadius = Mathf.Max(existing.impactRadius, radius);
@@ -269,14 +272,14 @@ namespace Yunjianzi
             for (int i = 0; i < glows.Count; i++)
             {
                 Glow existing = glows[i];
-                if ((existing.position - position).sqrMagnitude < 1.44f)
+                if (existing.realm == EmissionRealm && (existing.position - position).sqrMagnitude < 1.44f)
                 {
                     existing.size = Mathf.Max(existing.size, size);
                     return; // No lifetime refresh: repeated hits cannot sustain a white patch.
                 }
             }
             if (glows.Count < PurpleLightningBudget.MaxGlows)
-                glows.Add(new Glow { position = position, size = size, born = visualTime });
+                glows.Add(new Glow { realm = EmissionRealm, position = position, size = size, born = visualTime });
         }
 
         internal void AddEmpPulse(Vector3 position, float radius)
@@ -285,7 +288,7 @@ namespace Yunjianzi
             for (int i = 0; i < flashes.Count; i++)
             {
                 Flash existing = flashes[i];
-                if ((existing.bolt || existing.emp) && visualTime - existing.born < .12f &&
+                if (existing.realm == EmissionRealm && (existing.bolt || existing.emp) && visualTime - existing.born < .12f &&
                     (existing.points[0] - position).sqrMagnitude < .36f)
                 {
                     existing.empRadius = Mathf.Max(existing.empRadius, radius);
@@ -380,11 +383,11 @@ namespace Yunjianzi
                             flash.ribbon.EmpPulse(flash.points[jump + 1], .5f,
                                 flash.seed + jump, nodeProgress, false);
                             PurpleLightningRibbon.DrawGlow(flash.points[jump + 1], .7f,
-                                pulse * alpha * .32f);
+                                pulse * alpha * .32f, flash.realm);
                         }
                     }
                 }
-                flash.ribbon.Draw(alpha);
+                flash.ribbon.Draw(alpha, flash.realm);
             }
             float glowDensity = .72f / Mathf.Sqrt(Mathf.Max(1f, glows.Count * .22f));
             for (int i = 0; i < glows.Count; i++)
@@ -392,7 +395,7 @@ namespace Yunjianzi
                 Glow glow = glows[i];
                 float progress = Mathf.Clamp01((visualTime - glow.born) / GlowDuration);
                 PurpleLightningRibbon.DrawGlow(glow.position, glow.size * (1f + .25f * progress),
-                    (1f - progress) * glowDensity);
+                    (1f - progress) * glowDensity, glow.realm);
             }
         }
 
@@ -429,7 +432,7 @@ namespace Yunjianzi
     internal sealed class PurpleLightningRibbon
     {
         internal const float ParticleExplosionDuration = 1.44f;
-        private static readonly Material RibbonMaterial = CreateRibbonMaterial();
+        private static readonly Material[] RibbonMaterials = { CreateRibbonMaterial(2), CreateRibbonMaterial(3), CreateRibbonMaterial(4) };
         private static readonly Material GlowMaterial = MaterialPool.MatFrom(
             "Things/Mote/LightningGlow", ShaderDatabase.MoteGlow);
         private static readonly MaterialPropertyBlock Properties = new MaterialPropertyBlock();
@@ -442,7 +445,7 @@ namespace Yunjianzi
 
         internal PurpleLightningRibbon() { mesh.MarkDynamic(); }
 
-        private static Material CreateRibbonMaterial()
+        private static Material CreateRibbonMaterial(int realm)
         {
             Texture2D texture = new Texture2D(64, 1, TextureFormat.RGBA32, false);
             texture.name = "YJZ_PurpleLightningCrossSection";
@@ -454,7 +457,7 @@ namespace Yunjianzi
                 float distance = Mathf.Abs(i / 63f * 2f - 1f);
                 // A readable white-lavender core and brighter violet rim, without
                 // widening geometry or raising the simultaneous-flash budget.
-                Color colour = Color.Lerp(new Color(1f, .97f, 1f), new Color(.67f, .34f, 1f),
+                Color colour = Color.Lerp(LightningPalette.Core(realm), LightningPalette.Edge(realm),
                     Mathf.Clamp01(distance * 2.4f));
                 colour.a = Mathf.Pow(1f - distance, 1.25f);
                 pixels[i] = colour;
@@ -696,7 +699,7 @@ namespace Yunjianzi
             triangles.Add(index + 2); triangles.Add(index + 1); triangles.Add(index + 3);
         }
 
-        internal void Draw(float alpha)
+        internal void Draw(float alpha, int realm = 3)
         {
             if (vertices.Count == 0) return;
             mesh.Clear();
@@ -704,13 +707,13 @@ namespace Yunjianzi
             mesh.SetUVs(0, uv);
             mesh.SetTriangles(triangles, 0);
             Properties.SetColor(ShaderPropertyIDs.Color, new Color(1.12f, 1.12f, 1.12f, Mathf.Clamp01(alpha)));
-            Graphics.DrawMesh(mesh, Matrix4x4.identity, RibbonMaterial, 0, null, 0, Properties);
+            Graphics.DrawMesh(mesh, Matrix4x4.identity, RibbonMaterials[LightningPalette.Band(realm)], 0, null, 0, Properties);
         }
 
-        internal static void DrawGlow(Vector3 position, float size, float alpha)
+        internal static void DrawGlow(Vector3 position, float size, float alpha, int realm = 3)
         {
             position.y = Altitude - .005f;
-            Properties.SetColor(ShaderPropertyIDs.Color, new Color(.78f, .46f, 1f, Mathf.Clamp01(alpha)));
+            Properties.SetColor(ShaderPropertyIDs.Color, LightningPalette.Glow(realm, Mathf.Clamp01(alpha)));
             Graphics.DrawMesh(MeshPool.plane10, Matrix4x4.TRS(position, Quaternion.identity,
                 new Vector3(size, 1f, size)), GlowMaterial, 0, null, 0, Properties);
         }

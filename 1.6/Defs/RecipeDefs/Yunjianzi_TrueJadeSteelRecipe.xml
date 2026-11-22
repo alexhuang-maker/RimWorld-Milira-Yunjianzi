@@ -3,7 +3,7 @@
   <RecipeDef>
     <defName>YJZ_MakeTrueJadeSteel</defName>
     <label>熔合真玉钢</label>
-    <description>以翡翠搭建灵质晶格，再将日盘钢压入其中，熔合成坚韧且具有自洽灵脉的真玉钢。</description>
+    <description>在合玉炉中熔合翡翠与日盘钢，制成真玉钢。</description>
     <jobString>正在熔合真玉钢。</jobString>
     <workAmount>5000</workAmount>
     <workSkill>Crafting</workSkill>

@@ -40,7 +40,8 @@ namespace Yunjianzi
             // Patch the assembly exactly once.  A second PatchAll used to live in
             // the optional facial-animation integration and installed every
             // postfix/prefix twice when that integration was present.
-            new Harmony("alex.miliraprivateexpansion.yunjianzi").PatchAll();
+            // An explicit assembly also works when the 1.7 runtime inlines callers.
+            new Harmony("alex.miliraprivateexpansion.yunjianzi").PatchAll(typeof(YunjianziBootstrap).Assembly);
         }
     }
 
@@ -80,6 +81,7 @@ namespace Yunjianzi
             }
 
             NormalizeInitialGear(__result, extension);
+            __result.TryGetComp<CompYunjianziCultivation>()?.BeginInheritanceJourney();
         }
 
         private static void NormalizeInitialGear(Pawn pawn, FixedPawnTemplateExtension extension)

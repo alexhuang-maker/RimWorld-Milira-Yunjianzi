@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Only GenStep_YunjianziOrbitalMemorial places these. No recipes,
+       designation categories, corpse decay or ambient scatter registration. -->
+  <ThingDef Name="YJZ_OrbitalRelicBase" ParentName="BuildingBase" Abstract="True">
+    <thingClass>Building</thingClass><tickerType>Never</tickerType>
+    <drawerType>MapMeshOnly</drawerType><altitudeLayer>Building</altitudeLayer>
+    <rotatable>false</rotatable><selectable>true</selectable><useHitPoints>true</useHitPoints>
+    <size>(2,2)</size><passability>PassThroughOnly</passability><pathCost>30</pathCost>
+    <fillPercent>0.3</fillPercent><blockWind>false</blockWind><holdsRoof>false</holdsRoof>
+    <bringAlongOnGravship>false</bringAlongOnGravship>
+    <building><claimable>false</claimable><alwaysDeconstructible>true</alwaysDeconstructible></building>
+    <statBases><MaxHitPoints>260</MaxHitPoints><Flammability>0</Flammability><Beauty>-3</Beauty><WorkToBuild>1200</WorkToBuild><MarketValue>0</MarketValue></statBases>
+    <costList><Steel>8</Steel></costList>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><shaderType>Cutout</shaderType><drawSize>(2.7,2.7)</drawSize></graphicData>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_OrbitalRelicBase">
+    <defName>YJZ_Relic_AncientRing</defName><label>断环状古机残骸</label>
+    <description>环形机枢被一道斩痕剖开，径向的机关臂仍朝向殿外。铸痕间残留着难以辨认的云纹，与此地的白玉碑隐约相应。它或许曾侍奉上一代云间子，但其结构、材质与运转方式都和米莉拉机体迥异，已无人能确认。</description>
+    <size>(3,3)</size><graphicData><texPath>Yunjianzi/Buildings/OrbitalRelics/AncientRing</texPath><drawSize>(3.7,3.7)</drawSize></graphicData>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_OrbitalRelicBase">
+    <defName>YJZ_Relic_AncientBell</defName><label>覆钟状古机残骸</label>
+    <description>覆钟般的厚重外壳已经破裂，支足蜷折于内，露出陌生的环形机关。它没有人形躯干，也没有羽翼。残存的云纹似乎与前代传承有关；是否曾是一具机侍，已无从考证。</description>
+    <graphicData><texPath>Yunjianzi/Buildings/OrbitalRelics/AncientBell</texPath></graphicData>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_OrbitalRelicBase">
+    <defName>YJZ_Relic_AncientCrawler</defName><label>六足古机残骸</label>
+    <description>一具低伏的六足机关横陈于此，苍白护壳从中断裂，铜色关节牢牢咬合。它不像任何现存米莉拉机械体。甲壳上依稀可见云纹，断肢却再也无法指明它守护过谁。</description>
+    <size>(3,2)</size><graphicData><texPath>Yunjianzi/Buildings/OrbitalRelics/AncientCrawler</texPath><drawSize>(3.5,3.5)</drawSize></graphicData>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_OrbitalRelicBase">
+    <defName>YJZ_Relic_AncientCoil</defName><label>节环古机残骸</label>
+    <description>数节厚重机环弯折成断续长链，末端的感知棱面已彻底熄灭。其形制仿佛某种失传的机关法器，和如今的机侍截然不同。它倒下的位置，仍横在旧殿与敌骸之间。</description>
+    <size>(3,2)</size><graphicData><texPath>Yunjianzi/Buildings/OrbitalRelics/AncientCoil</texPath><drawSize>(3.5,3.5)</drawSize></graphicData>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_OrbitalRelicBase">
+    <defName>YJZ_Relic_DarkSkitter</defName><label>凝时伏行者残骸</label>
+    <description>黑暗智能驱使的小型伏行仆从，已经被斩碎。它没有像寻常邪物那样消散：断甲停在崩裂的瞬间，折肢与空壳一同被此地凝滞的时间封存。残骸没有生命，也不会自行苏醒。</description>
+    <graphicData><texPath>Yunjianzi/Buildings/OrbitalRelics/DarkSkitter</texPath></graphicData>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_OrbitalRelicBase">
+    <defName>YJZ_Relic_DarkWatcher</defName><label>凝时窥探者残骸</label>
+    <description>暗色棱甲围着一枚破灭的窥视核心。它曾替黑暗智能搜寻猎物，如今连最后一次破裂都未能完成。裂隙间的碎片被时间定住，微弱余色只是当年那一瞬的残留。</description>
+    <graphicData><texPath>Yunjianzi/Buildings/OrbitalRelics/DarkWatcher</texPath></graphicData>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_OrbitalRelicBase">
+    <defName>YJZ_Relic_DarkReaper</defName><label>凝时刃仆残骸</label>
+    <description>长刃与三足机壳纠缠成一堆，斩痕贯穿其躯。黑暗智能的一具刃仆就此败亡；散开的碎刃却未落尽，而是与残躯一同凝固在漫长岁月里。它已经失去了行动能力。</description>
+    <graphicData><texPath>Yunjianzi/Buildings/OrbitalRelics/DarkReaper</texPath></graphicData>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_OrbitalRelicBase">
+    <defName>YJZ_Relic_DarkCore</defName><label>凝时裂核残骸</label>
+    <description>一具低等黑暗仆从的核心被震裂，厚甲向外翻开。碎片之间还留着尚未散尽的间隙，仿佛毁灭这一刻被从时间中截下。它只是失去活性的残骸，并非魔神节点。</description>
+    <graphicData><texPath>Yunjianzi/Buildings/OrbitalRelics/DarkCore</texPath></graphicData>
+  </ThingDef>
+</Defs>

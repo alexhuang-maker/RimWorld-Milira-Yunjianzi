@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Dedicated Shenji palette: white core with a pale cyan-green halo.
+       Keep the existing beam shader; do not recolor the shared HAVOC mote. -->
+  <ThingDef Name="YJZ_Mote_ShenjiBeam" ParentName="AL_Mote_Laser">
+    <defName>YJZ_Mote_ShenjiBeam</defName>
+    <graphicData>
+      <drawSize>(1,1)</drawSize>
+      <shaderType>AL_Beam_PureMain</shaderType>
+      <shaderParameters Inherit="False">
+        <_MainTint>(0.35,0.82,0.74,1)</_MainTint>
+        <_CoreColor>(0.94,1,0.98,1)</_CoreColor>
+        <_CoreBoost>1</_CoreBoost>
+        <_Thickness>0.5</_Thickness>
+        <_FalloffExp>10</_FalloffExp>
+        <_CoreBoostExp>30</_CoreBoostExp>
+        <_Intensity>0.85</_Intensity>
+        <_NoiseTex>/AriandelLibrary/Effect/Azur/NoiseTex</_NoiseTex>
+        <_NoiseTex_ST>(1,1,0,0)</_NoiseTex_ST>
+        <_NoiseSpeed>(-2,0,0,0)</_NoiseSpeed>
+        <_StartPinch>0.1</_StartPinch>
+        <_EndPinch>0.1</_EndPinch>
+      </shaderParameters>
+    </graphicData>
+    <mote>
+      <fadeInTime>0.04</fadeInTime>
+      <fadeOutTime>0.20</fadeOutTime>
+    </mote>
+  </ThingDef>
+
+  <!-- A narrower, shorter-lived beam keeps three-hop refractions readable. -->
+  <ThingDef ParentName="YJZ_Mote_ShenjiBeam">
+    <defName>YJZ_Mote_ShenjiChainBeam</defName>
+    <graphicData>
+      <drawSize>(1,0.65)</drawSize>
+    </graphicData>
+    <mote>
+      <fadeInTime>0.03</fadeInTime>
+      <fadeOutTime>0.14</fadeOutTime>
+    </mote>
+  </ThingDef>
+</Defs>

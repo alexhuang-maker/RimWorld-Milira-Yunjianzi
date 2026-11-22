@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Separate non-rendered utility layers make both artifacts wearable together. -->
+  <ApparelLayerDef>
+    <defName>YJZ_SwordArtifact</defName>
+    <label>剑匣法器</label>
+    <drawOrder>41</drawOrder>
+  </ApparelLayerDef>
+  <ApparelLayerDef>
+    <defName>YJZ_CelestialSilk</defName>
+    <label>仙絮法器</label>
+    <drawOrder>42</drawOrder>
+  </ApparelLayerDef>
+  <ApparelLayerDef><defName>YJZ_SanyuanArtifact</defName><label>秘仪法器</label><drawOrder>43</drawOrder></ApparelLayerDef>
+</Defs>

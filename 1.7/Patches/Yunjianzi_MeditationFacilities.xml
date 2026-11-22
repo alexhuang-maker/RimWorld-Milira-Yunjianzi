@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ThingDef[@Name="YJZ_MeditationBuildingBase"]/comps</xpath>
+    <value>
+      <li Class="CompProperties_AffectedByFacilities">
+        <linkableFacilities>
+          <li>YJZ_Building_YunjianziBanner</li>
+          <li>YJZ_Building_SpiritConvergencePool</li>
+          <li>YJZ_Building_CelestialDaoGate</li>
+        </linkableFacilities>
+      </li>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ThingDef[@Name="YJZ_MeditationBuildingBase"]</xpath>
+    <value>
+      <placeWorkers>
+        <li>PlaceWorker_ShowFacilitiesConnections</li>
+      </placeWorkers>
+    </value>
+  </Operation>
+</Patch>

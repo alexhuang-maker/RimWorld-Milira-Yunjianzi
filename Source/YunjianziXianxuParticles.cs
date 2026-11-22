@@ -13,6 +13,7 @@ namespace Yunjianzi
         internal static void Draw(Pawn pawn, Vector3 origin, Rot4 rotation, float scale, int ticks, Vector3 depthAxis)
         {
             if (!pawn.Spawned || pawn.Map == null || pawn.Map != Find.CurrentMap || pawn.Position.Fogged(pawn.Map)) return;
+            int realm = LightningRealm.Of(pawn);
             int rot = rotation.AsInt;
             bool side = rot == 1 || rot == 3;
             // These particles are evaluated from game time, not emitted every
@@ -33,7 +34,7 @@ namespace Yunjianzi
                     x += driftX;
                     y += driftY;
                     float opacity = Mathf.Sin(age * Mathf.PI) * .85f;
-                    Color color = i % 2 == 0 ? new Color(.48f,.86f,1f,opacity) : new Color(.75f,.55f,1f,opacity);
+                    Color color = LightningPalette.Glow(realm, opacity);
                     DrawGlow(At(origin,scale,rot,depthAxis,x,y), (.025f + .045f * (1f-age)) * scale, color);
                 }
 
@@ -48,7 +49,7 @@ namespace Yunjianzi
                         if (p > 1f) break;
                         XianxuParticleMotion.Point(rot, mirror, p, out float fx, out float fy);
                         float alpha = .62f * (1f - sample / (float)XianxuParticleMotion.SamplesPerFlow);
-                        Color color = flow == 0 ? new Color(.58f,.9f,1f,alpha) : new Color(.76f,.52f,1f,alpha);
+                        Color color = LightningPalette.Glow(realm, alpha);
                         DrawGlow(At(origin,scale,rot,depthAxis,fx,fy), (.10f - sample * .012f) * scale, color);
                     }
                 }
@@ -56,7 +57,7 @@ namespace Yunjianzi
                 // A local lotus shimmer breathes with the full-silhouette glow.
                 XianxuParticleMotion.Point(rot,mirror,.10f,out float cx,out float cy);
                 DrawGlow(At(origin,scale,rot,depthAxis,cx,cy), .18f * scale,
-                    new Color(.65f,.58f,1f,XianxuParticleMotion.GlowAlpha(ticks,pawn.thingIDNumber)));
+                    LightningPalette.Glow(realm,XianxuParticleMotion.GlowAlpha(ticks,pawn.thingIDNumber)));
 
                 float head = XianxuParticleMotion.FlowProgress(ticks, pawn.thingIDNumber, 0);
                 if (((long)ticks + pawn.thingIDNumber) % 36 >= 18) continue;
@@ -71,7 +72,7 @@ namespace Yunjianzi
                     x1 += outward * Mathf.Sin(((ticks/3)%360) * 1.7f + (i+1)*2.3f) * 4f;
                     Vector3 a=At(origin,scale,rot,depthAxis,x0,y0), b=At(origin,scale,rot,depthAxis,x1,y1);
                     Vector3 delta=b-a;
-                    Properties.SetColor(ShaderPropertyIDs.Color,new Color(.7f,.9f,1f,.9f));
+                    Properties.SetColor(ShaderPropertyIDs.Color,LightningPalette.Glow(realm,.9f));
                     Graphics.DrawMesh(MeshPool.plane10, Matrix4x4.TRS((a+b)*.5f,
                         Quaternion.LookRotation(delta),new Vector3(.017f*scale,1f,delta.magnitude+.008f)),
                         Glow,0,null,0,Properties);

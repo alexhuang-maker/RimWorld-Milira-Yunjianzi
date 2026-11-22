@@ -58,11 +58,9 @@
   <!-- 符兵是真正的临时 Pawn，而非通过修改 Position 假装移动的建筑式 Thing。 -->
   <ThingDef Name="YJZ_BeanSoldierRaceBase" ParentName="AnimalThingBase" Abstract="True">
     <label>符兵</label>
-    <description>“撒豆于地，借甲于兵；一息成阵，一战还尘。”
+    <description>前代以符术凝兵，又借机巧补足寻敌之法，留下撒豆成兵的符图。云间子依式施术，兵形便循令奔赴敌前。
 
-道书《阳符篇》绘有豆化兵形之法，并以异世机巧补足其寻敌之术。豆本无名，受令则勇；它们没有长生之愿，也不求战后封赏，只在短短一息里奔向被标定的敌人。
-
-效果：会主动追踪敌人的临时自爆符兵，其强度随云间子的境界成长。</description>
+符胆既燃，形体随之俱散，只将余威留在敌阵之中。</description>
     <tickerType>Normal</tickerType>
     <statBases>
       <MarketValue>0</MarketValue>

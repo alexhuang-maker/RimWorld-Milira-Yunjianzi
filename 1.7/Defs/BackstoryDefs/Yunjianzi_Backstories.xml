@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <AlienRace.AlienBackstoryDef>
+    <defName>YJZ_Backstory_Childhood</defName>
+    <title>旧史求知者</title>
+    <titleShort>旧史求知者</titleShort>
+    <description>[PAWN_nameDef]在大学学习考古时，常在标本室帮忙。她替残片编号，誊写出土记录，再把它们送回库房。若有材料缺了出处，就得抱着旧目录一册册查。
+
+有一批器物始终没能归档。不同遗址出土的石片上，刻着同一组星位；按现有测算，那些星星从未在天空中排成过那样。记录里有人提过这个问题，后来的报告却没有再谈。
+
+她把相关目录记了下来。毕业后，她留校从事考古研究，继续追查这批材料的来历。</description>
+    <slot>Childhood</slot>
+    <skillGains>
+      <Crafting>3</Crafting>
+      <Intellectual>3</Intellectual>
+    </skillGains>
+    <spawnCategories>
+      <li>YJZ_Backstory_Childhood_Category</li>
+    </spawnCategories>
+    <bodyTypeFemale>Female</bodyTypeFemale>
+    <bodyTypeMale>Female</bodyTypeMale>
+  </AlienRace.AlienBackstoryDef>
+
+  <AlienRace.AlienBackstoryDef>
+    <defName>YJZ_Backstory_Adulthood</defName>
+    <title>云间传人</title>
+    <titleShort>云间传人</titleShort>
+    <description>西娅·阿纳斯塔西亚曾是一名循星图远行的遗迹探索者。她测绘废弃驻所，修复沉默的仪器，从破碎的记录中寻找古人的去向。一组反复出现的坐标，最终将她引到一座轨道陵墓。
+
+前代云间子在此与大敌同归于尽。幸存的自律机械在能量耗尽前清理战场，以大理石筑成陵殿，将白玉青云碑安置于正中，又在碑前供奉宝卷，为后来者留下一条承接道统的路。殿外的残骸仍凝固在最后一战，殿内却整洁如初。
+
+西娅推开墓门，读尽宝卷，依卷中法门引气入体。旧日不解的剑诀与炼器之理渐次贯通，纯白的发梢与羽翼染上清青。她将“云间子”置于自己的名字之中，接过前代未竟之志。自此，考察古迹之外，她更要以所学修行，持剑荡尽那尊魔神遗留的祸根。</description>
+    <slot>Adulthood</slot>
+    <skillGains>
+      <Melee>3</Melee>
+      <Crafting>2</Crafting>
+      <Intellectual>2</Intellectual>
+      <Social>1</Social>
+    </skillGains>
+    <spawnCategories>
+      <li>YJZ_Backstory_Adulthood_Category</li>
+    </spawnCategories>
+    <bodyTypeFemale>Female</bodyTypeFemale>
+    <bodyTypeMale>Female</bodyTypeMale>
+  </AlienRace.AlienBackstoryDef>
+  <AlienRace.AlienBackstoryDef>
+    <defName>YJZ_Backstory_Explorer</defName>
+    <title>遗迹探索者</title><titleShort>探索者</titleShort>
+    <description>毕业后，西娅·阿纳斯塔西亚离开熟悉的标本室，循着古老星图走访散落各地的遗迹。她记录遗址、修复仪器，试着还原那些被时间掩埋的故事。一次远航将她带到一座保存完好的轨道陵墓；墓门之后，尚有她未曾读懂的传承。</description>
+    <slot>Adulthood</slot>
+    <spawnCategories><li>YJZ_Backstory_Explorer_Category</li></spawnCategories>
+    <bodyTypeFemale>Female</bodyTypeFemale><bodyTypeMale>Female</bodyTypeMale>
+  </AlienRace.AlienBackstoryDef>
+</Defs>

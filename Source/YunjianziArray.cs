@@ -54,11 +54,13 @@ namespace Yunjianzi
         private static readonly Material RightMaterial = MaterialPool.MatFrom(
             "Yunjianzi/Effects/ThunderSpear/ThunderSpear_PlantedRight", ShaderDatabase.MoteGlow);
         private bool pointsRight;
+        private int visualRealm = 4;
         private int expireTick;
 
-        public void Initialize(bool spearPointsRight, int durationTicks)
+        public void Initialize(bool spearPointsRight, int durationTicks, int realm = 4)
         {
             pointsRight = spearPointsRight;
+            visualRealm = realm;
             expireTick = Find.TickManager.TicksGame + durationTicks;
         }
 
@@ -71,16 +73,16 @@ namespace Yunjianzi
                 // Keep the planted weapon itself rigid.  Motion comes from
                 // short-lived electrical particles around the impact point.
                 if (this.IsHashIntervalTick(20))
-                    YunjianziPurpleLightning.Glow(DrawPos, Map, .72f);
+                    YunjianziPurpleLightning.Glow(DrawPos, Map, .72f, realm: visualRealm);
                 if (this.IsHashIntervalTick(13))
                 {
                     Vector3 outer = DrawPos + Vector3Utility.RandomHorizontalOffset(Rand.Range(.35f, 1.15f));
-                    YunjianziPurpleLightning.Arc(outer, DrawPos, Map, .42f);
+                    YunjianziPurpleLightning.Arc(outer, DrawPos, Map, .42f, realm: visualRealm);
                 }
                 if (this.IsHashIntervalTick(9))
                     FleckMaker.ThrowMicroSparks(DrawPos + Vector3Utility.RandomHorizontalOffset(.28f), Map);
                 if (this.IsHashIntervalTick(47))
-                    YunjianziPurpleLightning.Burst(DrawPos, Map, .38f);
+                    YunjianziPurpleLightning.Burst(DrawPos, Map, .38f, realm: visualRealm);
             }
         }
 
@@ -89,12 +91,13 @@ namespace Yunjianzi
             drawLoc.y = Altitudes.AltitudeFor(AltitudeLayer.ItemImportant);
             float size = 3.4f * ThunderSpearGlow.ChargeAndAnchorScale;
             Matrix4x4 matrix = Matrix4x4.TRS(drawLoc, Quaternion.identity, new Vector3(size, 1f, size));
-            Graphics.DrawMesh(MeshPool.plane10, matrix, pointsRight ? RightMaterial : LeftMaterial, 0, null, 0, ThunderSpearGlow.Properties);
+            Graphics.DrawMesh(MeshPool.plane10, matrix, pointsRight ? RightMaterial : LeftMaterial, 0, null, 0, ThunderSpearGlow.ForRealm(visualRealm));
         }
 
         public override void ExposeData()
         {
             base.ExposeData();
+            Scribe_Values.Look(ref visualRealm, "yjz_thunderSpearVisualRealm", 4);
             Scribe_Values.Look(ref pointsRight, "yjz_thunderSpearPointsRight", false);
             Scribe_Values.Look(ref expireTick, "yjz_thunderSpearAnchorExpireTick", 0);
         }
@@ -636,8 +639,8 @@ namespace Yunjianzi
             bool follows = HasSkill(YunjianziSkills.MovingArray);
             bool sustained = HasSkill(YunjianziSkills.ArrayBarrier);
             string deployDescription = follows
-                ? "身载周天，阵随身行。阵眼隐入周天，唯一阵域随云间子行止而移，无须在原地留驻琉璃阵眼。"
-                : "以灵力凝成琉璃阵眼，在脚下展开驻留原地的雷阵。悟得身载周天后，阵眼隐去，唯一阵域将随步而移。";
+                ? "在身边展开仙阵，阵域随云间子移动，不再留下驻地阵眼。"
+                : "凝成琉璃阵眼，在当前位置展开仙阵。阵眼被摧毁时，阵域也会消散。";
             deployDescription += sustained
                 ? "\n\n展开不消耗灵力；维持每秒消耗5点灵力，直到主动收阵或灵力耗尽。"
                 : "\n\n布阵消耗" + (follows ? "100" : "50") + "点灵力，持续60秒。再次运诀即可收阵。";
@@ -645,7 +648,7 @@ namespace Yunjianzi
             {
                 defaultLabel = active ? "仙阵诀·收阵" : "仙阵诀·布阵",
                 defaultDesc = active
-                    ? "收束雷旗与阵纹，立即撤去当前仙阵并停止一切维持消耗。"
+                    ? "撤去当前仙阵，停止维持阵法的消耗。"
                     : deployDescription,
                 icon = YunjianziAbilityTextures.ImmortalArray,
                 action = active ? (Action)CancelArrays : ActivateArrays
@@ -655,7 +658,7 @@ namespace Yunjianzi
                 Command_Action blink = new Command_Action
                 {
                     defaultLabel = "仙阵诀·循纹神行",
-                    defaultDesc = "借阵纹移形，可一步踏入仙阵覆盖之处。紫府之后，落足时震雷外荡，逼退近敌；修为愈深，雷势越盛。\n\n消耗100点灵力，冷却20秒。",
+                    defaultDesc = "沿阵纹移形，抵达仙阵覆盖的位置。掌握相应法门后，落定时还会释放震雷，推开近敌并扰乱机械。\n\n消耗100点灵力，冷却20秒。",
                     icon = YunjianziAbilityTextures.ArrayTeleport,
                     action = BeginArrayBlink
                 };
@@ -733,12 +736,12 @@ namespace Yunjianzi
             Pawn.Position = cell;
             Pawn.Notify_Teleported(false, true);
             arrayBlinkReadyTick = Find.TickManager.TicksGame + 1200;
-            YunjianziCombatEffects.ShowArrayTeleport(origin, Pawn.DrawPos, map);
+            YunjianziCombatEffects.ShowArrayTeleport(origin, Pawn.DrawPos, map, Realm);
             ThunderBeastUtility.TrySummon(Pawn, originCell, map, true);
             ThunderBeastUtility.TrySummon(Pawn, cell, map, true);
             if (HasSkill(YunjianziSkills.ArrayTeleportShock))
             {
-                YunjianziPurpleLightning.Burst(Pawn.DrawPos, map, 1.5f);
+                YunjianziPurpleLightning.Burst(Pawn.DrawPos, map, 1.5f, realm: Realm);
                 ApplyArrayBlinkKnockback(cell, map);
             }
         }
@@ -783,7 +786,7 @@ namespace Yunjianzi
                     if (Find.TickManager.TicksGame % 18 == 0)
                     {
                         Vector3 hand = Pawn.DrawPos + new Vector3(.3f, 0f, .4f);
-                        YunjianziPurpleLightning.Arc(hand, hand + new Vector3(.15f, 0f, 1.35f), Pawn.Map, .6f);
+                        YunjianziPurpleLightning.Arc(hand, hand + new Vector3(.15f, 0f, 1.35f), Pawn.Map, .6f, realm: Realm);
                     }
                     return;
                 }
@@ -833,7 +836,7 @@ namespace Yunjianzi
             GenSpawn.Spawn(anchor, cell, Pawn.Map);
             // A spear arriving from the left keeps its tail to the upper-left,
             // while its spearhead is buried toward the lower-right.
-            anchor.Initialize(arrivedFromLeft, 1200);
+            anchor.Initialize(arrivedFromLeft, 1200, Realm);
             Messages.Message("雷枪镇地，万钧天狱展开。", new TargetInfo(cell, Pawn.Map), MessageTypeDefOf.ThreatBig, false);
         }
 
@@ -854,7 +857,7 @@ namespace Yunjianzi
             float scale = eased * pulse * ThunderSpearGlow.ChargeAndAnchorScale;
             Matrix4x4 matrix = Matrix4x4.TRS(loc, Quaternion.AngleAxis(angle, Vector3.up),
                 new Vector3(1.55f * scale, 1f, 3.1f * scale));
-            Graphics.DrawMesh(MeshPool.plane10, matrix, ThunderSpearChargeMaterial, 0, null, 0, ThunderSpearGlow.Properties);
+            Graphics.DrawMesh(MeshPool.plane10, matrix, ThunderSpearChargeMaterial, 0, null, 0, ThunderSpearGlow.ForRealm(Realm));
         }
 
         private void ApplyArrayBlinkKnockback(IntVec3 center, Map map)
@@ -891,7 +894,7 @@ namespace Yunjianzi
                 if (enemy.pather != null) enemy.pather.StopDead();
                 enemy.Position = destination;
                 enemy.Notify_Teleported(false, true);
-                YunjianziCombatEffects.ShowKnockback(from, enemy.DrawPos, map);
+                YunjianziCombatEffects.ShowKnockback(from, enemy.DrawPos, map, Realm);
             }
         }
 

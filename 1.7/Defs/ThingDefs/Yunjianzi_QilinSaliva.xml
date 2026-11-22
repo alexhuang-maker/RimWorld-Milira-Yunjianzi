@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ResourceBase">
+    <defName>YJZ_QilinSaliva</defName>
+    <label>麟涎</label>
+    <description>云麒麟吐纳清炁，积久凝露，赠予照料她的同行者。前代曾将它收在远行药囊中，留待伤病沉重时取用。
+
+清露入腹，能愈沉疴，续残肢；须有所伤病，方可受其滋养。</description>
+    <thingClass>ThingWithComps</thingClass>
+    <techLevel>Ultra</techLevel>
+    <graphicData>
+      <texPath>Yunjianzi/Items/QilinSaliva</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>80</MaxHitPoints>
+      <Mass>0.2</Mass>
+      <DeteriorationRate>2</DeteriorationRate>
+      <Flammability>0.2</Flammability>
+      <MarketValue>1300</MarketValue>
+    </statBases>
+    <stackLimit>10</stackLimit>
+    <thingCategories><li>Drugs</li></thingCategories>
+    <tradeability>Sellable</tradeability>
+    <comps>
+      <li Class="CompProperties_Usable">
+        <useJob>UseItem</useJob>
+        <useLabel>服用{0_label}</useLabel>
+        <useDuration>600</useDuration>
+        <showUseGizmo>true</showUseGizmo>
+      </li>
+      <li Class="CompProperties_UseEffect">
+        <compClass>CompUseEffect_FixWorstHealthCondition</compClass>
+      </li>
+      <li Class="CompProperties_UseEffectPlaySound"><soundOnUsed>MechSerumUsed</soundOnUsed></li>
+      <li Class="CompProperties_UseEffectDestroySelf" />
+    </comps>
+  </ThingDef>
+
+  <JobDef>
+    <defName>YJZ_GatherQilinSaliva</defName>
+    <driverClass>Yunjianzi.JobDriver_GatherQilinSaliva</driverClass>
+    <reportString>正在采集TargetA的麟涎。</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+  <WorkGiverDef>
+    <defName>YJZ_GatherQilinSaliva</defName>
+    <label>采集麟涎</label>
+    <giverClass>Yunjianzi.WorkGiver_GatherQilinSaliva</giverClass>
+    <workType>Handling</workType>
+    <verb>采集麟涎</verb>
+    <gerund>采集麟涎</gerund>
+    <priorityInType>90</priorityInType>
+    <requiredCapacities><li>Manipulation</li></requiredCapacities>
+  </WorkGiverDef>
+
+  <RecipeDef>
+    <defName>YJZ_AdministerQilinSaliva</defName>
+    <label>喂服麟涎</label>
+    <description>喂服麟涎，治疗目标身上可处理的严重健康问题。</description>
+    <workerClass>Recipe_AdministerUsableItem</workerClass>
+    <jobString>正在喂服麟涎。</jobString>
+    <workAmount>600</workAmount>
+    <anesthetize>false</anesthetize>
+    <targetsBodyPart>false</targetsBodyPart>
+    <surgeryOutcomeEffect IsNull="True" />
+    <dontShowIfAnyIngredientMissing>true</dontShowIfAnyIngredientMissing>
+    <ingredients><li><filter><thingDefs><li>YJZ_QilinSaliva</li></thingDefs></filter><count>1</count></li></ingredients>
+    <fixedIngredientFilter><thingDefs><li>YJZ_QilinSaliva</li></thingDefs></fixedIngredientFilter>
+  </RecipeDef>
+</Defs>

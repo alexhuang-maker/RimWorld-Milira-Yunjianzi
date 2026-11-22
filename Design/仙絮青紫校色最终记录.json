@@ -1,0 +1,45 @@
+{
+  "files": {
+    "A_Gold": "exec-5bd496ac-6007-439c-a45d-4ba3dcbc6669.png",
+    "C_Gold": "exec-f01f694d-5594-4d3a-8692-41cda021957e.png",
+    "Hidden_Gold": "exec-4d632498-7790-49fb-897d-5dc9ec0d99b0.png",
+    "C_Violet": "exec-2ca01314-946c-438f-bc9b-8e9c31ad2bb9.png",
+    "A_Cyan": "exec-2d732e20-3407-405e-8ddb-ee21f2774658.png",
+    "A_Violet": "exec-2c1f191c-e06a-4622-9f80-1918acab5cc6.png",
+    "C_Cyan": "exec-477821ea-a651-4d05-9a88-52a2642dc99f.png",
+    "Hidden_Cyan": "exec-3d6354ea-5725-4815-8754-063391051af3.png",
+    "Hidden_Violet": "exec-d80b6997-ec84-431c-8412-3c6c1decf70a.png"
+  },
+  "prompts": [
+    {
+      "name": "A_Cyan",
+      "prompt": "Color correction ONLY on this existing faint gossamer artifact sprite. Its thin translucent organza quality is correct and must be PRESERVED. Change the spiritual gauze pigment, gemstone interiors and fine electric threads to recognizable COOL CYAN / AQUA BLUE, fabric pigment hue around #22BBD5. Blue and green much stronger than red. NOT gray, NOT whitish gray, NOT mint green. Increase COLOR PURITY without increasing opacity or brightness. Keep actual gauze alpha approximately 15-30%, lower luminosity, strong identifiable hue in the fine fibers, no broad bloom or aura. Silver-white physical frame, clasps and outlines stay NEUTRAL SILVER WHITE and opaque. All positions, shapes, tiny jewelry, central opening, empty top, canvas size and transparency remain identical. Keep the light misty see-through cloth, NO opaque colored cloth and NO new background. One transparent square game sprite, no text.",
+      "reference": "exec-b210ea9a-e0f1-4794-bf0e-e93c887d3e51.png"
+    },
+    {
+      "name": "C_Cyan",
+      "prompt": "Color correction ONLY on this existing faint gossamer artifact sprite. Its thin translucent organza quality is correct and must be PRESERVED. Change the spiritual gauze pigment, gemstone interiors and fine electric threads to recognizable COOL CYAN / AQUA BLUE, fabric pigment hue around #22BBD5. Blue and green much stronger than red. NOT gray, NOT whitish gray, NOT mint green. Increase COLOR PURITY without increasing opacity or brightness. Keep actual gauze alpha approximately 15-30%, lower luminosity, strong identifiable hue in the fine fibers, no broad bloom or aura. Silver-white physical frame, clasps and outlines stay NEUTRAL SILVER WHITE and opaque. All positions, shapes, tiny jewelry, central opening, empty top, canvas size and transparency remain identical. Keep the light misty see-through cloth, NO opaque colored cloth and NO new background. One transparent square game sprite, no text.",
+      "reference": "exec-49603774-3789-4444-a2a1-86dfe2c33f25.png"
+    },
+    {
+      "name": "A_Violet",
+      "prompt": "Color correction ONLY on this existing faint gossamer artifact sprite. Its thin translucent organza quality is correct and must be PRESERVED. Change the spiritual gauze pigment, gemstone interiors and fine electric threads to recognizable BLUE-VIOLET / amethyst, fabric pigment hue around #7850D5. Blue stronger than red; red stronger than green. NOT pink, NOT lilac pink, NOT magenta, NOT red purple. Increase COLOR PURITY without increasing opacity or brightness. Keep actual gauze alpha approximately 15-30%, lower luminosity, strong identifiable hue in the fine fibers, no broad bloom or aura. Silver-white physical frame, clasps and outlines stay NEUTRAL SILVER WHITE and opaque. All positions, shapes, tiny jewelry, central opening, empty top, canvas size and transparency remain identical. Keep the light misty see-through cloth, NO opaque colored cloth and NO new background. One transparent square game sprite, no text.",
+      "reference": "exec-e7085f07-acff-45bc-b32b-4d05a4538c48.png"
+    },
+    {
+      "name": "C_Violet",
+      "prompt": "Color correction ONLY on this existing faint gossamer artifact sprite. Its thin translucent organza quality is correct and must be PRESERVED. Change the spiritual gauze pigment, gemstone interiors and fine electric threads to recognizable BLUE-VIOLET / amethyst, fabric pigment hue around #7850D5. Blue stronger than red; red stronger than green. NOT pink, NOT lilac pink, NOT magenta, NOT red purple. Increase COLOR PURITY without increasing opacity or brightness. Keep actual gauze alpha approximately 15-30%, lower luminosity, strong identifiable hue in the fine fibers, no broad bloom or aura. Silver-white physical frame, clasps and outlines stay NEUTRAL SILVER WHITE and opaque. All positions, shapes, tiny jewelry, central opening, empty top, canvas size and transparency remain identical. Keep the light misty see-through cloth, NO opaque colored cloth and NO new background. One transparent square game sprite, no text.",
+      "reference": "exec-9a6ecd2e-33c3-4e3f-a248-fe6a3538005c.png"
+    },
+    {
+      "name": "Hidden_Cyan",
+      "prompt": "Color correction ONLY on this existing faint gossamer artifact sprite. Its thin translucent organza quality is correct and must be PRESERVED. Change the spiritual gauze pigment, gemstone interiors and fine electric threads to recognizable COOL CYAN / AQUA BLUE, fabric pigment hue around #22BBD5. Blue and green much stronger than red. NOT gray, NOT whitish gray, NOT mint green. Increase COLOR PURITY without increasing opacity or brightness. Keep actual gauze alpha approximately 15-30%, lower luminosity, strong identifiable hue in the fine fibers, no broad bloom or aura. Silver-white physical frame, clasps and outlines stay NEUTRAL SILVER WHITE and opaque. All positions, shapes, tiny jewelry, central opening, empty top, canvas size and transparency remain identical. Keep the light misty see-through cloth, NO opaque colored cloth and NO new background. One transparent square game sprite, no text.",
+      "reference": "exec-4d632498-7790-49fb-897d-5dc9ec0d99b0.png"
+    },
+    {
+      "name": "Hidden_Violet",
+      "prompt": "Color correction ONLY on this existing faint gossamer artifact sprite. Its thin translucent organza quality is correct and must be PRESERVED. Change the spiritual gauze pigment, gemstone interiors and fine electric threads to recognizable BLUE-VIOLET / amethyst, fabric pigment hue around #7850D5. Blue stronger than red; red stronger than green. NOT pink, NOT lilac pink, NOT magenta, NOT red purple. Increase COLOR PURITY without increasing opacity or brightness. Keep actual gauze alpha approximately 15-30%, lower luminosity, strong identifiable hue in the fine fibers, no broad bloom or aura. Silver-white physical frame, clasps and outlines stay NEUTRAL SILVER WHITE and opaque. All positions, shapes, tiny jewelry, central opening, empty top, canvas size and transparency remain identical. Keep the light misty see-through cloth, NO opaque colored cloth and NO new background. One transparent square game sprite, no text.",
+      "reference": "exec-4d632498-7790-49fb-897d-5dc9ec0d99b0.png"
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+<ThingDef ParentName="BuildingBase">
+    <defName>YJZ_Building_TalismanTable</defName>
+    <label>仙器炼制台</label>
+    <description>依遗篇布灵路，借炉火炼器形。剑锋、机轨与天丝各循其法，灵机交汇，乃成随身仙器。\n\n藏剑成匣：炼制云海剑匣，以一匣温养六剑。\n御机成仪：炼制三垣秘仪斗，以三垣统契群机。\n织雷成絮：炼制九霄仙絮，以天丝承纳雷霆。\n\n达到对应境界后，在「仙器拾遗」中花费1点灵气参悟，再于米莉拉研究页完成对应的2000进度研究，即可备料炼制。</description>
+    <thingClass>Building_WorkTable</thingClass>
+    <size>(3,2)</size>
+    <rotatable>true</rotatable>
+    <graphicData>
+      <texPath>Yunjianzi/Building/TalismanTable</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(3,2)</drawSize>
+    </graphicData>
+    <altitudeLayer>Building</altitudeLayer>
+    <statBases>
+      <MaxHitPoints>420</MaxHitPoints>
+      <WorkToBuild>5000</WorkToBuild>
+      <Mass>80</Mass>
+      <Beauty>24</Beauty>
+      <Flammability>0.18</Flammability>
+      <WorkTableWorkSpeedFactor>1</WorkTableWorkSpeedFactor>
+      <WorkTableEfficiencyFactor>1</WorkTableEfficiencyFactor>
+    </statBases>
+    <costList>
+      <WoodLog>80</WoodLog>
+      <Jade>30</Jade>
+      <Milira_SolarCrystal>8</Milira_SolarCrystal>
+      <Milira_SunPlateSteel>20</Milira_SunPlateSteel>
+    </costList>
+    <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
+    <designationCategory>YJZ_QinglingJade</designationCategory>
+    <uiOrder>3950</uiOrder>
+    <passability>PassThroughOnly</passability>
+    <pathCost>35</pathCost>
+    <hasInteractionCell>true</hasInteractionCell>
+    <!-- 纸张位于台面南侧；操作员应站在纸前，而不是绕到背后的玉珠旁。 -->
+    <interactionCellOffset>(0,0,-1)</interactionCellOffset>
+    <surfaceType>Item</surfaceType>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <thingCategories><li>BuildingsMisc</li></thingCategories>
+    <inspectorTabs><li>ITab_Bills</li></inspectorTabs>
+    <building>
+      <spawnedConceptLearnOpportunity>BillsTab</spawnedConceptLearnOpportunity>
+      <canPlaceOverImpassablePlant>false</canPlaceOverImpassablePlant>
+      <ai_chillDestination>false</ai_chillDestination>
+      <buildingTags><li>Production</li></buildingTags>
+    </building>
+    <comps>
+      <li Class="CompProperties_Forbiddable" />
+      <li Class="CompProperties_ReportWorkSpeed">
+        <workSpeedStat>WorkTableWorkSpeedFactor</workSpeedStat>
+      </li>
+      <li Class="CompProperties_Glower">
+        <glowRadius>3.2</glowRadius>
+        <glowColor>(255,255,255,0)</glowColor>
+      </li>
+    </comps>
+    <placeWorkers>
+      <li>PlaceWorker_ReportWorkSpeedPenalties</li>
+      <li>PlaceWorker_PreventInteractionSpotOverlap</li>
+    </placeWorkers>
+  </ThingDef>
+
+  <ThingDef Name="YJZ_TalismanBase" ParentName="ResourceBase" Abstract="True">
+    <thingClass>ThingWithComps</thingClass>
+    <description>以灵墨落符，将所悟法门寄于纸中。收入身边尚且寂然，佩用之后，符意才随周身灵力流转。</description>
+    <stackLimit>10</stackLimit>
+    <tradeability>None</tradeability>
+    <generateCommonality>0</generateCommonality>
+    <thingCategories><li>Manufactured</li></thingCategories>
+    <graphicData>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(0.72,0.72)</drawSize>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>100</MaxHitPoints>
+      <Mass>0.05</Mass>
+      <Flammability>0.35</Flammability>
+    </statBases>
+    <comps>
+      <li Class="Yunjianzi.CompProperties_YunjianziTalisman" />
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Zhuoyu</defName><label>啄玉符</label><description>前代手记里夹着几页制器札记，记过刃口偏移、玉料暗裂与成器前的修整。啄玉符便依这些细微关节绘成。
+
+佩之心手相应，斧凿落处少有差池，成器更易精良。</description><graphicData><texPath>Yunjianzi/Talisman/Zhuoyu</texPath></graphicData><statBases><MarketValue>500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Shenjie</defName><label>截真符</label><description>云间子从前代勘察遗物的记录中整理出此符。许多当年略过的细节，都被他在页边重新标出，旁边另记着复查所得。
+
+符意入心，杂绪渐清，格物究理更易得其门径。</description><graphicData><texPath>Yunjianzi/Talisman/Shenjie</texPath></graphicData><statBases><MarketValue>500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Shenxing</defName><label>神行符</label><description>前代在远行札记中留下的轻身符。旧稿曾随路线多次修改，后来才收入常用符图。
+
+符力行于足下，越岭履险，身轻步疾。</description><graphicData><texPath>Yunjianzi/Talisman/Shenxing</texPath></graphicData><statBases><MarketValue>500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Jiqing</defName><label>寄情符</label><description>手记中偶尔夹着沿途的山水小稿，有些画在歇脚处，有些只匆匆勾出远峰。寄情符取其中存景于心的法门，随身带去一分清意。
+
+居处清雅时，符意愈畅，心绪与言谈也渐舒展。</description><graphicData><texPath>Yunjianzi/Talisman/Jiqing</texPath></graphicData><statBases><MarketValue>500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Baicao</defName><label>百草符</label><description>前代沿途救治伤病，留下不少辨症与施治的笔记。此符依经脉、血肉之理绘成，临用时能使伤处细微变化映入心神。
+
+持符行医，察病更明，针刀所至不致失手。</description><graphicData><texPath>Yunjianzi/Talisman/Baicao</texPath></graphicData><statBases><MarketValue>500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Xinjian</defName><label>心剑符</label><description>前代把交涉时的见闻记在行记末尾，旁附一道澄心符式。云间子循式炼符，使自己在纷杂言语中仍能留心对方神色与语意。
+
+佩之言辞从容，商谈易合，交易亦少失机。</description><graphicData><texPath>Yunjianzi/Talisman/Xinjian</texPath></graphicData><statBases><MarketValue>500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Beidou</defName><label>斗转符</label><description>从前代所记星位与御剑轨迹中推演出的符式。落笔时须使周天运转与符中节律相合，才能将出手间的滞涩一并调匀。
+
+佩之挥刃、引铳皆捷，飞剑往复亦如星循其轨。</description><graphicData><texPath>Yunjianzi/Talisman/Beidou</texPath></graphicData><statBases><MarketValue>1500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Guihai</defName><label>百川归海符</label><description>修炼札记中记过吐纳之后灵气散失的情形，前代由此画出归流符图。云间子循图行气，将符路收束在经脉周围。
+
+散炁有所归，周流不易竭，静坐、行走皆可更快复元。</description><graphicData><texPath>Yunjianzi/Talisman/Guihai</texPath></graphicData><statBases><MarketValue>1500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Shenlian</defName><label>神炼符</label><description>这道符式原附在前代的制器记录旁，用于长时御工。云间子将它用于日常劳作，执锤、裁料与运转机床时，皆能维持心手相随。
+
+神念不散，百工少滞，手中诸事因而渐快。</description><graphicData><texPath>Yunjianzi/Talisman/Shenlian</texPath></graphicData><statBases><MarketValue>1500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Huijian</defName><label>慧剑斩念符</label><description>前代调查异象时，曾在手记中反复记下无处寻声的低语。慧剑符式就留在这些记录之后，以清明剑意护住灵台。
+
+外声难入，纷念渐息，持符者得以守定心神。</description><graphicData><texPath>Yunjianzi/Talisman/Huijian</texPath></graphicData><statBases><MarketValue>1500</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Bumei</defName><label>不昧真灵符</label><description>随修为渐深，前代开始将守神心得记入符图。云间子结丹后依图炼成此符，使记诵与思虑都有所依凭。
+
+真灵不昧，闻见易明；纵有愁苦萦心，亦不至失守。</description><graphicData><texPath>Yunjianzi/Talisman/Bumei</texPath></graphicData><statBases><MarketValue>3000</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Jiexin</defName><label>劫心符</label><description>符眼以本源心血封成，再将灵力引入周身筋骨。前代留下了行气与收符的次序，须逐处参透，才能承受这道符力。
+
+符成则气血充盛，百骸坚实，执事迎敌皆有余力，外伤亦可减轻。</description><graphicData><texPath>Yunjianzi/Talisman/Jiexin</texPath></graphicData><statBases><MarketValue>3000</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Liuyang</defName><label>六阳真形符</label><description>前代将此符另列偏法，仍保留了完整符图与卸符之法。纯阳之炁尽入争战所用，佩者执兵时目明手捷，心火也随之偏盛。
+
+久佩则躁，难寄情于艺事；解下此符，诸般偏性方退。</description><graphicData><texPath>Yunjianzi/Talisman/Liuyang</texPath></graphicData><statBases><MarketValue>3000</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Tiandao</defName><label>万艺通玄符</label><description>前代把行医、御器与诸般技艺的参悟合入此图，须待元神有成才能维系。符力展开时，许多原本生疏的关节也在神识中变得清楚。
+
+百艺暂通，手随心至；本不能为之事，仍不可强行。符力散去，熟练亦随之退还。</description><graphicData><texPath>Yunjianzi/Talisman/Tiandao</texPath></graphicData><statBases><MarketValue>5000</MarketValue></statBases></ThingDef>
+  <ThingDef ParentName="YJZ_TalismanBase"><defName>YJZ_Talisman_Huanri</defName><label>偷天符</label><description>前代晚年的手记中留有这道驻龄符式。云间子以元神维系肉身，将渐生的衰朽止在尚未发生之处。
+
+岁月照常流过，此身不再添老；旧年留下的病损，却仍须另行调治。</description><graphicData><texPath>Yunjianzi/Talisman/Huanri</texPath></graphicData><statBases><MarketValue>5000</MarketValue></statBases></ThingDef>
+</Defs>

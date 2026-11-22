@@ -5,11 +5,9 @@
   <ThingDef ParentName="BuildingBase">
     <defName>YJZ_Building_YunjianziBanner</defName>
     <label>云间之影</label>
-    <description>“云无心以出岫。”——陶渊明《归去来兮辞》
+    <description>前代在陌生星球落脚时，曾以此旌标记驻所。旧旗早已不存，云间子依手记留下的旗样，以灵珠重现其影。
 
-道书夹页绘有一面无风自展的旧旌，旗心正是诛邪、云纹与残缺玉环。现任云间子以白玉灵珠复现其影；它不宣示领地，只证明上一代曾在某个陌生世界停云，而这一代又在此续上道统。
-
-效果：无需供能的云间子传承旗帜，能够照明并显著美化周围环境。</description>
+如今每到可久留之处，她便再立此旌。珠光不借薪火，静照来人。</description>
     <size>(1,1)</size>
     <rotatable>false</rotatable>
     <tickerType>Normal</tickerType>

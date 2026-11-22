@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Shown in the vanilla Schedule tab.  Only Yunjianzi maps this assignment
+       to her cultivation job; it has no special effect on other pawns. -->
+  <TimeAssignmentDef>
+    <defName>YJZ_Cultivate</defName>
+    <label>修炼</label>
+    <color>(72,205,210)</color>
+    <allowRest>false</allowRest>
+    <allowJoy>false</allowJoy>
+  </TimeAssignmentDef>
+</Defs>

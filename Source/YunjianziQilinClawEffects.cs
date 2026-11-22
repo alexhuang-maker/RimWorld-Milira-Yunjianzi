@@ -37,7 +37,7 @@ namespace Yunjianzi
                 float size = span * (stage >= 5 ? 1.06f : 1f) / artLength;
                 FleckCreationData data = FleckMaker.GetDataStatic(impact, caster.Map, fleck, size);
                 // Modest emissive gain preserves the approved purple texture and alpha.
-                data.instanceColor = new Color(1.12f, 1.12f, 1.12f, 1f);
+                data.instanceColor = LightningPalette.TextureTint(stage);
                 // Graphic_Fleck selects its mirrored mesh for negative X scale.
                 // Share the same rotation within each pair to keep the left/right rake distinct.
                 data.exactScale = new Vector3(variant >= 2 ? -size : size, 1f, size);

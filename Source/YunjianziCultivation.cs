@@ -219,6 +219,7 @@ namespace Yunjianzi
 
         private void EnsureRealmAndAbilities()
         {
+            if (AwaitingInheritance) return;
             EnsureIdentityStory();
             if (RealmHediff == null)
             {
@@ -230,6 +231,7 @@ namespace Yunjianzi
 
         private void EnsureIdentityStory()
         {
+            if (AwaitingInheritance) return;
             if (Pawn == null || Pawn.story == null) return;
             if (Pawn.story.Childhood != YJZDefOf.YJZ_Backstory_Childhood)
                 Pawn.story.Childhood = YJZDefOf.YJZ_Backstory_Childhood;
@@ -243,6 +245,9 @@ namespace Yunjianzi
         {
             base.CompTick();
             if (!IsYunjianzi || Pawn == null || Pawn.Dead) return;
+            if (boundScrollReplacementPending && Pawn.IsHashIntervalTick(250)) TryCreateBoundScroll();
+            if (AwaitingInheritance) return;
+            Sanyuan?.TickWorn();
             TickArraySystem();
             if (Pawn.IsHashIntervalTick(60))
             {
@@ -310,20 +315,19 @@ namespace Yunjianzi
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
             foreach (Gizmo gizmo in base.CompGetGizmosExtra()) yield return gizmo;
-            if (!IsYunjianzi || Realm <= 0 || Pawn == null || Pawn.Dead) yield break;
+            if (!IsYunjianzi || Pawn == null || Pawn.Dead) yield break;
+            if (Realm <= 0) yield break;
             if (Find.Selector.SingleSelectedThing == Pawn)
                 yield return new GizmoYunjianziCultivation { comp = this };
             if (Pawn.Faction == Faction.OfPlayer || DebugSettings.ShowDevGizmos)
             {
-                foreach (Gizmo scrollGizmo in GetBoundScrollGizmos()) yield return scrollGizmo;
                 Command_Action summon = new Command_Action
                 {
                     defaultLabel = "御剑诀·唤剑",
-                    defaultDesc = "循道书所记剑诀呼唤诛邪。此剑与云间子性命相系，无论流落何方，闻召皆会归于掌中。\n\n消耗10点灵力。",
+                    defaultDesc = "呼唤已经认主的诛邪，使其回到手中。\n\n消耗10点灵力。",
                     icon = YunjianziAbilityTextures.SummonZhuxie,
                     action = SummonZhuxie
                 };
-                if (!HasOpenedBoundScroll) summon.Disable("宝珠尚寂。须先研读遗仙宝卷，方能听见诛邪剑鸣。");
                 yield return summon;
                 if (HasSkill(YunjianziSkills.BlinkStrike))
                 {
@@ -331,12 +335,12 @@ namespace Yunjianzi
                     {
                         comp = this,
                         defaultLabel = "御剑诀·缩地御剑",
-                        defaultDesc = "人随剑意越过咫尺，现于敌后，以诛邪斩其未备。\n\n消耗20点灵力，冷却5秒。",
+                        defaultDesc = "闪身至敌后，持诛邪斩击。\n\n消耗20点灵力，冷却5秒。",
                         icon = YunjianziAbilityTextures.BlinkStrike,
                         action = BeginBlinkTargeting
                     };
                     blink.defaultLabel = autoBlink ? "御剑诀·缩地御剑（自动）" : "御剑诀·缩地御剑";
-                    blink.defaultDesc = "人随剑意越过咫尺，现于敌后，以诛邪斩其未备。\n\n消耗20点灵力，冷却5秒。右键可切换自行寻隙出剑；此法只在征召迎敌时生效。";
+                    blink.defaultDesc = "闪身至敌后，持诛邪斩击。\n\n消耗20点灵力，冷却5秒。右键可切换自行寻隙出剑；此法只在征召迎敌时生效。";
                     int remaining = blinkReadyTick - Find.TickManager.TicksGame;
                     if (remaining > 0) blink.Disable(string.Format("冷却中：{0:0.0}秒", remaining / 60f));
                     yield return blink;
@@ -367,10 +371,6 @@ namespace Yunjianzi
                     foreach (Gizmo shenjiGizmo in GetShenjiGizmos()) yield return shenjiGizmo;
                 if (HasSkill(YunjianziSkills.ShenjiWyvern))
                     foreach (Gizmo wyvernGizmo in GetSkyWyvernGizmos()) yield return wyvernGizmo;
-                if (HasSkill(YunjianziSkills.YangfuPrimer))
-                    foreach (Gizmo combatTalismanGizmo in GetYangfuCombatGizmos()) yield return combatTalismanGizmo;
-                if (HasSkill(YunjianziSkills.YangfuPrimer))
-                    foreach (Gizmo talismanGizmo in GetTalismanGizmos()) yield return talismanGizmo;
 
                 if (Prefs.DevMode && DebugSettings.godMode)
                 {
@@ -379,7 +379,7 @@ namespace Yunjianzi
                         yield return new Command_Action
                         {
                             defaultLabel = "DEV：直接开卷",
-                            defaultDesc = "God Mode调试：立即视为已研读云间宝卷，开启修为面板并获得初始10点灵力。",
+                            defaultDesc = "God Mode调试：立即视为已研读前代手记，开启修为面板并获得初始10点灵力。",
                             icon = YunjianziAbilityTextures.DevX,
                             action = DebugOpenBoundScroll
                         };
@@ -675,7 +675,7 @@ namespace Yunjianzi
             if (HasSkill(YunjianziSkills.ChainLightningEnchantment) && !target.Destroyed)
                 ApplyChainLightning(target);
             blinkReadyTick = Find.TickManager.TicksGame + Mathf.RoundToInt(300f * TalismanCooldownFactor);
-            YunjianziCombatEffects.ShowBlinkSlash(originDrawPos, targetDrawPos, Pawn.DrawPos, map);
+            YunjianziCombatEffects.ShowBlinkSlash(originDrawPos, targetDrawPos, Pawn.DrawPos, map, Realm);
             if (HasSkill(YunjianziSkills.BlinkChain) && (target.Destroyed || (target is Pawn && ((Pawn)target).Dead)) && Energy >= 20f)
             {
                 Thing next = CombatTargetsInRange(25.9f).OrderBy(t => t.Position.DistanceToSquared(Pawn.Position)).FirstOrDefault();
@@ -841,7 +841,7 @@ namespace Yunjianzi
                 enemyPawn.pather?.StopDead();
                 enemyPawn.Position = destination;
                 enemyPawn.Notify_Teleported(false, true);
-                YunjianziCombatEffects.ShowKnockback(from, enemyPawn.DrawPos, map);
+                YunjianziCombatEffects.ShowKnockback(from, enemyPawn.DrawPos, map, Realm);
             }
         }
 
@@ -906,7 +906,7 @@ namespace Yunjianzi
                     .FirstOrDefault();
             }
 
-            YunjianziPurpleLightning.Chain(arcPoints, map);
+            YunjianziPurpleLightning.Chain(arcPoints, map, realm: Realm);
         }
 
         private void UpdateSwordHeartClarity()
@@ -1035,7 +1035,7 @@ namespace Yunjianzi
                         CompactNumber(comp.ShieldMax)), 8);
                 TooltipHandler.TipRegion(shieldRect,
                     string.Format("精确数值：剑罡 {0:0.##}/{1:0.##}。\n", comp.Shield, comp.ShieldMax) +
-                    "剑罡随境界自然壮大，可替云间子承受来袭之力。装备云海剑轮时，上限提高50%，单次受伤不超过100点；剑罡每损失最大值的三分之一，还会爆发剑气伤敌并将其推开。参悟「剑罡卫形」可再使上限提高50%，并将重聚速度提升至三倍。");
+                    "剑罡随境界自然壮大，可替云间子承受来袭之力。装备云海剑匣时，上限提高50%，单次受伤不超过100点；剑罡每损失最大值的三分之一，还会爆发剑气伤敌并将其推开。参悟「剑罡卫形」可再使上限提高50%，并将重聚速度提升至三倍。");
             }
 
             DrawRealmEmblems(outer);
@@ -1044,7 +1044,7 @@ namespace Yunjianzi
             Rect orbRect = new Rect(outer.x + 7f, outer.y + 8f, 56f, 57f);
             if (comp.HasOpenedBoundScroll)
             {
-                TooltipHandler.TipRegion(orbRect, "点击宝珠，在识海中重展遗仙宝卷。每一次参悟都需以自身灵力印证；右侧玉印所示，便是当前境界。");
+                TooltipHandler.TipRegion(orbRect, "点击宝珠，在识海中重展前代云间子手记。每一次参悟都需以自身灵力印证；右侧玉印所示，便是当前境界。");
                 if (Mouse.IsOver(orbRect))
                 {
                     GUI.color = new Color(.40f, .94f, 1f, .82f);
@@ -1060,7 +1060,7 @@ namespace Yunjianzi
             }
             else
             {
-                TooltipHandler.TipRegion(orbRect, "宝珠沉寂无光。待遗仙宝卷纳入识海，其中篇章才会在此徐徐展开。");
+                TooltipHandler.TipRegion(orbRect, "宝珠沉寂无光。待前代云间子手记纳入识海，其中篇章才会在此徐徐展开。");
             }
             Text.Anchor = TextAnchor.UpperLeft;
             GUI.color = Color.white;
@@ -1221,6 +1221,10 @@ namespace Yunjianzi
         public static PawnKindDef YJZ_BeanSoldier_5;
         public static PawnKindDef YJZ_BeanSoldier_CloudCommand;
         public static PawnKindDef YJZ_ThunderBeast;
+        // Optional in the frozen 1.6 content branch; do not produce missing-Def
+        // errors if the common sources are built against that branch later.
+        public static PawnKindDef YJZ_ThunderBeast_Weak => DefDatabase<PawnKindDef>.GetNamedSilentFail("YJZ_ThunderBeast_Weak");
+        public static PawnKindDef YJZ_ThunderBeast_Strong => DefDatabase<PawnKindDef>.GetNamedSilentFail("YJZ_ThunderBeast_Strong");
         static YJZDefOf() { DefOfHelper.EnsureInitializedInCtor(typeof(YJZDefOf)); }
     }
 
@@ -1251,7 +1255,7 @@ namespace Yunjianzi
             cultivation.Shield += Mathf.Max(10f, cultivation.ShieldMax * .005f);
         }
 
-        public static void ShowBlinkSlash(Vector3 origin, Vector3 target, Vector3 destination, Map map)
+        public static void ShowBlinkSlash(Vector3 origin, Vector3 target, Vector3 destination, Map map, int realm = 3)
         {
             if (map == null) return;
             Vector3 direction = target - origin;
@@ -1273,42 +1277,45 @@ namespace Yunjianzi
                 map.flecks.CreateFleck(wake);
             }
             FleckMaker.ThrowMicroSparks(target, map);
-            YunjianziPurpleLightning.Glow(target, map, 1.1f);
+            YunjianziPurpleLightning.Glow(target, map, 1.1f, realm);
         }
 
-        public static void ShowArrayTeleport(Vector3 origin, Vector3 destination, Map map)
+        public static void ShowArrayTeleport(Vector3 origin, Vector3 destination, Map map, int realm = 3)
         {
             if (map == null) return;
-            DrawWarpGate(origin, map, false);
-            DrawWarpGate(destination, map, true);
+            DrawWarpGate(origin, map, false, realm);
+            DrawWarpGate(destination, map, true, realm);
             for (int i = 1; i <= 7; i++)
             {
                 Vector3 point = Vector3.Lerp(origin, destination, i / 8f);
                 FleckCreationData arc = FleckMaker.GetDataStatic(point, map, YJZDefOf.YJZ_Fleck_ArrayWarpB,
                     .30f + i * .035f);
                 arc.rotation = i * 47f;
+                arc.instanceColor = LightningPalette.TextureTint(realm);
                 map.flecks.CreateFleck(arc);
             }
         }
 
-        private static void DrawWarpGate(Vector3 position, Map map, bool arrival)
+        private static void DrawWarpGate(Vector3 position, Map map, bool arrival, int realm)
         {
             for (int i = 0; i < 3; i++)
             {
                 FleckCreationData ring = FleckMaker.GetDataStatic(position, map, YJZDefOf.YJZ_Fleck_ArrayWarpA,
                     (arrival ? 1.25f : 1.05f) + i * .22f);
                 ring.rotation = i * 120f + (arrival ? 25f : -25f);
+                ring.instanceColor = LightningPalette.TextureTint(realm);
                 map.flecks.CreateFleck(ring);
             }
             FleckCreationData pillar = FleckMaker.GetDataStatic(position, map, YJZDefOf.YJZ_Fleck_ArrayWarpB,
                 arrival ? 1.55f : 1.25f);
             pillar.rotation = arrival ? 35f : -35f;
-            map.flecks.CreateFleck(pillar);
-            YunjianziPurpleLightning.Glow(position, map, arrival ? 2.2f : 1.7f);
+            pillar.instanceColor = LightningPalette.TextureTint(realm);
+                map.flecks.CreateFleck(pillar);
+            YunjianziPurpleLightning.Glow(position, map, arrival ? 2.2f : 1.7f, realm);
             FleckMaker.ThrowMicroSparks(position, map);
         }
 
-        public static void ShowKnockback(Vector3 origin, Vector3 destination, Map map)
+        public static void ShowKnockback(Vector3 origin, Vector3 destination, Map map, int realm = 3)
         {
             if (map == null) return;
             Vector3 delta = destination - origin;
@@ -1319,9 +1326,10 @@ namespace Yunjianzi
                 Vector3 point = Vector3.Lerp(origin, destination, i / 4f);
                 FleckCreationData arc = FleckMaker.GetDataStatic(point, map, YJZDefOf.YJZ_Fleck_ArrayWarpB, .42f + i * .08f);
                 arc.rotation = angle + 90f;
+                arc.instanceColor = LightningPalette.TextureTint(realm);
                 map.flecks.CreateFleck(arc);
             }
-            YunjianziPurpleLightning.Glow(destination, map, 1.1f);
+            YunjianziPurpleLightning.Glow(destination, map, 1.1f, realm);
         }
     }
 

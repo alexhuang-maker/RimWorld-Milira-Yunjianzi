@@ -1,47 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\Tools\RimWorld.Build.props" />
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <Nullable>disable</Nullable>
     <AssemblyName>Yunjianzi.FixedTemplate</AssemblyName>
     <RootNamespace>Yunjianzi</RootNamespace>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <OutputPath>..\1.6\Assemblies\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Tools\RimWorld17Checks\OrbitalStartChecks.cs" Condition="'$(YunjianziAudit)' == 'true' and '$(RimWorldVersion)' == '1.7'" />
     <Compile Remove="YunjianziFacialAnimation.cs" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="all" />
-    <Reference Include="Assembly-CSharp">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Unity.Mathematics">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Unity.Mathematics.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="0Harmony">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="AncotLibrary">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\workshop\content\294100\2988801276\1.6\Assemblies\AncotLibrary.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
+    <Compile Include="..\Tools\EntityChecks\Runtime.cs" Condition="'$(YunjianziAudit)' == 'true' and '$(RimWorldVersion)' == '1.7'" />
+    <Compile Include="..\Tools\EntityChecks\SiegeRuntime.cs" Condition="'$(YunjianziAudit)' == 'true' and '$(RimWorldVersion)' == '1.7'" />
+    <Compile Include="..\Tools\RimWorld17Checks\RuntimeChecks.cs" Condition="'$(YunjianziAudit)' == 'true' and '$(RimWorldVersion)' == '1.7'" />
+    <Compile Include="..\Tools\RimWorld17Checks\SaveLoadChecks.cs" Condition="'$(YunjianziAudit)' == 'true' and '$(RimWorldVersion)' == '1.7'" />
   </ItemGroup>
 </Project>

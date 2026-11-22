@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase" MayRequire="Ludeon.RimWorld.Anomaly">
+    <defName>YJZ_EntityTombstone</defName>
+    <label>葬星邪碑</label>
+    <thingClass>Yunjianzi.Building_YunjianziTombstone</thingClass>
+    <tickerType>Normal</tickerType>
+    <size>(2,2)</size>
+    <rotatable>false</rotatable>
+    <passability>Impassable</passability>
+    <fillPercent>1</fillPercent>
+    <altitudeLayer>Building</altitudeLayer>
+    <terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
+    <selectable>true</selectable>
+    <useHitPoints>true</useHitPoints>
+    <leaveResourcesWhenKilled>false</leaveResourcesWhenKilled>
+    <statBases><MaxHitPoints>650</MaxHitPoints><Flammability>0</Flammability><Beauty>-12</Beauty></statBases>
+    <building><isEdifice>true</isEdifice><deconstructible>false</deconstructible></building>
+    <graphicData><texPath>Yunjianzi/Entities/Effects/Tombstone</texPath><graphicClass>Graphic_Single</graphicClass><shaderType>Cutout</shaderType><drawSize>(3.4,3.4)</drawSize></graphicData>
+  </ThingDef>
+  <HediffDef MayRequire="Ludeon.RimWorld.Anomaly">
+    <defName>YJZ_TombstoneWeaken</defName><label>邪碑压制</label><hediffClass>HediffWithComps</hediffClass><isBad>true</isBad>
+    <comps><li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>60~60</disappearsAfterTicks></li><li Class="HediffCompProperties_DisappearsOnDeath" /></comps>
+    <stages><li><statFactors><MoveSpeed>0.85</MoveSpeed><IncomingDamageFactor>1.15</IncomingDamageFactor></statFactors></li></stages>
+  </HediffDef>
+  <HediffDef MayRequire="Ludeon.RimWorld.Anomaly">
+    <defName>YJZ_TombstoneEmpower</defName><label>邪碑共鸣</label><hediffClass>HediffWithComps</hediffClass><isBad>false</isBad>
+    <comps><li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>60~60</disappearsAfterTicks></li><li Class="HediffCompProperties_DisappearsOnDeath" /></comps>
+    <stages><li><statFactors><MoveSpeed>1.12</MoveSpeed><IncomingDamageFactor>0.85</IncomingDamageFactor></statFactors></li></stages>
+  </HediffDef>
+</Defs>

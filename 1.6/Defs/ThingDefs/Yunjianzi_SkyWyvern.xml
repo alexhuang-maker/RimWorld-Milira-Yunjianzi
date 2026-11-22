@@ -2,25 +2,11 @@
 <Defs>
   <ThingDef Name="YJZ_SkyWyvern_Base" ParentName="AnimalThingBase" Abstract="True">
     <label>云麒麟</label>
-    <description>“云从龙，风从虎。”——《周易·乾卦·文言》
+    <description>前代曾在远行中照料过一头负伤幼麟。伤愈之后，她仍留在身边，陪他走过荒星与雷海。那段旧约也被记入手记，随传承留到今日。
 
-道书末页没有法诀，只有半枚没入云纹的蹄印。上一代云间子曾在星海尽头救下一头负伤幼麟，后来一人一兽踏云同行：云间子为她疗伤、辨路，她则驮着旧友越过雷海与荒星。二者从无主仆之名，只有一句彼此守望的旧约。
+新一代云间子循约相唤，她便再度同行。平日可伴人运物，临阵则踏雷迎敌，将瑞气分予近旁同伴。紫府显灵麟之形，金丹负霆，化神而九天真形渐全。
 
-多年以后，道书再度展开。云麒麟循着熟悉的气息而来，却没有因为相同的道号便立刻俯首。她看过新传人的剑，也看过她如何对待弱者，最终才将额头轻轻抵在她掌中——她所认可的从来不是一本书或一个名字，而是仍值得同行的人。
-
-平日里，云麒麟收敛雷威，愿意帮助搬运；强敌来犯时，她会自行迎战，以青雷利爪撕开敌阵，并用护盾与瑞气庇护身旁之人。随着云间子继续参悟道书，她沉睡的血脉也会逐步苏醒。
-
-她的形态由云间子的境界决定，不必另行学习进阶技能。突破后再次施展“瑞麟践约”，便会显现相应境界的真形，麟涎的凝聚进度随之保留。
-
-麟威战吼：各境界的云麒麟在进入战斗时都会自动发出战吼，激发血脉之力。自身移动速度提高50%，近战、雷爪、威压与背部雷矢的攻击频率提高50%，持续15秒。战吼冷却60秒，每次进入战斗仅触发一次。
-
-紫府·云中灵麟：平日搬运物资，战时自行迎敌，以青雷利爪扫击敌群，并以灵盾、瑞气和自愈之力守护同行者。
-
-金丹·负霆瑞兽：玉骨生云，体魄、脚力与再生能力一同成长，护体云光可适应接连而来的伤害；灵角引雷，吐息成霆，能够席卷敌阵，使血肉麻痹、机械失灵，遭遇袭击时会自行择敌吐雷。
-
-化神·九天麟主：九霄真形尽显，巨躯、雷爪、威压与护体灵光进一步增强；背部灵鳞化作随行云庭，不断孕育雷光飞矢，吐息更为频繁，雷霆的震击、麻痹与破坏也一并加深。
-
-瑞兽不受屠宰或放生之令，也不产出肉皮。被消灭时散为云气，不留下尸体或死亡产物；“瑞麟践约”随即进入10天冷却，期满后可再次呼唤。她每10天凝聚1份麟涎，由驯兽员采集；服用后可治愈一项最严重的健康问题，效果等同于治疗机械液。</description>
+瑞兽凝身于云炁，伤重则散，待旧约再续时重来。不可取其肉皮，惟有吐纳凝露，自愿相赠。</description>
     <thingClass>Pawn</thingClass>
     <uiIconPath>Yunjianzi/UI/SkyWyvern</uiIconPath>
     <uiIconScale>1</uiIconScale>
@@ -157,7 +143,7 @@
   <AbilityDef>
     <defName>YJZ_SkyWyvernBreath</defName>
     <label>九霄震息</label>
-    <description>云麒麟昂首引动云中积雷，再将灵角与经脉间的雷光一息吐尽。雷霆落处，血肉为之麻痹，机械亦会失去响应；无人号令时，她也懂得把这道天威留给聚集成群的敌人。</description>
+    <description>云麒麟将灵角间汇聚的雷光吐向敌人，冲击落点周围，使血肉麻痹、机械失去响应。</description>
     <iconPath>Yunjianzi/UI/Abilities/SummonSkyWyvern</iconPath>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
     <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
@@ -188,7 +174,7 @@
   <HediffDef>
     <defName>YJZ_SkyWyvernAcceleration</defName>
     <label>祥光同庇</label>
-    <description>云麒麟收敛威势，将清明瑞气分予同行之人。身在其中，脚步如踏薄云，心手也随之轻快。</description>
+    <description>云麒麟将瑞气散向同伴，帮助他们行动与出手。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <stages><li><statOffsets><MoveSpeed>0.6</MoveSpeed></statOffsets><capMods><li><capacity>Manipulation</capacity><offset>0.08</offset></li></capMods></li></stages>
@@ -198,7 +184,7 @@
   <HediffDef>
     <defName>YJZ_QilinBattleRoar</defName>
     <label>麟威战吼</label>
-    <description>战吼激起云麒麟的血脉之力，步若奔雷，攻势如潮。移动速度提高50%，近战、雷爪、威压与背部雷矢的攻击频率提高50%，持续15秒。</description>
+    <description>战吼激起血脉之力，暂时加快云麒麟的移动与攻击。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <stages>
@@ -220,7 +206,7 @@
   <HediffDef>
     <defName>YJZ_SkyWyvernRegeneration</defName>
     <label>生生云息</label>
-    <description>云麒麟吐纳天地清炁，血肉、灵脉乃至残缺肢体都会迅速自行弥合。血脉越接近真形，再生之势便越强。</description>
+    <description>云麒麟持续恢复伤势，受损的经脉与残缺肢体也能够重新生长。</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
   </HediffDef>

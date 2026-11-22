@@ -9,7 +9,9 @@
   <ThingDef ParentName="ResourceBase">
     <defName>YJZ_TrueJadeSteel</defName>
     <label>真玉钢</label>
-    <description>以翡翠为灵质骨架、日盘钢为金属经络，在合玉炉中反复熔合而成的玉质超合金。其晶格会将冲击沿青色灵脉分散，再由金色导脉重新闭合，因此硬度足以与米莉拉帝国的零素材料相比。真玉钢只用于专门设计的云间机械与结构，不能作为普通墙体或飞船船壳的通用建材。</description>
+    <description>云间子将翡翠与日盘钢反复熔合，循炼器法调理内中灵脉，才得到这类玉质合金。合玉炉成法之后，所得之材也渐趋稳定。
+
+质坚而能承灵，宜作专门器械与阵枢。寻常筑造未通其法，难将它随意裁用。</description>
     <graphicData>
       <texPath>Yunjianzi/Items/TrueJadeSteel</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -66,7 +68,9 @@
   <ThingDef ParentName="BuildingBase">
     <defName>YJZ_Building_TrueJadeForge</defName>
     <label>合玉炉</label>
-    <description>横置的封闭式灵质熔合台。左仓送入翡翠，右仓送入日盘钢，中央炉心以交错的灵力场把两种晶格压合成真玉钢。炉体会自动校正灵脉方向，避免成材内部留下肉眼不可见的断纹。</description>
+    <description>为熔合翡翠与日盘钢而设。云间子将故乡的加工工法与炼器符路合参，炉心既可压合金玉，也能调匀成材中的灵机。
+
+真玉钢由此出炉，神机灵核与诸般器物，亦可在其中升炼。</description>
     <thingClass>Building_WorkTable</thingClass>
     <size>(3,1)</size>
     <rotatable>true</rotatable>

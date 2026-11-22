@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef Name="YJZ_Shenji_RaceBase" ParentName="Milira_MilianBase_Pawn" Abstract="True">
+    <label>青羽机侍</label>
+    <description>前代与米莉安同行时留下了神机器图，修补与重制之法都记在其中。云间子修复旧伴后，也逐渐掌握了培育新机的方法。
+
+机身自有灵机周流，不借常规带宽维系。佩甲执铳，可守驻所，亦可随行远征。</description>
+    <statBases><BandwidthCost MayRequire="Ludeon.Rimworld.Biotech">0</BandwidthCost><MechEnergyLossPerHP MayRequire="Ludeon.Rimworld.Biotech">0</MechEnergyLossPerHP></statBases>
+    <comps Inherit="False">
+      <!-- 神机使用米莉拉自己的双层发型渲染器。列表故意只留一项：
+           N1-3 是齐颈短发（北向的小辫属于同一套背发），因此生成与换向都不会随机。 -->
+      <li Class="Milira.CompProperties_MilianHairSwitch">
+        <gizmoIconPath>Milira/UI/HairChange</gizmoIconPath>
+        <frontHairPaths>
+          <!-- Hair only. The tactical visor follows Milira Guard's native
+               Milian_Goggle / Overhead apparel pipeline and is never baked here. -->
+          <li>Yunjianzi/Pawn/Shenji/ShenjiHairFront</li>
+        </frontHairPaths>
+        <behindHairPaths>
+          <li>Yunjianzi/Pawn/Shenji/ShenjiHairBack</li>
+        </behindHairPaths>
+      </li>
+      <li Class="CompProperties_CanBeDormant" />
+      <li Class="CompProperties_WakeUpDormant"><wakeUpOnDamage>true</wakeUpOnDamage><wakeUpCheckRadius>30</wakeUpCheckRadius><wakeUpSound>MechanoidsWakeUp</wakeUpSound></li>
+      <!-- 神机带宽费用为 0，但征召、控制组与米莉安工作管理依赖原生监督关系。 -->
+      <li MayRequire="Ludeon.Rimworld.Biotech" Class="CompProperties_OverseerSubject">
+        <needsOverseerEffect>MechUncontrolled</needsOverseerEffect>
+        <delayUntilFeralCheck>60000</delayUntilFeralCheck>
+        <feralMtbDays>10</feralMtbDays>
+        <feralCascadeRadialDistance>25</feralCascadeRadialDistance>
+      </li>
+      <li MayRequire="Ludeon.Rimworld.Biotech" Class="CompProperties_MechRepairable" />
+      <li Class="Milira.CompProperties_MilianApparelRender" />
+      <li Class="Milira.CompProperties_GainHediffSpawn">
+        <hediffDef>Milian_ClassHediff_Pawn</hediffDef>
+      </li>
+      <li><compClass>Milira.CompStripMilian</compClass></li>
+      <li Class="AncotLibrary.CompProperties_MechAutoFight"><hediffDef>Milira_MilianAutoFightHint</hediffDef><requireResearch>Milira_MilianTech_AutoFight</requireResearch></li>
+      <li Class="Milira.CompProperties_EquipMilian"><useJob>Milira_EquipMilianPre</useJob><useDuration>0</useDuration><warmupMote>Mote_ResurrectAbility</warmupMote></li>
+      <li Class="Milira.CompProperties_TargetEffect_EquipMilian" />
+      <li Class="Milira.CompProperties_TargetableWeapon"><compClass>Milira.CompTargetableWeapon</compClass><ignoreQuestLodgerPawns>true</ignoreQuestLodgerPawns></li>
+      <li Class="Yunjianzi.CompProperties_YunjianziShenji" />
+    </comps>
+    <uiIconPath>Milian/Mechanoid_uiIcon/PawnI</uiIconPath>
+  </ThingDef>
+
+  <!-- 三种机体是固定型号，不再随主人境界自动变形。 -->
+  <ThingDef ParentName="YJZ_Shenji_RaceBase">
+    <defName>YJZ_Shenji_Race</defName><label>青羽机侍</label>
+    <statBases><MoveSpeed>4.6</MoveSpeed><WorkSpeedGlobal>0.80</WorkSpeedGlobal><MarketValue>2200</MarketValue></statBases>
+    <race><baseHealthScale>1.35</baseHealthScale><mechFixedSkillLevel>10</mechFixedSkillLevel></race>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_Shenji_RaceBase">
+    <defName>YJZ_Shenji_Race_Lingwei</defName><label>玄翎灵卫</label>
+    <statBases><MoveSpeed>4.9</MoveSpeed><WorkSpeedGlobal>1.00</WorkSpeedGlobal><MarketValue>3400</MarketValue></statBases>
+    <race><baseHealthScale>1.70</baseHealthScale><mechFixedSkillLevel>12</mechFixedSkillLevel></race>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_Shenji_RaceBase">
+    <defName>YJZ_Shenji_Race_Tianjiang</defName><label>九霄天将</label>
+    <statBases><MoveSpeed>5.25</MoveSpeed><WorkSpeedGlobal>1.20</WorkSpeedGlobal><MarketValue>5200</MarketValue></statBases>
+    <race>
+      <baseHealthScale>2.15</baseHealthScale>
+      <mechFixedSkillLevel>14</mechFixedSkillLevel>
+      <!-- 普通米莉安底板没有知识工作；仅完成体能够进行研究。 -->
+      <mechEnabledWorkTypes><li>Research</li></mechEnabledWorkTypes>
+    </race>
+  </ThingDef>
+
+  <PawnKindDef Name="YJZ_ShenjiKindBase" ParentName="BaseMilianKind_Mechanoid" Abstract="True">
+    <race>YJZ_Shenji_Race</race>
+    <combatPower>220</combatPower>
+    <weaponMoney>0</weaponMoney>
+    <apparelMoney>0</apparelMoney>
+    <techHediffsMoney>0</techHediffsMoney>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="YJZ_ShenjiKindBase">
+    <defName>YJZ_Shenji</defName>
+    <label>青羽机侍</label>
+    <!-- Intrinsic armor is a true Milian apparel overlay. Keep the native
+         Milian body underneath so legs and joints remain visible. -->
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="YJZ_ShenjiKindBase">
+    <defName>YJZ_Shenji_Lingwei</defName>
+    <label>玄翎灵卫</label>
+    <race>YJZ_Shenji_Race_Lingwei</race>
+    <combatPower>340</combatPower>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="YJZ_ShenjiKindBase">
+    <defName>YJZ_Shenji_Tianjiang</defName>
+    <label>九霄天将</label>
+    <race>YJZ_Shenji_Race_Tianjiang</race>
+    <combatPower>520</combatPower>
+    <modExtensions>
+      <li Class="MilianModification.MilianComponentExtension">
+        <componentScheme>
+          <li>
+            <selectWeight>1</selectWeight>
+            <availableComponents_Head>
+              <li>YJZ_MilianFitting_CloudCommandChip</li>
+            </availableComponents_Head>
+          </li>
+        </componentScheme>
+      </li>
+    </modExtensions>
+  </PawnKindDef>
+
+  <ThingDef ParentName="Gun_AssaultRifle">
+    <defName>YJZ_Weapon_Shenji_Assault</defName>
+    <tradeability>None</tradeability>
+    <generateCommonality>0</generateCommonality>
+    <weaponTags Inherit="False" />
+    <label>青芒灵铳</label>
+    <description>前代留给青羽机侍的铳式，保留了米莉拉制式武装的机括，又以符路接通机体能源。旧驻所中尚有拆检的记录，故而重制时颇有章法可循。
+
+青芒随指而发，点射相续，最宜伴机侍守夜与远行。</description>
+    <graphicData>
+      <texPath>Yunjianzi/Weapons/ShenjiCannon_Assault</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>Cutout</shaderType>
+      <!-- 枪身横向拉长，但不同比例放大厚度，保持普通人可肩射的步枪轮廓。 -->
+      <drawSize>(1.42,1.10)</drawSize>
+    </graphicData>
+  </ThingDef>
+
+  <ThingDef ParentName="Gun_Minigun">
+    <defName>YJZ_Weapon_Shenji_Gatling</defName>
+    <tradeability>None</tradeability>
+    <generateCommonality>0</generateCommonality>
+    <weaponTags Inherit="False" />
+    <label>连星机括</label>
+    <description>云间子依手记中的连星器图改炼铳机，使诸管轮转，共承灵流。铳火尚未收尽，后续弹流已循轨而出。
+
+临阵展开，星芒密落，聚集之敌难以从容近身。</description>
+    <graphicData>
+      <texPath>Yunjianzi/Weapons/ShenjiCannon_Gatling</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>Cutout</shaderType>
+      <drawSize>(1.52,1.12)</drawSize>
+    </graphicData>
+    <verbs Inherit="false">
+      <li>
+        <verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand>
+        <defaultProjectile>YJZ_Projectile_ShenjiIonRound</defaultProjectile><warmupTime>2.5</warmupTime>
+        <forcedMissRadius>1.1</forcedMissRadius>
+        <range>30.9</range><burstShotCount>25</burstShotCount><ticksBetweenBurstShots>5</ticksBetweenBurstShots>
+        <soundCast>Shot_Minigun</soundCast><soundCastTail>GunTail_Medium</soundCastTail><muzzleFlashScale>9</muzzleFlashScale>
+      </li>
+    </verbs>
+  </ThingDef>
+
+  <!-- 筑基离子弹：用原版 Projectile_Explosive 落点结算，半径仅覆盖命中点周围
+       约一格。伤害低于普通迷你枪弹，但能有效处理紧密集群。 -->
+  <ThingDef ParentName="BaseBullet">
+    <defName>YJZ_Projectile_ShenjiIonRound</defName>
+    <label>神机离子弹</label>
+    <thingClass>Yunjianzi.Projectile_YunjianziIonRound</thingClass>
+    <graphicData>
+      <texPath>Things/Projectile/Bullet_Small</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>TransparentPostLight</shaderType>
+      <color>(112,238,255)</color>
+      <drawSize>(0.72,0.72)</drawSize>
+    </graphicData>
+    <projectile>
+      <speed>70</speed>
+      <damageDef>Bomb</damageDef>
+      <damageAmountBase>8</damageAmountBase>
+      <armorPenetrationBase>0.18</armorPenetrationBase>
+      <explosionRadius>1.1</explosionRadius>
+      <explosionDamageFalloff>true</explosionDamageFalloff>
+      <explosionChanceToStartFire>0</explosionChanceToStartFire>
+      <soundExplode>Explosion_Bomb</soundExplode>
+    </projectile>
+  </ThingDef>
+
+  <!-- 紫府后的主射线与金丹折射射线使用神机专属的青白光束材质。
+       使用帝国能量射线的伤害结算，避免普通射线受额外伤害系数压到1点；
+       主射线基础伤害为10，折射射线为3，严格等于30%。 -->
+  <ThingDef ParentName="MiliraBullet_Ray">
+    <defName>YJZ_Projectile_ShenjiLaser</defName>
+    <label>神机辉光</label>
+    <thingClass>Yunjianzi.Projectile_YunjianziShenjiLaser</thingClass>
+    <projectile>
+      <damageDef>MI_Energy_Ray</damageDef>
+      <damageAmountBase>10</damageAmountBase>
+      <armorPenetrationBase>0.85</armorPenetrationBase>
+      <stoppingPower>0.8</stoppingPower>
+    </projectile>
+  </ThingDef>
+
+  <ThingDef ParentName="MiliraBullet_Ray">
+    <defName>YJZ_Projectile_ShenjiChainLaser</defName>
+    <label>神机折射辉光</label>
+    <projectile>
+      <damageDef>MI_Energy_Ray</damageDef>
+      <damageAmountBase>3</damageAmountBase>
+      <armorPenetrationBase>0.85</armorPenetrationBase>
+      <beamStartOffset>0</beamStartOffset>
+    </projectile>
+  </ThingDef>
+
+  <ThingDef ParentName="Gun_AssaultRifle" Name="YJZ_Weapon_Shenji_Gauss_Base">
+    <defName>YJZ_Weapon_Shenji_Gauss</defName>
+    <tradeability>None</tradeability>
+    <generateCommonality>0</generateCommonality>
+    <weaponTags Inherit="False" />
+    <label>贯日光铳</label>
+    <description>器图以日棱晶束光，符纹约其去向。云间子以紫府神识参校各处灵路，才使这道辉光能够出铳而不散。
+
+光至则甲穿，远处之敌亦难蔽形。</description>
+    <graphicData>
+      <texPath>Yunjianzi/Weapons/ShenjiCannon_Gauss</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>Cutout</shaderType>
+      <drawSize>(1.64,1.15)</drawSize>
+    </graphicData>
+    <statBases>
+      <RangedWeapon_Cooldown>0.25</RangedWeapon_Cooldown>
+    </statBases>
+    <verbs Inherit="false">
+      <li>
+        <verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand>
+        <defaultProjectile>YJZ_Projectile_ShenjiLaser</defaultProjectile><warmupTime>0.25</warmupTime>
+        <range>35.9</range><burstShotCount>6</burstShotCount><ticksBetweenBurstShots>6</ticksBetweenBurstShots>
+        <soundCast>Milira_Shot_RayRifle</soundCast><soundCastTail>GunTail_Heavy</soundCastTail><muzzleFlashScale>9</muzzleFlashScale>
+      </li>
+    </verbs>
+  </ThingDef>
+
+  <ThingDef ParentName="YJZ_Weapon_Shenji_Gauss_Base">
+    <defName>YJZ_Weapon_Shenji_Legendary</defName>
+    <label>九霄神光仪</label>
+    <description>贯日器图推演至此，已须另炼光仪来承接余能。主辉光出后，诸仪仍可引其未尽之势；待流光千折之法参透，敌影之间便有青芒递转。
+
+神光相续，照彻远阵，机体灵机未息，铳火便不轻歇。</description>
+    <graphicData>
+      <texPath>Yunjianzi/Weapons/ShenjiCannon_Legendary</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>Cutout</shaderType>
+      <drawSize>(1.72,1.18)</drawSize>
+    </graphicData>
+    <statBases>
+      <RangedWeapon_Cooldown>0.20</RangedWeapon_Cooldown>
+    </statBases>
+    <verbs Inherit="false">
+      <li>
+        <verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand>
+        <defaultProjectile>YJZ_Projectile_ShenjiLaser</defaultProjectile><warmupTime>0.20</warmupTime>
+        <range>39.9</range><burstShotCount>8</burstShotCount><ticksBetweenBurstShots>4</ticksBetweenBurstShots>
+        <soundCast>Milira_Shot_RayRifle</soundCast><soundCastTail>GunTail_Heavy</soundCastTail><muzzleFlashScale>11</muzzleFlashScale>
+      </li>
+    </verbs>
+  </ThingDef>
+</Defs>

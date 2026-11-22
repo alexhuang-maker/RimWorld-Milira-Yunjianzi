@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-22",
+  "tool": "built-in image_gen",
+  "status": "User approved the lighter C cyan/violet previews with '现在ok'; A and Hidden matched to these references.",
+  "runtimeDirectory": "Content/Textures/Yunjianzi/Apparel/JiuxiaoXianxu/Styles/Realm",
+  "approvedC": {
+    "Cyan": "exec-35f586dd-ce2c-45a2-b373-1c941e809b9e.png",
+    "Violet": "exec-ec4fc04b-f69f-41ae-86f4-5fb504f8cdcb.png"
+  },
+  "matched": {
+    "A_Cyan": "exec-ec30bf0a-76dc-42a0-9e03-8cf7f8c0e10b.png",
+    "A_Violet": "exec-4d4220ab-6061-4270-a8f5-bf7dbc594031.png",
+    "Hidden_Cyan": "exec-7f708370-3895-4baa-bfa0-32f6e10701ce.png",
+    "Hidden_Violet": "exec-f365f26a-762c-4c40-8c64-5a52524a0013.png"
+  },
+  "prompts": [
+    {
+      "style": "A",
+      "colour": "Cyan",
+      "prompt": "Edit IMAGE 1, preserving its exact shape, silhouette, white metal structures, gemstone positions and square framing. IMAGE 2 is the USER APPROVED color/material/lightning style reference: match its light ice-cyan gossamer EXACTLY. Replace image1's dark colored interior with image2's lighter airy translucent gauze. Add the same sparse, fine discontinuous lightning threads and tiny luminous pinpoints, no opaque mass, no broad glow or haze, no dark cloth. Metal remains crisp SILVER WHITE; gemstones match the reference's vivid cyan. Keep the two slim S-shaped ribbons of image1. Do NOT adopt the wider mantle structure of image2. Preserve actual transparent RGBA, central empty gap and entirely empty head region. Output one square game sprite, no text, background or panels."
+    },
+    {
+      "style": "A",
+      "colour": "Violet",
+      "prompt": "Edit IMAGE 1, preserving its exact shape, silhouette, white metal structures, gemstone positions and square framing. IMAGE 2 is the USER APPROVED color/material/lightning style reference: match its light blue-violet lavender gossamer EXACTLY. Replace image1's dark colored interior with image2's lighter airy translucent gauze. Add the same sparse, fine discontinuous lightning threads and tiny luminous pinpoints, no opaque mass, no broad glow or haze, no dark cloth. Metal remains crisp SILVER WHITE; gemstones match the reference's vivid violet. Keep the two slim S-shaped ribbons of image1. Do NOT adopt the wider mantle structure of image2. Preserve actual transparent RGBA, central empty gap and entirely empty head region. Output one square game sprite, no text, background or panels."
+    },
+    {
+      "style": "Hidden",
+      "colour": "Cyan",
+      "prompt": "Edit IMAGE 1, preserving its exact shape, silhouette, white metal structures, gemstone positions and square framing. IMAGE 2 is the USER APPROVED color/material/lightning style reference: match its light ice-cyan gossamer EXACTLY. Replace image1's dark colored interior with image2's lighter airy translucent gauze. Add the same sparse, fine discontinuous lightning threads and tiny luminous pinpoints, no opaque mass, no broad glow or haze, no dark cloth. Metal remains crisp SILVER WHITE; gemstones match the reference's vivid cyan. Keep ONLY the two existing tiny shoulder clasps and short wisps. Do NOT add full ribbons, mantle or long tails. Almost entire canvas remains transparent. Preserve actual transparent RGBA, central empty gap and entirely empty head region. Output one square game sprite, no text, background or panels."
+    },
+    {
+      "style": "Hidden",
+      "colour": "Violet",
+      "prompt": "Edit IMAGE 1, preserving its exact shape, silhouette, white metal structures, gemstone positions and square framing. IMAGE 2 is the USER APPROVED color/material/lightning style reference: match its light blue-violet lavender gossamer EXACTLY. Replace image1's dark colored interior with image2's lighter airy translucent gauze. Add the same sparse, fine discontinuous lightning threads and tiny luminous pinpoints, no opaque mass, no broad glow or haze, no dark cloth. Metal remains crisp SILVER WHITE; gemstones match the reference's vivid violet. Keep ONLY the two existing tiny shoulder clasps and short wisps. Do NOT add full ribbons, mantle or long tails. Almost entire canvas remains transparent. Preserve actual transparent RGBA, central empty gap and entirely empty head region. Output one square game sprite, no text, background or panels."
+    }
+  ]
+}

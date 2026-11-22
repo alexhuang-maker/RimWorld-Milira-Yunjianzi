@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <MapGeneratorDef ParentName="SpaceMapGenerator" MayRequire="Ludeon.RimWorld.Odyssey">
+    <defName>YJZ_OrbitalMemorial</defName><label>孤云遗冢</label><validScenarioMap>true</validScenarioMap>
+    <genSteps Inherit="False"><li>Space</li><li>YJZ_OrbitalFoundation</li><li>ScenParts</li><li>YJZ_OrbitalMemorial</li><li>FogSpace</li></genSteps>
+  </MapGeneratorDef>
+  <GenStepDef MayRequire="Ludeon.RimWorld.Odyssey"><defName>YJZ_OrbitalFoundation</defName><order>200</order><genStep Class="Yunjianzi.GenStep_YunjianziOrbitalFoundation"/></GenStepDef>
+  <GenStepDef MayRequire="Ludeon.RimWorld.Odyssey"><defName>YJZ_OrbitalMemorial</defName><order>900</order><genStep Class="Yunjianzi.GenStep_YunjianziOrbitalMemorial"/></GenStepDef>
+  <!-- Dedicated jade stele and incense altar; the scroll is a separate item. -->
+  <ThingDef ParentName="BuildingBase">
+    <defName>YJZ_PredecessorCenotaph</defName><label>白玉青云碑</label>
+    <description>白玉为碑，青云为纹。前代云间子与大敌同归于尽后，幸存的自律机械在能量耗尽前筑起大理石陵殿，立碑于内殿深处，供奉宝卷，留待后人承接道统。碑中残存的温养阵维持密封殿室的温度，不产生空气。</description>
+    <thingClass>Building</thingClass><tickerType>Rare</tickerType><size>(5,5)</size><passability>Impassable</passability>
+    <rotatable>false</rotatable><graphicData><texPath>Yunjianzi/Buildings/OrbitalMemorial/CloudStele</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(6,6)</drawSize></graphicData>
+    <statBases><MaxHitPoints>1800</MaxHitPoints><Flammability>0</Flammability><Beauty>25</Beauty></statBases>
+    <bringAlongOnGravship>false</bringAlongOnGravship><holdsRoof>true</holdsRoof><building><deconstructible>false</deconstructible></building>
+    <comps><li Class="Yunjianzi.CompProperties_YunjianziMemorialHeating"><heatEnergy>64000</heatEnergy></li></comps>
+  </ThingDef>
+  <ThingDef ParentName="BuildingBase">
+    <defName>YJZ_MemorialOffering</defName><label>供奉香案</label><description>置于白玉青云碑前的香案，前代宝卷供奉其上。首次研读后，宝卷消耗，香案留在碑前。</description>
+    <thingClass>Building</thingClass><size>(2,1)</size><surfaceType>Item</surfaceType><passability>PassThroughOnly</passability><rotatable>false</rotatable>
+    <graphicData><texPath>Yunjianzi/Buildings/OrbitalMemorial/IncenseAltar</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(2.5,1.25)</drawSize></graphicData>
+    <statBases><MaxHitPoints>500</MaxHitPoints><Flammability>0</Flammability></statBases><bringAlongOnGravship>false</bringAlongOnGravship>
+    <comps><li Class="CompProperties_Glower"><glowRadius>12</glowRadius><glowColor>(220,235,225,0)</glowColor></li></comps>
+  </ThingDef>
+  <ThingDef ParentName="BuildingBase" MayRequire="Ludeon.RimWorld.Odyssey">
+    <defName>YJZ_MemorialLifeSupport</defName><label>遗址维生核心</label><description>仍在运转的独立维生装置，为密封舱室补充空气并维持温度。舱室破损时无法维持适宜环境。</description>
+    <thingClass>Building</thingClass><tickerType>Rare</tickerType><passability>Impassable</passability>
+    <graphicData><texPath>Things/Building/OxygenPump/OxygenPump</texPath><graphicClass>Graphic_Multi</graphicClass></graphicData>
+    <statBases><MaxHitPoints>600</MaxHitPoints><Flammability>0</Flammability></statBases><bringAlongOnGravship>false</bringAlongOnGravship>
+    <comps><li Class="CompProperties_OxygenPusher"><requiresPower>false</requiresPower><airPerSecondPerHundredCells>0.1</airPerSecondPerHundredCells></li><li><compClass>Yunjianzi.CompYunjianziMemorialHeating</compClass></li><li Class="CompProperties_Glower"><glowRadius>9</glowRadius><glowColor>(160,210,220,0)</glowColor></li></comps>
+  </ThingDef>
+  <ThingDef Name="YJZ_MemorialDecorationBase" ParentName="BuildingBase" Abstract="True">
+    <thingClass>Building</thingClass><tickerType>Rare</tickerType><drawerType>MapMeshOnly</drawerType>
+    <size>(1,1)</size><passability>Standable</passability><pathCost>8</pathCost><rotatable>false</rotatable>
+    <altitudeLayer>BuildingOnTop</altitudeLayer><fillPercent>0.12</fillPercent><bringAlongOnGravship>false</bringAlongOnGravship>
+    <statBases><MaxHitPoints>300</MaxHitPoints><Flammability>0</Flammability><Beauty>12</Beauty></statBases>
+    <building><isEdifice>false</isEdifice><deconstructible>false</deconstructible></building>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_MemorialDecorationBase">
+    <defName>YJZ_MemorialEverlight</defName><label>遗殿长明灯</label>
+    <description>自律机械留在陵殿中的长明灯。灯座温养阵只为所在的密封殿室供暖，不产生空气；殿室破损时无法维持温度。</description>
+    <graphicData><texPath>Things/Building/Furniture/LampStanding</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(1,1)</drawSize></graphicData>
+    <comps><li Class="CompProperties_Glower"><glowRadius>7</glowRadius><glowColor>(220,235,225,0)</glowColor></li><li Class="Yunjianzi.CompProperties_YunjianziMemorialHeating"><heatEnergy>10000</heatEnergy></li></comps>
+  </ThingDef>
+  <ThingDef ParentName="YJZ_MemorialDecorationBase">
+    <defName>YJZ_MemorialCenser</defName><label>遗殿石瓮</label>
+    <description>沿参拜轴线与两侧廊厅成对陈设的古式石瓮。</description>
+    <!-- Legacy save identifier retained; new maps spawn vanilla marble Urn. -->
+    <graphicData><texPath>Things/Building/Misc/Urn</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(1,1)</drawSize></graphicData>
+  </ThingDef>
+</Defs>

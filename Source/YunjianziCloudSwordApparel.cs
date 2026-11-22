@@ -19,44 +19,45 @@ namespace Yunjianzi
     public sealed class CompCloudSwordArray : ThingComp
     {
         private static readonly Material Sword = MaterialPool.MatFrom(
-            "Yunjianzi/Apparel/CloudSwordArray/CloudSwordArrayV2", ShaderDatabase.TransparentPostLight);
-        private static readonly Material Glow = MaterialPool.MatFrom(
-            "Yunjianzi/Apparel/CloudSwordArray/CloudSwordArrayV2", ShaderDatabase.MoteGlow);
+            "Yunjianzi/Apparel/CloudSwordArray/CloudSwordBlade", ShaderDatabase.TransparentPostLight);
 
         private CompProperties_CloudSwordArray Props => (CompProperties_CloudSwordArray)props;
 
         public override void CompDrawWornExtras()
         {
             Pawn pawn = (parent as Apparel)?.Wearer;
-            if (pawn == null || !pawn.Spawned || pawn.Dead || pawn.Downed) return;
-            if (!pawn.Drafted && pawn.mindState?.enemyTarget == null) return;
+            if (pawn == null || !pawn.Drafted || !pawn.Spawned || pawn.Dead || pawn.Downed) return;
 
             Vector3 center = pawn.DrawPos;
-            int now = Find.TickManager.TicksGame;
-            float breathe = Mathf.Sin(now * .075f) * .06f;
-            int count = Mathf.Max(6, Props.swordCount);
+            Rot4 facing = pawn.Rotation;
+            bool horizontal = facing.IsHorizontal;
+            // Side views show the near rank only; the far three are occluded by it.
+            center.y += facing == Rot4.North ? .04f : -.018f;
+            int count = Props.swordCount;
+            int pairs = (count + 1) / 2;
             for (int i = 0; i < count; i++)
             {
-                float t = count == 1 ? .5f : i / (float)(count - 1);
-                // A wide halo-like fan leaves the pawn readable while evoking a
-                // ring of weightless spirit swords behind her.
-                float angle = Mathf.Lerp(-72f, 72f, t);
-                float radians = angle * Mathf.Deg2Rad;
-                float radius = Props.radius + breathe + Mathf.Sin(now * .11f + i * .9f) * .035f;
-                Vector3 offset = new Vector3(Mathf.Sin(radians) * radius, 0f,
-                    .10f + Mathf.Cos(radians) * radius * .54f);
-                Vector3 loc = center + offset;
-                loc.y = center.y + .008f + i * .0002f;
-                // The source sprite already points upward. Fan outward from that
-                // orientation instead of turning every blade upside down.
-                float rotation = angle * .72f + Mathf.Sin(now * .055f + i) * 1.8f;
-                float scale = .57f + (1f - Mathf.Abs(t - .5f) * 2f) * .07f;
-                Matrix4x4 glow = Matrix4x4.TRS(loc - new Vector3(0f, .002f, 0f),
-                    Quaternion.AngleAxis(rotation, Vector3.up), new Vector3(scale * 1.28f, 1f, scale * 1.28f));
-                Matrix4x4 body = Matrix4x4.TRS(loc,
-                    Quaternion.AngleAxis(rotation, Vector3.up), new Vector3(scale, 1f, scale));
-                Graphics.DrawMesh(MeshPool.plane10, glow, Glow, 0);
-                Graphics.DrawMesh(MeshPool.plane10, body, Sword, 0);
+                int pair = i / 2;
+                float side = i % 2 == 0 ? -1f : 1f;
+                if (facing == Rot4.North || facing == Rot4.West) side = -side;
+                float spread = pairs <= 1 ? 0f : pair / (float)(pairs - 1);
+                float hover = Mathf.Sin(Find.TickManager.TicksGame * .035f + pair * .7f) * .022f;
+                bool far = horizontal && (facing == Rot4.East ? side < 0 : side > 0);
+                if (far) continue;
+                Vector3 local = new Vector3(side * Props.radius * (.43f + .57f * spread),
+                    far ? -.004f : 0f, -.12f + .52f * spread + hover + (horizontal ? (far ? .14f : -.14f) : 0f));
+                float length = .78f + .18f * spread;
+                Quaternion tilt = Quaternion.AngleAxis(180f - side * (12f + 17f * spread), Vector3.up);
+                if (horizontal)
+                {
+                    float rear = facing == Rot4.East ? -1f : 1f;
+                    local.x = rear * (.70f + .28f * pair + (far ? .12f : 0f));
+                    local.z = -.20f + .18f * pair + (far ? .22f : 0f) + hover;
+                    tilt = Quaternion.AngleAxis(180f - rear * (14f + 9f * pair + (far ? 4f : 0f)), Vector3.up);
+                }
+                Matrix4x4 blade = Matrix4x4.TRS(center + local, tilt,
+                    new Vector3(length * (horizontal ? 1.05f : 1.25f), 1f, length));
+                Graphics.DrawMesh(MeshPool.plane10, blade, Sword, 0);
             }
         }
     }
